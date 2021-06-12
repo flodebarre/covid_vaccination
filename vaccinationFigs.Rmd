@@ -524,9 +524,14 @@ plotSquares <- function(lejour){
     
     points(xpos[1:nbSquares[icat]], ypos[1:nbSquares[icat]], pch = thepch, col = col0)
     
-    points(xpos[1:newdat[icat, "nbSquares_dose1"]], ypos[1:newdat[icat, "nbSquares_dose1"]], pch = thepch, col = col1D)
+    # Condition necessary because indices start at 1, so otherwise would plot 1 square when still at 0
+    if(newdat[icat, "nbSquares_dose1"] >= 1){
+      points(xpos[1:newdat[icat, "nbSquares_dose1"]], ypos[1:newdat[icat, "nbSquares_dose1"]], pch = thepch, col = col1D)
+    }
   
-    points(xpos[1:newdat[icat, "nbSquares_complet"]], ypos[1:newdat[icat, "nbSquares_complet"]], pch = thepch, col = colFin)
+    if(newdat[icat, "nbSquares_complet"] >= 1){
+      points(xpos[1:newdat[icat, "nbSquares_complet"]], ypos[1:newdat[icat, "nbSquares_complet"]], pch = thepch, col = colFin)
+    }
     
     par(xpd = TRUE)
     
@@ -547,7 +552,7 @@ plotSquares <- function(lejour){
 for(i in dev.list())dev.off()
 plotSquares(max(dat$jour))
 
-plotSquares("2021-02-01")
+plotSquares("2021-01-01")
 ```
 
 ```{r}
