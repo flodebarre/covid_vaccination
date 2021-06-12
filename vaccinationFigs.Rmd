@@ -54,8 +54,8 @@ popsizes
 ```{r}
 # Define colors 
 
-col1D <- "#073863"  # 1 dose
-colFin <- "#cc0001" # Parcours fini
+col1D <- "#af8dc3"  # 1 dose
+colFin <- "#7fbf7b" # Parcours fini
 col0 <- "#d9d9d9"   # non vacciné
 ```
 
@@ -486,56 +486,62 @@ for (i in seq_along(pop)){
 
 ```{r}
 nCats <- length(cats)
+
+# Plot paramters
 nbRow <- 4 # Nb of rows for each age class
+scaleSquare <- 5*10^4 # Number of people represented by a square
+nbSquares <- round(pop/scaleSquare) # Number of squares per category
+nbCols <- ceiling(nbSquares / nbRow) # Corresponding number of columns
 
-scaleSquare <- 5*10^4
-nbSquares <- round(pop/scaleSquare)
-nbCols <- ceiling(nbSquares / nbRow)
-nbCols  
+cote <- 0.9 # Space for square
+deltaSquare <- 0.1 # Space between squares
+# NB in the current version, only cote+deltaSquare is used
+deltaCat <- 0.65 # Space between categories
 
-cote <- 0.9
-deltaSquare <- 0.1
-deltaCat <- 0.5
-
-
-lejour <- max(dat$jour)
 
 plotSquares <- function(lejour){
+  # lejour: day to be plotted
+  
+  # Initialize plot
   plot(0, type = "n", xlim = c(0, max(nbCols)+1), ylim = c(0,  nCats*(deltaCat + nbRow*(cote + deltaSquare))), axes = FALSE, xlab = "", ylab = "")
   
-  
-  
+  # Subset of the data for the given day
   subdat <- dat[which(dat$jour == lejour), ]
   
+  # Compute key quantities for each category
   newdat <- computeVals(subdat, cats, pop)
   
+  # Add information about the corresp. number of squares
   newdat$nbSquares_dose1 <- round(newdat$n_cum_dose1/scaleSquare)
   newdat$nbSquares_complet <- round(newdat$n_cum_complet/scaleSquare)
-  newdat
-  
+
   for(icat in seq_len(nCats)){
-    positions <- list()
+    # x positions
     xpos <- rep(1:max(nbCols), each = nbRow)
+    # y positions
     ypos <- rep((icat - 1) * (nbRow * (cote + deltaSquare) + deltaCat) + ((1:nbRow)-1)*(cote + deltaSquare), max(nbCols))
-    positions[[icat]] <- as.data.frame(cbind(xpos, ypos))
-    names(positions[[icat]]) <- c("x", "y")
-  
-    thepch <- 15
+
+    thepch <- 15 # Plot squares
     
+    # Points of unvaccinated, until total size of the category
     points(xpos[1:nbSquares[icat]], ypos[1:nbSquares[icat]], pch = thepch, col = col0)
     
     # Condition necessary because indices start at 1, so otherwise would plot 1 square when still at 0
     if(newdat[icat, "nbSquares_dose1"] >= 1){
+      # Points of at least one dose
       points(xpos[1:newdat[icat, "nbSquares_dose1"]], ypos[1:newdat[icat, "nbSquares_dose1"]], pch = thepch, col = col1D)
     }
   
     if(newdat[icat, "nbSquares_complet"] >= 1){
+      # Points of fully vaccinated
       points(xpos[1:newdat[icat, "nbSquares_complet"]], ypos[1:newdat[icat, "nbSquares_complet"]], pch = thepch, col = colFin)
     }
     
+    # Add legend
     par(xpd = TRUE)
-    
+    # Age categories
     text(0, mean(c(ypos[2], ypos[3])), adj = c(1, 0), labels = paste(catNames[icat], "ans"))
+    # Corresponding population size
     text(0, mean(c(ypos[2], ypos[3])), adj = c(1, 1.5), labels = paste(round(pop[icat]/10^6, 1), "M"), cex = 0.75)
     par(xpd = FALSE)
   }
@@ -551,8 +557,7 @@ plotSquares <- function(lejour){
 
 for(i in dev.list())dev.off()
 plotSquares(max(dat$jour))
-
-plotSquares("2021-01-01")
+plotSquares("2021-06-01")
 ```
 
 ```{r}
@@ -568,10 +573,5 @@ for(dd in vacDays){
     
 # Convert into gif
 system("convert -quality 100% -delay 0.1 -loop 0 pics/vacc-squares_*.png pics/animationVaccination_squares.gif")
-```
-
-
-```{r}
-
 ```
 
