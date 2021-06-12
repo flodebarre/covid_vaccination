@@ -49,6 +49,8 @@ popsizes
 
 # Plot
 
+## Bars
+
 ```{r}
 # Lines of the last days
 iend <- which(dat$jour >= max(dat$jour, na.rm = TRUE))
@@ -109,6 +111,34 @@ for (i in seq_along(pop)){
   pop[i] <- sum(popsizes[is.element(popsizes$age, unlist(cats[i])), "x"]) # Sum population sizes of the age cats making up the big age class
 }
 
+# Function to compute the key values for each age class, 
+# for the chosen subset of data
+computeVals <- function(subdat, cats, pop){
+  # subdat : subset of the data for the chosen date
+  # cats : list of age classes, with ages categories as vectors
+  # pop : vector of population sizes for the corresponding age classes, same order as elements of cats
+  
+  # Initialize output
+  newdat <- as.data.frame(cbind(seq_along(cats)))
+  newdat$couv_dose1 <- 0
+  newdat$couv_complet <- 0
+  
+  for(i in newdat[, 1]){
+    # Select subset of values for age class i
+    ssdat <- subdat[is.element(subdat$clage_vacsi, unlist(cats[i])), ]
+    # Compute proportions and numbers
+    newdat[i, "n_cum_dose1"] <- sum(ssdat$n_cum_dose1)
+    newdat[i, "n_cum_complet"] <- sum(ssdat$n_cum_complet)
+    newdat[i, "couv_dose1"] <- sum(ssdat$n_cum_dose1)/pop[i]
+    newdat[i, "couv_complet"] <- sum(ssdat$n_cum_complet)/pop[i]
+  }
+  # En cours is at least one minus finished
+  newdat$n_cum_encours <- newdat$n_cum_dose1 - newdat$n_cum_complet
+  newdat$couv_encours <- newdat$couv_dose1 - newdat$couv_complet
+
+  # Output
+  newdat
+}
 
 # Function to plot the figure
 plotProps <- function(lejour){
@@ -121,18 +151,7 @@ plotProps <- function(lejour){
   subdat <- dat[ival, ]
   
   # Compute key values
-  # Sum number of vaccinated individuals in the age categories making up the age class, divide by population size (pop) of the big age class
-  newdat <- as.data.frame(cbind(seq_along(cats))) # initialize
-  newdat$couv_dose1 <- 0
-  newdat$couv_complet <- 0
-  for(i in newdat[, 1]){
-    ssdat <- subdat[is.element(subdat$clage_vacsi, unlist(cats[i])), ]
-    newdat[i, "couv_dose1"] <- sum(ssdat$n_cum_dose1)/pop[i]
-    newdat[i, "couv_complet"] <- sum(ssdat$n_cum_complet)/pop[i]
-  }
-  # En cours is at least one minus finished
-  newdat$couv_encours <- newdat$couv_dose1 - newdat$couv_complet
-  
+  newdat <- computeVals(subdat, cats, pop)
   
 #--- 
   # Plotting
@@ -207,6 +226,123 @@ for(dd in vacDays){
 }
     
 # Convert into gif
-system("convert -quality 100% -delay 0.1 -loop 0 pics/vacc*.png pics/animationVaccination.gif")
+system("convert -quality 100% -delay 0.1 -loop 0 pics/vacc*.png pics/animationVaccination_bars.gif")
+```
+
+## Donuts
+
+```{r}
+drawArc <- function(r1, r2, a1, a2, npts = 100, deltax = 0, deltay = 0, ...){
+  # r1 radius of the big circle
+  # r2 radius of the inner circle
+  # a1 angle start point, as proportion [0, 1]
+  # a2 angle end point
+  # npts nb of points in the arc
+  # deltax x shift
+  # deltay y shift
+  
+  dpi <- + pi/2
+  polygon(x = deltax + c(r2 * cos(-2 * pi * a1 + dpi), r1 * cos(-2 * pi * seq(a1, a2, length.out = npts) + dpi), r2 * cos(-2 * pi * seq(a2, a1, length.out = npts) + dpi)), 
+          y = deltay + c(r2 * sin(-2 * pi * a1 + dpi), r1 * sin(-2 * pi * seq(a1, a2, length.out = npts) + dpi), r2 * sin(-2 * pi * seq(a2, a1, length.out = npts) + dpi)), ...)
+}
+
+drawDonut <- function(vals, cols = c(col1D, colFin, col0), r1, fracRadius = 0.6, deltax = 0, deltay = 0){
+  # vals : fraction values
+  # cols : corresponding colors
+  
+  # Check categories add
+  if(round(sum(vals), 3) != 1){
+    stop("values need to sum to 1")
+  }
+  
+  cumvals <- cumsum(vals)
+
+  drawArc(r1, r2 = r1*fracRadius, a1 = 0, a2 = vals[1], deltax = deltax, deltay = deltay, 
+          col = cols[1], border = gray(0,0))
+  for(i in 2:length(vals)){
+    drawArc(r1, r2 = r1*fracRadius, a1 = cumvals[i-1], a2 = cumvals[i], deltax = deltax, deltay = deltay, 
+            col = cols[i], border = gray(0,0))
+  }
+}
+
+
+plot(-150:150, asp = 1, type = "n")
+drawDonut(c(0.3, 0.2, 0.5), r1 = 67, deltax = 0, deltay =0 )
+
+drawArc(100, 50, 0., 0.3, col = "red", border = "blue", deltax = 100)
+```
+
+```{r}
+# Function to plot the figure
+plotDonuts <- function(lejour, donutSize = TRUE, innerSize = 0.5, cols = c(col1D, colFin, col0)){
+  # lejour: "YYYY-MM-DD" day to be plotted
+  # donutSize: bool whether size of the category is through size of outer cicle
+  # innerSize: if donutSize = TRUE, relative size of the inner circle
+  
+  # Indices in the table corresponding to the chosen day
+  ival <- which(dat$jour == lejour)
+  
+  # Subset of the data for the chosen day
+  subdat <- dat[ival, ]
+  
+  # Compute key values
+  newdat <- computeVals(subdat, cats, pop)
+
+#--- 
+  # Plotting
+  
+  maxpop <- max(pop)
+  dx <- 100
+  rayons <- sqrt(pop/pi)
+  scaledRayons <- rayons / max(rayons)*dx
+  scaledRayons
+  
+  par(mar = c(1, 0.5, 2.5, 0.5))
+  xx <- cumsum(2*scaledRayons)-scaledRayons + (seq_along(cats) - 1)*0.1*dx
+
+  plot(xx, rep(0, length(cats)), 
+       xlim = c(min(xx) - dx, max(xx) + dx), 
+       ylim = c(-dx, dx), 
+       type = "n", xlab = "", ylab = "", asp = 1, axes = FALSE)
+  
+  for(i in seq_along(cats)){
+    v <- c(newdat[i, "couv_complet"], newdat[i, "couv_encours"], 1 - (newdat[i, "couv_encours"] + newdat[i, "couv_complet"]))
+    drawDonut(v, cols = c(colFin, col1D, col0), scaledRayons[i], innerSize, deltax = xx[i])
+  }
+  
+  text(xx, y = 0, labels = catNames, adj = c(0.5, 0))
+  text(xx, y = 0, labels = paste0(round(pop/10^6, 1), " M"), adj = c(0.5, 1.5), cex = 0.7)
+  
+
+  # Add legend
+  par(xpd = TRUE)
+  legend(x = "topleft", col = c(colFin, col1D, col0), pch = 15, legend = c("Vaccination finie", "En cours (1 dose)", "Non vacciné"), inset = c(0, -0.075), ncol = 3, cex = 0.9, bty = "n")
+  
+  
+  mtext("Visualisation @nicolasberrod, animation @flodebarre | Données https://www.data.gouv.fr/en/datasets/r/54dd5f8d-1e2e-4ccb-8fb8-eac68245befd\n Code sur https://github.com/flodebarre/covid_vaccination", side = 1, line = 0, cex = 0.65)
+  
+  # Add title: plotted day
+  mtext(subdat[1, "jour"], side = 3, line = 1, cex = 1.3)
+}
+
+plotDonuts("2021-06-02")
+```
+
+
+
+```{r}
+# Vector of all vaccination days
+vacDays <- sort(unique(dat$jour))
+
+# Figure for each day
+for(dd in vacDays){
+  png(filename = paste0("pics/vacc-donut_", dd, ".png"), width = 900, height = 400, pointsize = 20)
+
+  plotDonuts(dd)
+  dev.off()
+}
+    
+# Convert into gif
+system("convert -quality 100% -delay 0.1 -loop 0 pics/vacc-donut_*.png pics/animationVaccination_donuts.gif")
 ```
 
