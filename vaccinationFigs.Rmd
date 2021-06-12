@@ -425,7 +425,7 @@ plotDyn <- function(icat, geog = "France"){
   opacityFill <- 0.3
   # Plot at least one dose
   polygon(as.Date(c(newdat$jour, rev(newdat$jour), newdat[1, "jour"])), 
-          c(newdat$couv_dose1, rev(newdat$couv_complet), newdat[1, "couv_dose1"]), border = gray(0, 0), col = adjustcolor(lighten(col1D, 2), opacityFill))
+          c(newdat$couv_dose1, rev(0* newdat$couv_complet), newdat[1, "couv_dose1"]), border = gray(0, 0), col = adjustcolor(lighten(col1D, 2), opacityFill))
   
   # Plot vaccination completed
   polygon(as.Date(c(newdat$jour, rev(newdat$jour), newdat[1, "jour"])), 
@@ -435,7 +435,7 @@ plotDyn <- function(icat, geog = "France"){
     abline(h = i, col = gray(0.85), lwd = 0.8)
   }
   
-  legend(x = "topleft", box.lwd = 0, lty = c(1, 1), col = c(col1D, colFin), legend = c("Vaccination en cours", "Vaccination complète"), lwd = lwdLines)
+  legend(x = "topleft", box.lwd = 0, lty = c(1, 1), col = c(col1D, colFin), legend = c("Au moins une dose", "Vaccination complète"), lwd = lwdLines)
   
   
   # Lines 
@@ -461,7 +461,112 @@ for(i in seq_along(cats)){
  
  dev.off()
 }
+```
 
+
+## Squares
+
+
+Age Categories
+
+```{r}
+# Define age categories as list: 
+# - each list element is a big age categories, and 
+# - it contains as a vector the corresponding age classes
+cats <- list(c(24, 29), c(39), c(49), c(59), c(64, 69), c(74, 79), c(80))
+catNames <- c("18-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80+")
+
+# Compute population sizes for each big age class
+pop <- rep(0, length(cats)) # initialize
+for (i in seq_along(pop)){
+  pop[i] <- round(sum(popsizes[is.element(popsizes$age, unlist(cats[i])), "x"])) # Sum population sizes of the age cats making up the big age class
+}
+```
+
+
+```{r}
+nCats <- length(cats)
+nbRow <- 4 # Nb of rows for each age class
+
+scaleSquare <- 5*10^4
+nbSquares <- round(pop/scaleSquare)
+nbCols <- ceiling(nbSquares / nbRow)
+nbCols  
+
+cote <- 0.9
+deltaSquare <- 0.1
+deltaCat <- 0.5
+
+
+lejour <- max(dat$jour)
+
+plotSquares <- function(lejour){
+  plot(0, type = "n", xlim = c(0, max(nbCols)+1), ylim = c(0,  nCats*(deltaCat + nbRow*(cote + deltaSquare))), axes = FALSE, xlab = "", ylab = "")
+  
+  
+  
+  subdat <- dat[which(dat$jour == lejour), ]
+  
+  newdat <- computeVals(subdat, cats, pop)
+  
+  newdat$nbSquares_dose1 <- round(newdat$n_cum_dose1/scaleSquare)
+  newdat$nbSquares_complet <- round(newdat$n_cum_complet/scaleSquare)
+  newdat
+  
+  for(icat in seq_len(nCats)){
+    positions <- list()
+    xpos <- rep(1:max(nbCols), each = nbRow)
+    ypos <- rep((icat - 1) * (nbRow * (cote + deltaSquare) + deltaCat) + ((1:nbRow)-1)*(cote + deltaSquare), max(nbCols))
+    positions[[icat]] <- as.data.frame(cbind(xpos, ypos))
+    names(positions[[icat]]) <- c("x", "y")
+  
+    thepch <- 15
+    
+    points(xpos[1:nbSquares[icat]], ypos[1:nbSquares[icat]], pch = thepch, col = col0)
+    
+    points(xpos[1:newdat[icat, "nbSquares_dose1"]], ypos[1:newdat[icat, "nbSquares_dose1"]], pch = thepch, col = col1D)
+  
+    points(xpos[1:newdat[icat, "nbSquares_complet"]], ypos[1:newdat[icat, "nbSquares_complet"]], pch = thepch, col = colFin)
+    
+    par(xpd = TRUE)
+    
+    text(0, mean(c(ypos[2], ypos[3])), adj = c(1, 0), labels = paste(catNames[icat], "ans"))
+    text(0, mean(c(ypos[2], ypos[3])), adj = c(1, 1.5), labels = paste(round(pop[icat]/10^6, 1), "M"), cex = 0.75)
+    par(xpd = FALSE)
+  }
+  
+  mtext("@flodebarre \nDonnées https://www.data.gouv.fr/en/datasets/r/54dd5f8d-1e2e-4ccb-8fb8-eac68245befd\nCode https://github.com/flodebarre/covid_vaccination", side = 1, line = 2, cex = 0.65, adj = 0)
+  
+  title(main = lejour)
+  
+  par(xpd = TRUE)
+  legend(x = "topleft", col = c(colFin, col1D, col0, 1), pch = c(rep(thepch, 3), 0), legend = c("Vaccination finie", "Vaccination en cours", "Non vacciné", paste(toString(scaleSquare), "personnes")), inset = c(-0.1, -0.05), bty = "n", cex = 0.8, pt.cex = 1, ncol = 4, text.width = c(5, 11, 12, 11))
+
+}
+
+for(i in dev.list())dev.off()
+plotSquares(max(dat$jour))
+
+plotSquares("2021-02-01")
+```
+
+```{r}
+# Vector of all vaccination days
+vacDays <- sort(unique(dat$jour))
+
+# Figure for each day
+for(dd in vacDays){
+  png(filename = paste0("pics/vacc-squares_", dd, ".png"), width = 950, height = 750, pointsize = 22)
+  plotSquares(dd)
+  dev.off()
+}
+    
+# Convert into gif
+system("convert -quality 100% -delay 0.1 -loop 0 pics/vacc-squares_*.png pics/animationVaccination_squares.gif")
+```
+
+
+```{r}
 
 ```
 
