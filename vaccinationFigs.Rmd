@@ -49,14 +49,24 @@ popsizes
 
 # Plot
 
-## Bars
+## Generic
 
 ```{r}
-# Lines of the last days
-iend <- which(dat$jour >= max(dat$jour, na.rm = TRUE))
+# Define colors 
 
-subdat <- dat[iend, ]
-subdat
+col1D <- "#073863"  # 1 dose
+colFin <- "#cc0001" # Parcours fini
+col0 <- "#d9d9d9"   # non vacciné
+```
+
+```{r}
+# Source: https://gist.github.com/Jfortin1/72ef064469d1703c6b30
+lighten <- function(color, factor = 1.4){
+    col <- col2rgb(color)
+    col <- col*factor
+    col <- rgb(t(as.matrix(apply(col, 1, function(x) if (x > 255) 255 else x))), maxColorValue=255)
+    col
+}
 ```
 
 Age class codes
@@ -75,14 +85,6 @@ Age class codes
 > 80 : 80 et +
 
 
-```{r}
-# Define colors 
-
-col1D <- "#073863"  # 1 dose
-colFin <- "#cc0001" # Parcours fini
-col0 <- "#d9d9d9"   # non vacciné
-```
-
 
 ```{r}
 # I am not using this after all, but keeping it to avoid having to type it again if I ever need to use it
@@ -90,26 +92,25 @@ dic <- c("Tous âges", "0-9", "10-17", "18-24", "25-29", "30-39", "40-49", "50-5
 names(dic) <- c(0, 9, 17, 24, 29, 39, 49, 59, 69, 74, 79, 80)
 ```
 
-```{r}
-# Indices of the values to be plotted
-ival <- iend
 
+Age Categories
+
+```{r}
 # Define age categories as list: 
 # - each list element is a big age categories, and 
 # - it contains as a vector the corresponding age classes
 cats <- list(c(24, 29, 39, 49), c(59), c(64, 69, 74), c(79, 80))
 catNames <- c("18-49", "50-59", "60-74", "75+")
 
-# Size parameters
-recL <- 100 # Length of the rectangles
-popFactor <- 10^(-6) # Scaling factor for population size
-deltaZ <- 7 # Space between rectangles
-
 # Compute population sizes for each big age class
 pop <- rep(0, length(cats)) # initialize
 for (i in seq_along(pop)){
   pop[i] <- sum(popsizes[is.element(popsizes$age, unlist(cats[i])), "x"]) # Sum population sizes of the age cats making up the big age class
 }
+```
+
+
+```{r}
 
 # Function to compute the key values for each age class, 
 # for the chosen subset of data
@@ -139,6 +140,30 @@ computeVals <- function(subdat, cats, pop){
   # Output
   newdat
 }
+```
+
+## Bars
+
+```{r}
+# Lines of the last days
+iend <- which(dat$jour >= max(dat$jour, na.rm = TRUE))
+
+subdat <- dat[iend, ]
+subdat
+```
+
+
+```{r}
+# Indices of the values to be plotted
+ival <- iend
+
+
+# Size parameters
+recL <- 100 # Length of the rectangles
+popFactor <- 10^(-6) # Scaling factor for population size
+deltaZ <- 7 # Space between rectangles
+
+
 
 # Function to plot the figure
 plotProps <- function(lejour){
@@ -344,5 +369,99 @@ for(dd in vacDays){
     
 # Convert into gif
 system("convert -quality 100% -delay 0.1 -loop 0 pics/vacc-donut_*.png pics/animationVaccination_donuts.gif")
+```
+
+## Time dynamics
+
+```{r}
+# Function to compute the key values for each age class, 
+# for the chosen subset of data
+computeTimeVals <- function(subdat, popAge){
+  # subdat : data
+  # popAge : population size of the age class
+
+  days <- sort(unique(subdat$jour))
+  
+  # Initialize output
+  newdat <- as.data.frame(cbind(seq_along(days)))
+  newdat$jour <- days
+  newdat$couv_dose1 <- 0
+  newdat$couv_complet <- 0
+  
+  for(i in newdat[, 1]){
+    # Select subset of values for day i
+    ssdat <- subdat[is.element(subdat$jour, days[i]), ]
+    ssdat
+    # Compute proportions and numbers
+    newdat[i, "n_cum_dose1"] <- sum(ssdat$n_cum_dose1)
+    newdat[i, "n_cum_complet"] <- sum(ssdat$n_cum_complet)
+    newdat[i, "couv_dose1"] <- sum(ssdat$n_cum_dose1)/popAge
+    newdat[i, "couv_complet"] <- sum(ssdat$n_cum_complet)/popAge
+  }
+  # En cours is at least one minus finished
+  newdat$n_cum_encours <- newdat$n_cum_dose1 - newdat$n_cum_complet
+  newdat$couv_encours <- newdat$couv_dose1 - newdat$couv_complet
+
+  # Output
+  newdat
+}
+```
+
+
+```{r}
+# Function to plot the time dynamics for an age class
+plotDyn <- function(icat, geog = "France"){
+  newdat <- computeTimeVals(dat[is.element(dat$clage_vacsi, unlist(cats[icat])),], pop[icat])
+  
+  par(mar = c(4, 4, 3, 2))
+  par(las = 1)
+  par(xpd = FALSE)
+  par(mgp = c(2, 0.5, 0), tck = -0.02)
+  
+  plot(as.Date(newdat$jour), newdat$couv_dose1, 
+       ylim = c(0, 1), xlim = range(as.Date(dat$jour)), 
+       type = "n", xaxs = "i", yaxs = "i", frame.plot = FALSE, xlab = "", ylab = "Proportion de la catégorie d'âge", axes = FALSE)
+  
+  opacityFill <- 0.3
+  # Plot at least one dose
+  polygon(as.Date(c(newdat$jour, rev(newdat$jour), newdat[1, "jour"])), 
+          c(newdat$couv_dose1, rev(newdat$couv_complet), newdat[1, "couv_dose1"]), border = gray(0, 0), col = adjustcolor(lighten(col1D, 2), opacityFill))
+  
+  # Plot vaccination completed
+  polygon(as.Date(c(newdat$jour, rev(newdat$jour), newdat[1, "jour"])), 
+          c(newdat$couv_complet, rep(0, nrow(newdat)), newdat[1, "couv_dose1"]), border = gray(0, 0), col = adjustcolor(colFin, opacityFill))
+  # Grid lines
+  for(i in seq(0, 1, by = 0.1)){
+    abline(h = i, col = gray(0.85), lwd = 0.8)
+  }
+  
+  legend(x = "topleft", box.lwd = 0, lty = c(1, 1), col = c(col1D, colFin), legend = c("Vaccination en cours", "Vaccination complète"), lwd = lwdLines)
+  
+  
+  # Lines 
+  lwdLines <- 2
+  lines(as.Date(newdat$jour), newdat$couv_dose1, col = col1D, lwd = lwdLines)
+  lines(as.Date(newdat$jour), newdat$couv_complet, col = colFin, lwd = lwdLines)
+  axis(2)
+  axis(4)
+  months <- c("2021-01-01", "2021-02-01", "2021-03-01", "2021-04-01", "2021-05-01", "2021-06-01")
+  axis(1, at = as.Date(months), labels = substr(months, 0, 7))
+  
+    mtext("@flodebarre | Données https://www.data.gouv.fr/en/datasets/r/54dd5f8d-1e2e-4ccb-8fb8-eac68245befd\n Code: https://github.com/flodebarre/covid_vaccination", side = 1, line = 3, cex = 0.65)
+    
+  title(main = paste0(catNames[icat], " ans, ", geog))
+
+}
+
+for(i in seq_along(cats)){
+  
+  png(filename = paste0("pics/vaccDyn_", i, ".png"), width = 800, height = 500, pointsize = 20)
+
+ plotDyn(i) 
+ 
+ dev.off()
+}
+
+
 ```
 
