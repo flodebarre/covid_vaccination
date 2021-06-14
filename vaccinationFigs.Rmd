@@ -588,7 +588,7 @@ nbCols <- ceiling(nbSquares / nbRow) # Corresponding number of columns
 cote <- 0.9 # Space for square
 deltaSquare <- 0.1 # Space between squares
 # NB in the current version, only cote+deltaSquare is used
-deltaCat <- 1 # Space between categories
+deltaCat <- 1.5 # Space between categories
 
 distDyn <- 2
 widthDyn <- 25
@@ -651,9 +651,9 @@ plotSquaresDyn <- function(lejour){
     # Add legend
     par(xpd = TRUE)
     # Age categories
-    text(0, mean(c(ypos[2], ypos[3])), adj = c(1, 0), labels = paste(catNames[icat], "ans"))
+    text(0, mean(ypos), adj = c(1, 0), labels = paste(catNames[icat], "ans"))
     # Corresponding population size
-    text(0, mean(c(ypos[2], ypos[3])), adj = c(1, 1.5), labels = paste(round(pop[icat]/10^6, 1), "M"), cex = 0.75)
+    text(0, mean(ypos), adj = c(1, 1.5), labels = paste(round(pop[icat]/10^6, 1), "M"), cex = 0.75)
     par(xpd = FALSE)
     
     
@@ -708,11 +708,11 @@ plotSquaresDyn <- function(lejour){
 
 for(i in dev.list())dev.off()
 
-png("test.png", width = 1500, height = 1000, pointsize = 22)
+png("test.png", width = 650, height = 650, pointsize = 12)
 
 #  png(filename = paste0("pics/vaccSqDyn_", i, ".png"), width = 800, height = 500, pointsize = 20)
 
-plotSquaresDyn("2021-06-01")
+plotSquaresDyn(max(dat$jour))
 dev.off()
 system("open test.png")
 ```
