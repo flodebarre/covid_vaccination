@@ -422,10 +422,10 @@ plotDyn <- function(icat, geog = "France"){
        ylim = c(0, 1), xlim = range(as.Date(dat$jour)), 
        type = "n", xaxs = "i", yaxs = "i", frame.plot = FALSE, xlab = "", ylab = "Proportion de la catégorie d'âge", axes = FALSE)
   
-  opacityFill <- 0.3
+  opacityFill <- 0.5
   # Plot at least one dose
   polygon(as.Date(c(newdat$jour, rev(newdat$jour), newdat[1, "jour"])), 
-          c(newdat$couv_dose1, rev(0* newdat$couv_complet), newdat[1, "couv_dose1"]), border = gray(0, 0), col = adjustcolor(lighten(col1D, 2), opacityFill))
+          c(newdat$couv_dose1, rev(0* newdat$couv_complet), newdat[1, "couv_dose1"]), border = gray(0, 0), col = adjustcolor(col1D, opacityFill))
   
   # Plot vaccination completed
   polygon(as.Date(c(newdat$jour, rev(newdat$jour), newdat[1, "jour"])), 
@@ -434,12 +434,12 @@ plotDyn <- function(icat, geog = "France"){
   for(i in seq(0, 1, by = 0.1)){
     abline(h = i, col = gray(0.85), lwd = 0.8)
   }
+  lwdLines <- 2
   
   legend(x = "topleft", box.lwd = 0, lty = c(1, 1), col = c(col1D, colFin), legend = c("Au moins une dose", "Vaccination complète"), lwd = lwdLines)
   
   
   # Lines 
-  lwdLines <- 2
   lines(as.Date(newdat$jour), newdat$couv_dose1, col = col1D, lwd = lwdLines)
   lines(as.Date(newdat$jour), newdat$couv_complet, col = colFin, lwd = lwdLines)
   axis(2)
@@ -453,6 +453,7 @@ plotDyn <- function(icat, geog = "France"){
 
 }
 
+plotDyn(1)
 for(i in seq_along(cats)){
   
   png(filename = paste0("pics/vaccDyn_", i, ".png"), width = 800, height = 500, pointsize = 20)
@@ -487,7 +488,7 @@ for (i in seq_along(pop)){
 ```{r}
 nCats <- length(cats)
 
-# Plot paramters
+# Plot parameters
 nbRow <- 4 # Nb of rows for each age class
 scaleSquare <- 5*10^4 # Number of people represented by a square
 nbSquares <- round(pop/scaleSquare) # Number of squares per category
@@ -574,4 +575,167 @@ for(dd in vacDays){
 # Convert into gif
 system("convert -quality 100% -delay 0.1 -loop 0 pics/vacc-squares_*.png pics/animationVaccination_squares.gif")
 ```
+
+## Squares and time dynamics
+
+```{r}
+# Plot parameters
+nbRow <- 8 # Nb of rows for each age class
+scaleSquare <- 5*10^4 # Number of people represented by a square
+nbSquares <- round(pop/scaleSquare) # Number of squares per category
+nbCols <- ceiling(nbSquares / nbRow) # Corresponding number of columns
+
+cote <- 0.9 # Space for square
+deltaSquare <- 0.1 # Space between squares
+# NB in the current version, only cote+deltaSquare is used
+deltaCat <- 1 # Space between categories
+
+distDyn <- 2
+widthDyn <- 25
+
+plotSquaresDyn <- function(lejour){
+  # lejour: day to be plotted
+
+  # Initialize plot
+  plot(0, type = "n", xlim = c(0, max(nbCols)+1 + distDyn + widthDyn), ylim = c(0,  nCats*(deltaCat + nbRow*(cote + deltaSquare))), axes = FALSE, xlab = "", ylab = "")
+  
+  # Subset of the data for the given day
+  subdat <- dat[which(dat$jour == lejour), ]
+  
+  # Compute key quantities for each category
+  newdat <- computeVals(subdat, cats, pop)
+  
+  # Add information about the corresp. number of squares
+  newdat$nbSquares_dose1 <- round(newdat$n_cum_dose1/scaleSquare)
+  newdat$nbSquares_complet <- round(newdat$n_cum_complet/scaleSquare)
+
+  for(icat in seq_len(nCats)){
+    # x positions
+    xpos <- rep(1:max(nbCols), each = nbRow)
+    # y positions
+    ypos <- rep((icat - 1) * (nbRow * (cote + deltaSquare) + deltaCat) + ((1:nbRow)-1)*(cote + deltaSquare), max(nbCols))
+    
+    yTmin <- min(ypos[1:max(nbCols)])
+    yTmax <- max(ypos[1:max(nbCols)])
+    xTmin <- max(nbCols) + distDyn
+    xTmax <- xTmin + widthDyn
+
+    # Frame of time plot
+    rect(xTmin, yTmin, xTmax, yTmax, border = gray(0.5))
+
+    par(xpd = TRUE)    
+    thecex <- 0.6
+    if(icat == 1){
+      text(mean(c(xTmin, xTmax)), y = yTmin, adj = c(0.5, 1.5), labels = "temps", cex = thecex)
+      
+    }
+    text(rep(xTmax, 2), c(yTmin,yTmax), labels = c(" 0%", " 100%"), adj = c(0, 0.5), cex = thecex)
+
+    par(xpd = FALSE)
+    thepch <- 15 # Plot squares
+    
+    # Points of unvaccinated, until total size of the category
+    points(xpos[1:nbSquares[icat]], ypos[1:nbSquares[icat]], pch = thepch, col = col0)
+    
+    # Condition necessary because indices start at 1, so otherwise would plot 1 square when still at 0
+    if(newdat[icat, "nbSquares_dose1"] >= 1){
+      # Points of at least one dose
+      points(xpos[1:newdat[icat, "nbSquares_dose1"]], ypos[1:newdat[icat, "nbSquares_dose1"]], pch = thepch, col = col1D)
+    }
+  
+    if(newdat[icat, "nbSquares_complet"] >= 1){
+      # Points of fully vaccinated
+      points(xpos[1:newdat[icat, "nbSquares_complet"]], ypos[1:newdat[icat, "nbSquares_complet"]], pch = thepch, col = colFin)
+    }
+    
+    # Add legend
+    par(xpd = TRUE)
+    # Age categories
+    text(0, mean(c(ypos[2], ypos[3])), adj = c(1, 0), labels = paste(catNames[icat], "ans"))
+    # Corresponding population size
+    text(0, mean(c(ypos[2], ypos[3])), adj = c(1, 1.5), labels = paste(round(pop[icat]/10^6, 1), "M"), cex = 0.75)
+    par(xpd = FALSE)
+    
+    
+  # Add time dynamics
+  # Dataset
+  newdatT <- computeTimeVals(dat[is.element(dat$clage_vacsi, unlist(cats[icat])),], pop[icat])
+  
+  vX <- as.numeric(as.Date(newdatT$jour))
+  xT.all <- xTmin + (xTmax - xTmin) * (vX - min(vX))/(max(vX) - min(vX))
+  
+  yT_complet <- yTmin + (yTmax - yTmin) * newdatT$couv_complet
+  yT_1D <- yTmin + (yTmax - yTmin) * newdatT$couv_dose1
+
+  
+  i.jour <- which(sort(unique(dat$jour)) == lejour)
+  opacityFill <- 0.5
+  lwdT <- 2
+  
+  # Fill areas
+  polygon(c(xT.all[1:i.jour], rev(xT.all[1:i.jour]), xT.all[1]),
+          c(rep(yTmax, i.jour), rev(yT_1D[1:i.jour]), 1), border = gray(0, 0), col = adjustcolor(col0, opacityFill))
+
+  polygon(c(xT.all[1:i.jour], rev(xT.all[1:i.jour]), xT.all[1]),
+          c(yT_1D[1:i.jour], rev(yT_complet[1:i.jour]), 1), border = gray(0, 0), col = adjustcolor(col1D, opacityFill))
+  
+  polygon(c(xT.all[1:i.jour], rev(xT.all[1:i.jour]), xT.all[1]),
+          c(yT_complet[1:i.jour], rep(yTmin, i.jour), 1), border = gray(0, 0), col = adjustcolor(colFin, opacityFill))
+  
+  lines(xT.all[1:i.jour], yT_1D[1:i.jour], col = col1D, lwd = lwdT)
+  lines(xT.all[1:i.jour], yT_complet[1:i.jour], col = colFin, lwd = lwdT)
+  
+  # Plot at least one dose
+  polygon(as.Date(c(newdatT$jour, rev(newdatT$jour), newdatT[1, "jour"])), 
+          c(newdatT$couv_dose1, rev(0* newdatT$couv_complet), newdatT[1, "couv_dose1"]), border = gray(0, 0), col = adjustcolor(col1D, opacityFill))
+  
+  # Plot vaccination completed
+  polygon(as.Date(c(newdatT$jour, rev(newdatT$jour), newdatT[1, "jour"])), 
+          c(newdatT$couv_complet, rep(0, nrow(newdatT)), newdatT[1, "couv_dose1"]), border = gray(0, 0), col = adjustcolor(colFin, opacityFill))
+  
+  }
+  
+  mtext("@flodebarre \nDonnées https://www.data.gouv.fr/en/datasets/r/54dd5f8d-1e2e-4ccb-8fb8-eac68245befd\nCode https://github.com/flodebarre/covid_vaccination", side = 1, line = 2, cex = 0.65, adj = 0)
+  
+  title(main = lejour)
+  
+  par(xpd = TRUE)
+  legend(x = "topleft", col = c(1, colFin, col1D, col0), pch = c(0, rep(thepch, 3)), legend = c(paste(toString(scaleSquare), "personnes"), "Vaccination finie", "Vaccination en cours", "Non vacciné"), inset = c(-0., -0.05), bty = "n", cex = 0.8, pt.cex = 1, ncol = 4, text.width = c(5, 11, 12, 11))
+  
+
+
+}
+
+for(i in dev.list())dev.off()
+
+png("test.png", width = 1500, height = 1000, pointsize = 22)
+
+#  png(filename = paste0("pics/vaccSqDyn_", i, ".png"), width = 800, height = 500, pointsize = 20)
+
+plotSquaresDyn("2021-06-01")
+dev.off()
+system("open test.png")
+```
+
+
+```{r}
+# Vector of all vaccination days
+vacDays <- sort(unique(dat$jour))
+
+# Figure for each day
+for(dd in vacDays){
+  png(filename = paste0("pics/vacc-SquaresDyn_", dd, ".png"), 
+      width = 1500, height = 1000, pointsize = 22)
+  plotSquaresDyn(dd)
+  dev.off()
+}
+    
+# Convert into gif
+system("convert -quality 100% -delay 0.1 -loop 0 pics/vacc-SquaresDyn_*.png pics/animationVaccination_squaresDyn.gif")
+
+system(paste0("open pics/vacc-SquaresDyn_", dd, ".png"))
+
+system(paste0("open pics/vacc-SquaresDyn_", dd, ".png"))
+```
+
 
