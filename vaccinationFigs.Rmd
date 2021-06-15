@@ -725,7 +725,7 @@ vacDays <- sort(unique(dat$jour))
 # Figure for each day
 for(dd in vacDays){
   png(filename = paste0("pics/vacc-SquaresDyn_", dd, ".png"), 
-      width = 1500, height = 1000, pointsize = 22)
+      width = 650, height = 650, pointsize = 12)
   plotSquaresDyn(dd)
   dev.off()
 }
