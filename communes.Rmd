@@ -1,0 +1,79 @@
+---
+title: "communes"
+author: "FD"
+output: 
+  html_document: 
+      code_folding: hide
+      toc: TRUE
+      toc_float: TRUE
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Load data
+
+Niveau de vie par commune
+
+Source : <https://www.data.gouv.fr/fr/datasets/niveau-de-vie-des-francais-par-commune/>
+
+```{r}
+URL <- "https://www.data.gouv.fr/fr/datasets/r/16fce6ae-1907-442d-99b2-9ddcf6c41b03"
+dataFile <- paste0("data/niveauVie.csv") # name file with today's date
+download.file(URL, dataFile) # download file from repo
+dat.niveauVie <- read.csv(dataFile, sep = ";", stringsAsFactors = FALSE, dec = ",")
+
+head(dat.niveauVie)
+```
+
+Vaccination par commune
+
+```{r}
+URL <- "https://datavaccin-covid.ameli.fr/explore/dataset/donnees-de-vaccination-par-commune/download/?format=csv&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B"
+dataFile <- paste0("data/vacciCommunes.csv") # name file with today's date
+download.file(URL, dataFile) # download file from repo
+dat.vaccin <- read.csv(dataFile, sep = ";", stringsAsFactors = FALSE, dec = ",")
+head(dat.vaccin)
+```
+
+```{r}
+# Final week in the data
+maxWeek <- max(unique(dat.vaccin$semaine_injection))
+
+# Select only data for the final week
+dat.vaccin.final <- dat.vaccin[which(dat.vaccin$semaine_injection == maxWeek), ]
+
+# Free memory
+rm(dat.vaccin)
+```
+
+Merge the two datasets
+
+```{r}
+head(dat.vaccin.final)
+nrow(dat.vaccin.final)
+
+head(dat.niveauVie)
+names(dat.niveauVie) <- c("commune_residence", "libelle_commune", "med14")
+nrow(dat.niveauVie)
+
+dat.all <- merge(dat.niveauVie, dat.vaccin.final, by = "commune_residence")
+nrow(dat.all)
+```
+
+```{r}
+par(mar = c(4, 4, 3, 3), las = 1)
+for(cla in unique(dat.all$libelle_classe_age)){
+  subdat <- dat.all[which(dat.all$libelle_classe_age == cla), ]
+  plot(subdat$med14, subdat$taux_cumu_1_inj, 
+       ylim = c(0, 1), 
+       xlab = "Revenu MED14", ylab = "Proportion 1ere injection", 
+       yaxs = "i")
+  title(main = cla)
+}
+
+```
+
