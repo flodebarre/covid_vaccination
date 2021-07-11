@@ -60,8 +60,15 @@ head(dat.injection)
 ```{r, results = 'hide'}
 # Departement as numeric
 unique(dat.residence$departement_residence)
-dat.residence$dep <- as.numeric(dat.residence$departement_residence)
+dat.residence[which(is.element(dat.residence$departement_residence, c("2A", "2B"))), "departement_residence"] <- "20" # Corse 
 
+dat.residence[which(is.element(dat.residence$departement_residence, c("Tout département"))), "departement_residence"] <- NA # Redundant
+
+
+dat.residence$dep <- as.numeric(dat.residence$departement_residence)
+sort(unique(dat.residence$dep))
+
+dat.injection[which(is.element(dat.injection$dep, c("2A", "2B"))), "dep"] <- "20" # Corse 
 dat.injection$dep <- as.numeric(dat.injection$dep)
 head(dat.injection)
 unique(dat.injection$dep)
@@ -96,6 +103,9 @@ Consistency check
 ```{r}
 # Find latest common date between the two datasets
 finalCommonDate <- min(c(max(dat.injection$date), max(dat.residence$date)))
+
+# Check another date
+# finalCommonDate <- "2021-05-30"
 
 final.residence <- dat.residence[which(dat.residence$date == finalCommonDate), ]
 final.injection <- dat.injection[which(dat.injection$date == finalCommonDate), ]
