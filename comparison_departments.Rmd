@@ -94,29 +94,32 @@ colResidence <- "#a1d76a"
 Consistency check
 
 ```{r}
+# Find latest common date between the two datasets
 finalCommonDate <- min(c(max(dat.injection$date), max(dat.residence$date)))
 
 final.residence <- dat.residence[which(dat.residence$date == finalCommonDate), ]
 final.injection <- dat.injection[which(dat.injection$date == finalCommonDate), ]
 
 unique(final.residence$dep)
-
 unique(final.injection$dep)
-
 
 rbind(sum(final.injection$n_cum_complet)
 , sum(final.residence$effectif_cumu_termine))
 
+# Compare numbers of injections in the two datasets
 sum(final.injection$n_cum_dose1) - sum(final.residence$effectif_cumu_1_inj)
 ```
 
 There are more injections in the by injection dataset than in the by residency dataset. So overall our difference will be positive (while should be 0). 
+
+Merge datasets
 
 ```{r}
 # Merge datasets
 names(final.residence)
 final.both <- merge(final.residence, final.injection, by = "dep", all = FALSE)
 
+# Rename columns to make sure information about whether residence of injection is kept
 final.both$cum1D_residence <- final.both$effectif_cumu_1_inj
 final.both$cumTermine_residence <- final.both$effectif_cumu_termine
 final.both$cum1D_injection <- final.both$n_cum_dose1
@@ -126,7 +129,6 @@ final.both$cumTermine_injection <- final.both$n_cum_complet
 for(i in c("cum1D_residence", "cumTermine_residence", "cum1D_injection", "cumTermine_injection")){
   final.both[is.na(final.both[, i]), i] <- 0
 }
-
 
 # Difference between nb injections and nb residence
 final.both$diffInjRes.1D <- final.both$cum1D_injection - final.both$cum1D_residence
@@ -138,30 +140,36 @@ final.both$reldiffInjRes.1D <- (final.both$cum1D_injection - final.both$cum1D_re
 
 final.both$reldiffInjRes.termine <- (final.both$cumTermine_injection - final.both$cumTermine_residence)/final.both$cumTermine_residence
 
-sum(final.both$diffInjRes.1D) # This is the same value as before, phew
+# Consistency check
+sum(final.both$diffInjRes.1D) # NB not the same as before because more geog info in res; to get the same number, add "all = TRUE" in the merge function
 ```
 
+Plot differences per departement 
 ```{r}
 filename <- "injections-residents.png"
 png(filename = filename, width = 1600, height = 500, res = 100, pointsize = 12)
 
 par(xpd = FALSE)
-thecol <- "diffInjRes.1D"
+# Column to be plotted
+# thecol <- "diffInjRes.1D"
 thecol <- "reldiffInjRes.1D"
-# Sort 
+# Sort data by this columns
 tmp <- final.both[order(final.both[, thecol], decreasing = TRUE), ]
-
+# Number of different departments
 n <- nrow(tmp)
 
 par(las = 1)
 par(mar = c(1, 5, 3, 5))
 
-tmpp <- tmp[-n, thecol]
-ymax <- max(tmpp[which(tmpp<Inf)])
+stopifnot(tmp[n, "dep"] == 0) # Check that last one corresponds to data for which dep info was not known (initially coded 0 or 990 in the different datasets)
 
-x0 <- n+6
-y0 <- 2.5*min(tmpp)
+tmpp <- tmp[-n, thecol] # Data for which dep info is known
+ymax <- max(tmpp[which(tmpp<Inf)]) # max y value
 
+x0 <- n+6 # Position of the point for which dep info is not known
+y0 <- 2.5*min(tmpp) # y position of the point (broken y axis)
+
+# Initialize plot
 plot(tmp[-n, thecol], xlim = c(1, x0), ylim = c(y0, ymax), axes = FALSE, 
      xlab = "", ylab = "", 
      type = "n")
@@ -171,35 +179,42 @@ et nombre de personnes vaccinées habitant le département")
 axis(2)
 usr <- par("usr")
 
+# Position of the last point (no geog info)
 xpos4 <- x0 + 4
-axis(4, at = c(0, round(y0, 2)), pos = xpos4)
-abline(h = 0)
+axis(4, at = c(0, round(y0, 2)), pos = xpos4) # Add right axis
 
+# Add horizontal lines
 clip(usr[1], n, usr[3], usr[4])
 for(i in seq(-0.3, 0.6, by = 0.1)){
   abline(h = i, lwd = 0.5, col = gray(0.5))
 }
-
 clip(usr[1], usr[2], usr[3], usr[4])
 abline(h = 0, lwd = 1.5, col = gray(0.5))
 
+
+# Add symbols for broken axis
 par(xpd = TRUE)
 ygap <- y0*3/4
 points(x = c(xpos4, n + (x0 - n)/2), y = c(ygap, 0), cex = 3, col = "white", pch = 15)
 text(x = xpos4, y = ygap, labels = "//", cex = 1.5)
 
+# Define colors for positive and negative values
 colPos <- "#f1a340"
 colNeg <- "#998ec3"
 cols <- c(colNeg, colPos)
 names(cols) <- c("Neg", "Pos")
 
+# Add points
 points(tmp[-n, thecol], col = cols[1 + (tmp[-n, thecol] > 0)], pch = 16)
-points(x0, y0, col = cols[1 + (tmp[n, thecol] > 0)], pch = 16)
+points(x0, y0, col = cols[1 + (tmp[n, thecol] > 0)], pch = 16) # last one
 
+# Add legend, dep info
 text(x = c(1:(n-1), x0), y = c(tmp[-n, thecol], y0), labels = c(tmp[-n, "dep"], "pas de dep."), cex = 0.55, adj = c(0.5, -1))
 
+# Identify position at which change from pos to neg values happens
 xposneg <- which(tmp[-n, thecol] < 0)[1] - 1/2
 
+# Add legend for signs
 text(x = c(1 + xposneg/2, xposneg + (x0 - xposneg)/2), y = 0.65*c(usr[4], usr[3]), labels = c("Plus de personnes primo-injectées dans le département (données SPF)\nque de résidents du département primo-injectés (données Ameli)", 
 "Moins de personnes primo-injectées dans le département (données SPF)\nque de résidents du département primo-injectés (données Ameli)"), col = c(colPos, colNeg))
 
