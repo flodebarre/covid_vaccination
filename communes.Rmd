@@ -16,11 +16,16 @@ knitr::opts_chunk$set(echo = TRUE)
 rm(list = ls())
 ```
 
+```{r, include = FALSE}
+dlData <- FALSE
+# Whether to download the data again
+```
+
 # Initializations
 
 ## Load data
 
-Niveau de vie par commune
+### Niveau de vie par commune (2014)
 
 Source : <https://www.data.gouv.fr/fr/datasets/niveau-de-vie-des-francais-par-commune/>
 
@@ -30,21 +35,69 @@ Source : <https://www.data.gouv.fr/fr/datasets/niveau-de-vie-des-francais-par-co
 ```{r, results = 'hide'}
 URL <- "https://www.data.gouv.fr/fr/datasets/r/16fce6ae-1907-442d-99b2-9ddcf6c41b03"
 dataFile <- paste0("data/niveauVie.csv") # name file with today's date
-download.file(URL, dataFile) # download file from repo
-dat.niveauVie <- read.csv(dataFile, sep = ";", stringsAsFactors = FALSE, dec = ",")
+if(dlData){
+  download.file(URL, dataFile) # download file from repo
+}
+dat.niveauVie2014 <- read.csv(dataFile, sep = ";", stringsAsFactors = FALSE, dec = ",")
 
-head(dat.niveauVie)
+head(dat.niveauVie2014)
 ```
 
-Vaccination par commune
+### Niveau de vie par commune 2018
+
+Source : <https://www.insee.fr/fr/statistiques/5009236?sommaire=5009255#consulter>
+
+<!--
+Liste des variables
+
+Code géographique ;
+Libellé géographique ;
+Nombre de ménages fiscaux ;
+Nombre de personnes dans les ménages fiscaux ;
+Médiane du niveau de vie (€) ;
+Part des ménages fiscaux imposés (%) ;
+Taux de pauvreté-Ensemble (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a moins de 30 ans (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a de 30 à 39 ans (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a de 40 à 49 ans (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a de 50 à 59 ans (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a de 60 à 74 ans (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a 75 ans ou plus (%) ;
+Taux de pauvreté des ménages propriétaires de leur logement (%) ;
+Taux de pauvreté des ménages locataires de leur logement (%) ;
+Part des revenus d'activité (%) ;
+dont part des salaires, traitements (%) ;
+dont part des indemnités de chômage (%) ;
+dont part des revenus des activités non salariées (%) ;
+Part des pensions, retraites et rentes (%) ;
+Part des revenus du patrimoine et des autres revenus (%) ;
+Part de l'ensemble des prestations sociales (%) ;
+dont part des prestations familiales (%) ;
+dont part des minima sociaux (%) ;
+dont part des prestations logement (%) ;
+Part des impôts (%) ;
+Rapport interdécile 9e décile/1er decile ;
+1er décile du niveau de vie (€) ;
+9e décile du niveau de vie (€).
+-->
+
+```{r, results = 'hide'}
+dat.niveauVie2018 <- read.csv("data/cc_filosofi_2018_COM-geo2021.csv", sep = ";")
+head(dat.niveauVie2018)
+```
+
+### Vaccination par commune
 
 ```{r, results = 'hide'}
 URL <- "https://datavaccin-covid.ameli.fr/explore/dataset/donnees-de-vaccination-par-commune/download/?format=csv&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B"
 dataFile <- paste0("data/vacciCommunes.csv") # name file with today's date
-download.file(URL, dataFile) # download file from repo
+if(dlData){
+  download.file(URL, dataFile) # download file from repo
+}
 dat.vaccin <- read.csv(dataFile, sep = ";", stringsAsFactors = FALSE, dec = ",")
 head(dat.vaccin)
 ```
+
 
 ## Clean data
 
@@ -61,12 +114,18 @@ Merge the two datasets
 ```{r, results = 'hide'}
 nrow(dat.vaccin.final)
 
-names(dat.niveauVie)
-names(dat.niveauVie) <- c("commune_residence", "libelle_commune", "med14")
-nrow(dat.niveauVie)
+names(dat.niveauVie2014)
+names(dat.niveauVie2014) <- c("commune_residence", "libelle_commune", "med14_2014")
+nrow(dat.niveauVie2014)
 
-dat.all <- merge(dat.niveauVie, dat.vaccin.final, by = "commune_residence")
+names(dat.niveauVie2018)[c(1, 4)] <- c("commune_residence",  "med14_2018")
+
+dat.all <- merge(dat.niveauVie2014, dat.vaccin.final, by = "commune_residence")
 nrow(dat.all)
+dat.all <- merge(dat.all, dat.niveauVie2018, by = "commune_residence")
+nrow(dat.all)
+
+names(dat.all)
 ```
 
 Add region information 
@@ -128,27 +187,27 @@ names(colAge) <- ages
 ## Models
 
 ```{r}
-mdl1D <- glm(formula = cbind(effectif_cumu_1_inj, population_carto - effectif_cumu_1_inj) ~ med14 + classe_age + classe_age*med14 + region, data = dat, family = binomial(link = "logit"))
+mdl1D <- glm(formula = cbind(effectif_cumu_1_inj, population_carto - effectif_cumu_1_inj) ~ med14_2018 + classe_age + classe_age*med14_2018 + region, data = dat, family = binomial(link = "logit"))
 
-mdl1D.noregion <- glm(formula = cbind(effectif_cumu_1_inj, population_carto - effectif_cumu_1_inj) ~ med14 + classe_age, data = dat, family = binomial(link = "logit"))
+mdl1D.noregion <- glm(formula = cbind(effectif_cumu_1_inj, population_carto - effectif_cumu_1_inj) ~ med14_2018 + classe_age, data = dat, family = binomial(link = "logit"))
 
-mdlFin <- glm(formula = cbind(effectif_cumu_termine, population_carto - effectif_cumu_termine) ~ med14 + classe_age + classe_age*med14 + region, data = dat, family = binomial(link = "logit"))
+mdlFin <- glm(formula = cbind(effectif_cumu_termine, population_carto - effectif_cumu_termine) ~ med14_2018 + classe_age + classe_age*med14_2018 + region, data = dat, family = binomial(link = "logit"))
 
-mdlFin.noregion <- glm(formula = cbind(effectif_cumu_termine, population_carto - effectif_cumu_termine) ~ med14 + classe_age, data = dat, family = binomial(link = "logit"))
+mdlFin.noregion <- glm(formula = cbind(effectif_cumu_termine, population_carto - effectif_cumu_termine) ~ med14_2018 + classe_age, data = dat, family = binomial(link = "logit"))
 
 summary(mdl1D)
 summary(mdlFin)
 
 
-# Fit
 ```
 
 
 ```{r, results = 'hide'}
-newdata <- expand.grid(med14 = seq(min(dat$med14), max(dat$med14), length.out = 100), classe_age = sort(unique(dat$classe_age)), region = unique(dat$region))
+# Fit
+newdata <- expand.grid(med14_2018 = seq(min(dat$med14_2018), max(dat$med14_2018), length.out = 100), classe_age = sort(unique(dat$classe_age)), region = unique(dat$region))
 nrow(newdata)
 
-newdata.noregion <- expand.grid(med14 = seq(min(dat$med14), max(dat$med14), length.out = 100), classe_age = sort(unique(dat$classe_age)))
+newdata.noregion <- expand.grid(med14_2018 = seq(min(dat$med14_2018), max(dat$med14_2018), length.out = 100), classe_age = sort(unique(dat$classe_age)))
 
 ndt <- newdata
 ndt$prd1D <- predict(mdl1D, newdata = newdata, type = "response")
@@ -178,10 +237,10 @@ cla <- "Tout âge"
 par(mar = marWithDetails - c(0, 0, 0, 3), las = 1, mgp = c(1.75, 0.4, 0), tck = -0.02)
 
   subdat <- dat[which(dat$libelle_classe_age == cla), ]
-  plot(subdat$med14, subdat$taux_cumu_1_inj, 
+  plot(subdat$med14_2018, subdat$taux_cumu_1_inj, 
        ylim = c(0, 0.7), 
-       xlab = "Revenu médian dans la commune", ylab = "Proportion de la population
-ayant reçu au moins une infection", 
+       xlab = "Revenu médian dans la commune (2018)", ylab = "Proportion de la population
+ayant reçu au moins une injection", 
        yaxs = "i", 
        col = adjustcolor(colRegion[subdat$region], alpha.f = 0.5), 
        pch = pchRegion[subdat$region],
@@ -193,14 +252,14 @@ frame.plot = FALSE)
   
   
 # Add legends
-x1 <- max(dat$med14)
-d1 <- dat[which(dat$med14 == x1), ]
+x1 <- max(dat$med14_2018)
+d1 <- dat[which(dat$med14_2018 == x1), ]
 
-x2 <- min(dat$med14)
-d2 <- dat[which(dat$med14 == x2), ]
+x2 <- min(dat$med14_2018)
+d2 <- dat[which(dat$med14_2018 == x2), ]
 
 x3 <- 35161
-d3 <- dat[which(dat$med14 == x3), ]
+d3 <- dat[which(dat$med14_2018 == x3), ]
 
 dy <- 0.01
 text(x = c(x1, x2, x3), 
@@ -221,8 +280,8 @@ lwd.pred <- 1.5
 # Remove all ages
 tmp <- dat[which(dat$classe_age != "TOUT_AGE"),]
 
-plot(tmp$med14, tmp$taux_cumu_1_inj, 
-     xlab = "Revenu médian dans la commune", ylab = "Proportion de la classe d'âge 
+plot(tmp$med14_2018, tmp$taux_cumu_1_inj, 
+     xlab = "Revenu médian dans la commune (2018)", ylab = "Proportion de la classe d'âge 
 ayant reçu au moins eu une injection", 
      yaxs = "i", frame.plot = FALSE, ylim = c(0, 1),
      type = "n", axes = FALSE
@@ -244,22 +303,22 @@ cexleg <- 0.6
 colRec <- gray(0.925)
 
 # max
-xmax <- max(dat$med14)
-datmax <- dat[which(dat$med14 == xmax), ]
+xmax <- max(dat$med14_2018)
+datmax <- dat[which(dat$med14_2018 == xmax), ]
 rect(xleft = xmax - dx, xright = xmax + dx,
      ybottom = as.numeric(min(datmax$taux_cumu_1_inj)) - dy, ytop = as.numeric(max(datmax$taux_cumu_1_inj)) + dy, col = colRec, border = gray(0, 0))
 text(x = xmax - dx, y = (as.numeric(max(datmax$taux_cumu_1_inj)) + as.numeric(min(datmax$taux_cumu_1_inj)) )/2, labels = datmax[1, "libelle_commune.x"], cex = cexleg, adj = c(0.5, 0), srt = 90)
 
 # min
-xmin <- min(dat$med14)
-datmin <- dat[which(dat$med14 == xmin), ]
+xmin <- min(dat$med14_2018)
+datmin <- dat[which(dat$med14_2018 == xmin), ]
 rect(xleft = xmin - dx, xright = xmin + dx,
      ybottom = as.numeric(min(datmin$taux_cumu_1_inj)) - dy, ytop = as.numeric(max(datmin$taux_cumu_1_inj)) + dy, col = colRec, border = gray(0, 0))
 text(x = xmin - dx, y = (as.numeric(max(datmin$taux_cumu_1_inj)) + as.numeric(min(datmin$taux_cumu_1_inj)) )/2, labels = datmin[1, "libelle_commune.x"], cex = cexleg, adj = c(0.5, 0), srt = 90)
 
 # Intermediate
-dat3 <- dat[dat$med14>35000 & dat$med14 < 36000,]
-x3 <- unique(dat3$med14)
+dat3 <- dat[dat$med14_2018>35000 & dat$med14_2018 < 36000,]
+x3 <- unique(dat3$med14_2018)
 rect(xleft = x3 - dx, xright = x3 + dx,
      ybottom = as.numeric(min(dat3$taux_cumu_1_inj)) - dy, ytop = as.numeric(max(dat3$taux_cumu_1_inj)) + dy, col = colRec, border = gray(0, 0))
 text(x = x3 - dx, y = (as.numeric(max(dat3$taux_cumu_1_inj)) + as.numeric(min(dat3$taux_cumu_1_inj)) )/2, labels = dat3[1, "libelle_commune.x"], cex = cexleg, adj = c(0.5, 0), srt = 90)
@@ -268,7 +327,7 @@ mtext(1, line = 4.5, text = textDetails, cex = 0.6, adj = 0, col = gray(0.6))
 
 par(xpd = TRUE)
 
-points(tmp$med14, tmp$taux_cumu_1_inj, 
+points(tmp$med14_2018, tmp$taux_cumu_1_inj, 
      col = adjustcolor(colAge[tmp$libelle_classe_age], alpha.f = alf), 
      pch = pchRegion[tmp$region])
 # Get age classes and sort them by proportion vaccinated for the legend
@@ -276,7 +335,7 @@ mns <- aggregate(as.numeric(dat$taux_cumu_termine), by = list(dat$libelle_classe
 mns2 <- mns[sort(mns$x, index.return = TRUE, decreasing = TRUE)$ix,]
 mns2 <- mns2[mns2$Group.1 != "Tout âge", ]
 
-legend(x = 1.05*max(tmp$med14), y = 0.5, 
+legend(x = 1.05*max(tmp$med14_2018), y = 0.5, 
        legend = c(mns2$Group.1, names(pchRegion)), 
        col = c(colAge[mns2$Group.1], rep(gray(0.5), 3)), 
        pch = c(rep(NA, nrow(mns2)), pchRegion), 
@@ -287,7 +346,7 @@ for(age in ages[ages!="Tout âge"]){
   agcl <- dic.ages[age] # Get corresponding age class
   # Get predicted data for this age class (no region)
   subd <- ndt.noregion[ndt.noregion$classe_age == agcl,]
-  lines(subd$med14, subd$prd1D, col = colAge[age], lwd = lwd.pred)
+  lines(subd$med14_2018, subd$prd1D, col = colAge[age], lwd = lwd.pred)
 }
 
 
@@ -300,8 +359,8 @@ for(age in ages[ages!="Tout âge"]){
 ```{r}
 par(mar = marWithDetails, las = 1, mgp = c(1.75, 0.4, 0), tck = -0.02)
 
-plot(tmp$med14, tmp$taux_cumu_termine, 
-     xlab = "Revenu médian dans la commune", ylab = "Proportion de la classe d'âge 
+plot(tmp$med14_2018, tmp$taux_cumu_termine, 
+     xlab = "Revenu médian dans la commune (2018)", ylab = "Proportion de la classe d'âge 
 dont la vaccination est terminée", 
      yaxs = "i", frame.plot = FALSE, ylim = c(0, 1),
      type = "n", axes = FALSE
@@ -323,22 +382,22 @@ cexleg <- 0.6
 colRec <- gray(0.925)
 
 # max
-xmax <- max(dat$med14)
-datmax <- dat[which(dat$med14 == xmax), ]
+xmax <- max(dat$med14_2018)
+datmax <- dat[which(dat$med14_2018 == xmax), ]
 rect(xleft = xmax - dx, xright = xmax + dx,
      ybottom = as.numeric(min(datmax$taux_cumu_termine)) - dy, ytop = as.numeric(max(datmax$taux_cumu_termine)) + dy, col = colRec, border = gray(0, 0))
 text(x = xmax - dx, y = (as.numeric(max(datmax$taux_cumu_termine)) + as.numeric(min(datmax$taux_cumu_termine)) )/2, labels = datmax[1, "libelle_commune.x"], cex = cexleg, adj = c(0.5, 0), srt = 90)
 
 # min
-xmin <- min(dat$med14)
-datmin <- dat[which(dat$med14 == xmin), ]
+xmin <- min(dat$med14_2018)
+datmin <- dat[which(dat$med14_2018 == xmin), ]
 rect(xleft = xmin - dx, xright = xmin + dx,
      ybottom = as.numeric(min(datmin$taux_cumu_termine)) - dy, ytop = as.numeric(max(datmin$taux_cumu_termine)) + dy, col = colRec, border = gray(0, 0))
 text(x = xmin - dx, y = (as.numeric(max(datmin$taux_cumu_termine)) + as.numeric(min(datmin$taux_cumu_termine)) )/2, labels = datmin[1, "libelle_commune.x"], cex = cexleg, adj = c(0.5, 0), srt = 90)
 
 # Intermediate
-dat3 <- dat[dat$med14>35000 & dat$med14 < 36000,]
-x3 <- unique(dat3$med14)
+dat3 <- dat[dat$med14_2018>35000 & dat$med14_2018 < 36000,]
+x3 <- unique(dat3$med14_2018)
 rect(xleft = x3 - dx, xright = x3 + dx,
      ybottom = as.numeric(min(dat3$taux_cumu_termine)) - dy, ytop = as.numeric(max(dat3$taux_cumu_termine)) + dy, col = colRec, border = gray(0, 0))
 text(x = x3 - dx, y = (as.numeric(max(dat3$taux_cumu_termine)) + as.numeric(min(dat3$taux_cumu_termine)) )/2, labels = dat3[1, "libelle_commune.x"], cex = cexleg, adj = c(0.5, 0), srt = 90)
@@ -347,7 +406,7 @@ mtext(1, line = 4.5, text = textDetails, cex = 0.6, adj = 0, col = gray(0.6))
 
 par(xpd = TRUE)
 
-points(tmp$med14, tmp$taux_cumu_termine, 
+points(tmp$med14_2018, tmp$taux_cumu_termine, 
      col = adjustcolor(colAge[tmp$libelle_classe_age], alpha.f = alf), 
      pch = pchRegion[tmp$region])
 # Get age classes and sort them by proportion vaccinated for the legend
@@ -355,7 +414,7 @@ mns <- aggregate(as.numeric(dat$taux_cumu_termine), by = list(dat$libelle_classe
 mns2 <- mns[sort(mns$x, index.return = TRUE, decreasing = TRUE)$ix,]
 mns2 <- mns2[mns2$Group.1 != "Tout âge", ]
 
-legend(x = 1.05*max(tmp$med14), y = 0.5, 
+legend(x = 1.05*max(tmp$med14_2018), y = 0.5, 
        legend = c(mns2$Group.1, names(pchRegion)), 
        col = c(colAge[mns2$Group.1], rep(gray(0.5), 3)), 
        pch = c(rep(NA, nrow(mns2)), pchRegion), 
@@ -368,7 +427,7 @@ for(age in ages[ages!="Tout âge"]){
   agcl <- dic.ages[age] # Get corresponding age class
   # Get predicted data for this age class (no region)
   subd <- ndt.noregion[ndt.noregion$classe_age == agcl,]
-  lines(subd$med14, subd$prdFin, col = colAge[age], lwd = lwd.pred)
+  lines(subd$med14_2018, subd$prdFin, col = colAge[age], lwd = lwd.pred)
 }
 ```
 
@@ -405,13 +464,13 @@ unique(dat.all.time$taux_cumu_1_inj)
 dat$classe_age <- as.factor(dat$classe_age)
 dat$region <- as.factor(dat$region)
 
-mdl1D <- glm(formula = cbind(effectif_cumu_1_inj, population_carto - effectif_cumu_1_inj) ~ time + med14 + classe_age + med14*time + classe_age*time + region + region*time, data = dat, family = binomial(link = "logit"))
+mdl1D <- glm(formula = cbind(effectif_cumu_1_inj, population_carto - effectif_cumu_1_inj) ~ time + med14_2018 + classe_age + med14_2018*time + classe_age*time + region + region*time, data = dat, family = binomial(link = "logit"))
 
-mdl1D.2 <- glm(formula = cbind(effectif_cumu_1_inj, population_carto - effectif_cumu_1_inj) ~ time + med14 + classe_age + med14*time + classe_age*time, data = dat, family = binomial(link = "logit"))
+mdl1D.2 <- glm(formula = cbind(effectif_cumu_1_inj, population_carto - effectif_cumu_1_inj) ~ time + med14_2018 + classe_age + med14_2018*time + classe_age*time, data = dat, family = binomial(link = "logit"))
 
-mdlFin <- glm(formula = cbind(effectif_cumu_termine, population_carto - effectif_cumu_termine) ~ time + med14 + classe_age + med14*time + classe_age*time + region + region*time, data = dat, family = binomial(link = "logit"))
+mdlFin <- glm(formula = cbind(effectif_cumu_termine, population_carto - effectif_cumu_termine) ~ time + med14_2018 + classe_age + med14_2018*time + classe_age*time + region + region*time, data = dat, family = binomial(link = "logit"))
 
-mdlFin.2 <- glm(formula = cbind(effectif_cumu_termine, population_carto - effectif_cumu_termine) ~ time + med14 + classe_age + med14*time + classe_age*time, data = dat, family = binomial(link = "logit"))
+mdlFin.2 <- glm(formula = cbind(effectif_cumu_termine, population_carto - effectif_cumu_termine) ~ time + med14_2018 + classe_age + med14_2018*time + classe_age*time, data = dat, family = binomial(link = "logit"))
 
 summary(mdl1D)
 summary(mdlFin)
@@ -431,7 +490,7 @@ dat$pred1D.response.se.lower <- lgt(dat$pred1D - 1.96 * dat$se1D)
 #with(preddat, lines(0:1000, exp(fit-1.96*se.fit)/(1+exp(fit-1.96*se.fit)), lty=2))
 
 
-newdata <- expand.grid(med14 = seq(min(dat$med14), max(dat$med14), length.out = 100), classe_age = sort(unique(dat$classe_age)), time = seq(min(dat$time), max(dat$time), length.out = 11))
+newdata <- expand.grid(med14_2018 = seq(min(dat$med14_2018), max(dat$med14_2018), length.out = 100), classe_age = sort(unique(dat$classe_age)), time = seq(min(dat$time), max(dat$time), length.out = 11))
 nrow(newdata)
 
 prd1D <- predict(mdl1D.2, newdata = newdata, type = "response")
@@ -454,7 +513,7 @@ unique(dat$libelle_classe_age)
 dat.final <- dat[which(dat$time == max(dat$time)),]
 
 tmp <- dat.final[which(dat.final$classe_age != "TOUT_AGE"),]
-plot(tmp$med14, tmp$taux_cumu_1_inj)
+plot(tmp$med14_2018, tmp$taux_cumu_1_inj)
 
 mns <- aggregate(as.numeric(dat.final$taux_cumu_termine), by = list(dat.final$libelle_classe_age), FUN = mean, na.rm = TRUE)
 mns2 <- mns[sort(mns$x, index.return = TRUE, decreasing = TRUE)$ix,]
@@ -464,15 +523,15 @@ mns2 <- mns2[mns2$Group.1 != "Tout âge", ]
 par(mar = c(4, 3, 2, 6), las = 1)
 alf <- 0.5
 
-plot(tmp$med14, tmp$taux_cumu_1_inj, col = adjustcolor(colAge[tmp$libelle_classe_age], alpha.f = alf), 
+plot(tmp$med14_2018, tmp$taux_cumu_1_inj, col = adjustcolor(colAge[tmp$libelle_classe_age], alpha.f = alf), 
      xlab = xlb, ylab = "Proportion vaccination terminée", pch = 16, yaxs = "i", frame.plot = FALSE, ylim = c(0, 1))
 par(xpd = TRUE)
-legend(x = 1.03*max(tmp$med14), y = 1, legend = mns2$Group.1, col = adjustcolor(colAge[mns2$Group.1], alpha.f = alf), pch = 16, bty = "n", cex = 0.7, pt.cex = 1, xjust = 0)
+legend(x = 1.03*max(tmp$med14_2018), y = 1, legend = mns2$Group.1, col = adjustcolor(colAge[mns2$Group.1], alpha.f = alf), pch = 16, bty = "n", cex = 0.7, pt.cex = 1, xjust = 0)
 
 for(age in ages[ages!="Tout âge"]){
   agcl <- dic.ages[age]
   subd <- ndt[ndt$classe_age == agcl,]
-  lines(subd$med14, subd$pred1D, col = colAge[age], lwd = 2)
+  lines(subd$med14_2018, subd$pred1D, col = colAge[age], lwd = 2)
 }
 
 tmp[1,]
@@ -504,9 +563,9 @@ Données revenus : https://www.data.gouv.fr/fr/datasets/niveau-de-vie-des-franca
 par(mar = c(5, 4, 3, 3), las = 1, mgp = c(1.75, 0.4, 0), tck = -0.02)
 for(cla in unique(dat.all$libelle_classe_age)){
   subdat <- dat.all[which(dat.all$libelle_classe_age == cla), ]
-  plot(subdat$med14, subdat$taux_cumu_1_inj, 
+  plot(subdat$med14_2018, subdat$taux_cumu_1_inj, 
        ylim = c(0, 1), 
-       xlab = "Revenu MED14", ylab = "Proportion 1ere injection", 
+       xlab = "Revenu med14_2018", ylab = "Proportion 1ere injection", 
        yaxs = "i", pch = 16, col = adjustcolor(colRegion[subdat$region], alpha.f = 0.5), frame.plot = FALSE)
   axis(4)
   title(main = cla)
@@ -517,26 +576,47 @@ Données revenus : https://www.data.gouv.fr/fr/datasets/niveau-de-vie-des-franca
 
 ```
 
-```{r, eval = FALSE}
+
+# Plotly
+```{r}
 #install.packages("plotly")
 library(plotly)
 
-#for(cla in unique(dat.all$libelle_classe_age)){
+```
+
+```{r, eval = FALSE}
+plot_ly(dat.all, x = ~med14_2014, y = ~med14_2018, text = ~paste(commune_residence, libelle_commune.x))
+```
+
+
+```{r, eval = FALSE}
+
 cla <- "Tout âge"
-  subdat <- dat.all[which(dat.all$libelle_classe_age == cla), ]
+subdat <- dat.all[which(dat.all$libelle_classe_age == cla), ]
 
-fig <- plot_ly(subdat, x = ~med14, y = ~taux_cumu_1_inj, type = 'scatter', mode = 'markers',
+fig <- plot_ly(subdat, x = ~med14_2018, y = ~as.numeric(taux_cumu_1_inj), type = 'scatter', mode = 'markers',
+        color = ~region,
+        symbol = ~region,
         hoverinfo = 'text',
-        text = ~paste(commune_residence, libelle_commune.x)) %>% layout(yaxis = list(title = "Proportion 1ere injection"), xaxis = list(title = "Revenu median"))
+        text = ~paste(commune_residence, libelle_commune.x)) %>% layout(yaxis = list(title = "Proportion 1ere injection"), xaxis = list(title = "Revenu median dans la commune (2018)"))
 fig
-fig2 <- fig %>% layout(yaxis = list(range = c(0, 1000), title = "Proportion 1ere injection"))
+fig2 <- fig %>% layout(yaxis = list(range = c(0, 0.75), title = "Proportion 1ere injection"))
+fig2
+```
 
+
+```{r, eval = FALSE}
+# Vaccination terminee
+fig <- plot_ly(subdat, x = ~med14_2018, y = ~as.numeric(taux_cumu_termine), type = 'scatter', mode = 'markers',
+        color = ~region,
+        symbol = ~region,
+        hoverinfo = 'text',
+        text = ~paste(commune_residence, libelle_commune.x)) %>% layout(yaxis = list(title = "Proportion vaccination terminée"), xaxis = list(title = "Revenu median dans la commune (2018)"))
+fig
+fig2 <- fig %>% layout(yaxis = list(range = c(0, 0.75)))
 fig2
 
-readline(prompt="Press [enter] to continue")
 
 
-}
-fig
 ```
 
