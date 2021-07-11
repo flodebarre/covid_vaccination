@@ -1,0 +1,210 @@
+---
+title: "comparison_departements"
+author: "FD"
+output: 
+  html_document: 
+      code_folding: hide
+      toc: TRUE
+      toc_float: TRUE
+      self_contained: no
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list = ls())
+```
+
+```{r, include = FALSE}
+dlData <- FALSE
+# Whether to download the data again
+```
+
+
+# Load data
+
+## Vaccination par département
+
+Source <https://datavaccin-covid.ameli.fr/explore/dataset/donnees-vaccination-par-tranche-dage-type-de-vaccin-et-departement/information/?sort=-date_reference>
+
+```{r}
+URL <- "https://datavaccin-covid.ameli.fr/explore/dataset/donnees-vaccination-par-tranche-dage-type-de-vaccin-et-departement/download/?format=csv&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B"
+
+dataFile <- paste0("data/vacciDeps_residence.csv") # name file with today's date
+if(dlData){
+  download.file(URL, dataFile) # download file from repo
+}
+dat.residence <- read.csv(dataFile, sep = ";", stringsAsFactors = FALSE, dec = ",")
+head(dat.residence)
+```
+
+
+## Vaccination par département d'injection
+
+Source <https://www.data.gouv.fr/en/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/>  
+`vacsi-dep`
+
+```{r}
+URL <- "https://www.data.gouv.fr/en/datasets/r/4f39ec91-80d7-4602-befb-4b522804c0af"
+dataFile <- paste0("data/vacciDeps_injection.csv") # name file with today's date
+if(dlData){
+  download.file(URL, dataFile) # download file from repo
+}
+dat.injection <- read.csv(dataFile, sep = ";", stringsAsFactors = FALSE, dec = ",")
+head(dat.injection)
+```
+
+## Clean data
+
+```{r, results = 'hide'}
+# Departement as numeric
+unique(dat.residence$departement_residence)
+dat.residence$dep <- as.numeric(dat.residence$departement_residence)
+
+dat.injection$dep <- as.numeric(dat.injection$dep)
+head(dat.injection)
+unique(dat.injection$dep)
+```
+
+
+```{r, results = 'hide'}
+# Select all ages and all vaccines
+
+dat.residence <- dat.residence[which(dat.residence$classe_age == "TOUT_AGE" & dat.residence$type_vaccin == "Tout vaccin" & !is.na(dat.residence$dep)), ]
+
+# 999 : pas connu -> 0 (same code as other dataset)
+dat.residence[which(dat.residence$dep == 999), "dep"] <- 0
+```
+
+Dates
+
+```{r}
+dat.residence$date <- as.Date(dat.residence$date)
+dat.injection$date <- as.Date(dat.injection$jour)
+```
+
+# Plots
+
+```{r}
+colInjection <- "#e9a3c9"
+colResidence <- "#a1d76a"
+```
+
+Consistency check
+
+```{r}
+finalCommonDate <- min(c(max(dat.injection$date), max(dat.residence$date)))
+
+final.residence <- dat.residence[which(dat.residence$date == finalCommonDate), ]
+final.injection <- dat.injection[which(dat.injection$date == finalCommonDate), ]
+
+unique(final.residence$dep)
+
+unique(final.injection$dep)
+
+
+rbind(sum(final.injection$n_cum_complet)
+, sum(final.residence$effectif_cumu_termine))
+
+sum(final.injection$n_cum_dose1) - sum(final.residence$effectif_cumu_1_inj)
+```
+
+There are more injections in the by injection dataset than in the by residency dataset. So overall our difference will be positive (while should be 0). 
+
+```{r}
+# Merge datasets
+names(final.residence)
+final.both <- merge(final.residence, final.injection, by = "dep", all = FALSE)
+
+final.both$cum1D_residence <- final.both$effectif_cumu_1_inj
+final.both$cumTermine_residence <- final.both$effectif_cumu_termine
+final.both$cum1D_injection <- final.both$n_cum_dose1
+final.both$cumTermine_injection <- final.both$n_cum_complet
+
+# Replace NA by 0
+for(i in c("cum1D_residence", "cumTermine_residence", "cum1D_injection", "cumTermine_injection")){
+  final.both[is.na(final.both[, i]), i] <- 0
+}
+
+
+# Difference between nb injections and nb residence
+final.both$diffInjRes.1D <- final.both$cum1D_injection - final.both$cum1D_residence
+
+final.both$diffInjRes.termine <- final.both$cumTermine_injection - final.both$cumTermine_residence
+
+# Relative difference
+final.both$reldiffInjRes.1D <- (final.both$cum1D_injection - final.both$cum1D_residence)/final.both$cum1D_residence
+
+final.both$reldiffInjRes.termine <- (final.both$cumTermine_injection - final.both$cumTermine_residence)/final.both$cumTermine_residence
+
+sum(final.both$diffInjRes.1D) # This is the same value as before, phew
+```
+
+```{r}
+filename <- "injections-residents.png"
+png(filename = filename, width = 1600, height = 500, res = 100, pointsize = 12)
+
+par(xpd = FALSE)
+thecol <- "diffInjRes.1D"
+thecol <- "reldiffInjRes.1D"
+# Sort 
+tmp <- final.both[order(final.both[, thecol], decreasing = TRUE), ]
+
+n <- nrow(tmp)
+
+par(las = 1)
+par(mar = c(1, 5, 3, 5))
+
+tmpp <- tmp[-n, thecol]
+ymax <- max(tmpp[which(tmpp<Inf)])
+
+x0 <- n+6
+y0 <- 2.5*min(tmpp)
+
+plot(tmp[-n, thecol], xlim = c(1, x0), ylim = c(y0, ymax), axes = FALSE, 
+     xlab = "", ylab = "", 
+     type = "n")
+mtext("Différence relative", side = 2, las = 3, line = 3)
+mtext("Différence relative entre nombre d'injections dans le département
+et nombre de personnes vaccinées habitant le département")
+axis(2)
+usr <- par("usr")
+
+xpos4 <- x0 + 4
+axis(4, at = c(0, round(y0, 2)), pos = xpos4)
+abline(h = 0)
+
+clip(usr[1], n, usr[3], usr[4])
+for(i in seq(-0.3, 0.6, by = 0.1)){
+  abline(h = i, lwd = 0.5, col = gray(0.5))
+}
+
+clip(usr[1], usr[2], usr[3], usr[4])
+abline(h = 0, lwd = 1.5, col = gray(0.5))
+
+par(xpd = TRUE)
+ygap <- y0*3/4
+points(x = c(xpos4, n + (x0 - n)/2), y = c(ygap, 0), cex = 3, col = "white", pch = 15)
+text(x = xpos4, y = ygap, labels = "//", cex = 1.5)
+
+colPos <- "#f1a340"
+colNeg <- "#998ec3"
+cols <- c(colNeg, colPos)
+names(cols) <- c("Neg", "Pos")
+
+points(tmp[-n, thecol], col = cols[1 + (tmp[-n, thecol] > 0)], pch = 16)
+points(x0, y0, col = cols[1 + (tmp[n, thecol] > 0)], pch = 16)
+
+text(x = c(1:(n-1), x0), y = c(tmp[-n, thecol], y0), labels = c(tmp[-n, "dep"], "pas de dep."), cex = 0.55, adj = c(0.5, -1))
+
+xposneg <- which(tmp[-n, thecol] < 0)[1] - 1/2
+
+text(x = c(1 + xposneg/2, xposneg + (x0 - xposneg)/2), y = 0.65*c(usr[4], usr[3]), labels = c("Plus de personnes primo-injectées dans le département (données SPF)\nque de résidents du département primo-injectés (données Ameli)", 
+"Moins de personnes primo-injectées dans le département (données SPF)\nque de résidents du département primo-injectés (données Ameli)"), col = c(colPos, colNeg))
+
+dev.off()
+system(paste("open", filename))
+
+```
+
