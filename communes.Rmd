@@ -223,10 +223,14 @@ ndt.noregion$prdFin <- predict(mdlFin.noregion, newdata = newdata.noregion, type
 ```{r}
 marWithDetails <- c(6, 6, 3, 6.75)
 
-textDetails <- "Figure @flodebarre, données trouvées par @humeursdevictor
+textDetails <- "Figure @flodebarre, données vaccination trouvées par @humeursdevictor
 Code: https://github.com/flodebarre/covid_vaccination/blob/main/communes.Rmd
 Données vaccination : https://datavaccin-covid.ameli.fr/explore/dataset/donnees-de-vaccination-par-commune
-Données revenus : https://www.data.gouv.fr/fr/datasets/niveau-de-vie-des-francais-par-commune/"
+Données revenus : https://www.insee.fr/fr/statistiques/5009236?sommaire=5009255#consulter"
+```
+
+```{r}
+cexA <- 0.8
 ```
 
 ### Tous ages
@@ -244,8 +248,10 @@ ayant reçu au moins une injection",
        yaxs = "i", 
        col = adjustcolor(colRegion[subdat$region], alpha.f = 0.5), 
        pch = pchRegion[subdat$region],
-frame.plot = FALSE)
-  axis(4)
+frame.plot = FALSE, axes = FALSE)
+  axis(1, cex.axis = cexA)
+  axis(2, cex.axis = cexA)
+  axis(4, cex.axis = cexA)
   title(main = "Au moins une injection, tous âges")
   mtext(textDetails, side = 1, line = 4.5, cex = 0.6, adj = 0, col = gray(0.4))
   legend("bottomright", legend = names(colRegion), col = colRegion, pch = pchRegion[names(colRegion)], bty = "n", title = "Regions")
@@ -258,8 +264,8 @@ d1 <- dat[which(dat$med14_2018 == x1), ]
 x2 <- min(dat$med14_2018)
 d2 <- dat[which(dat$med14_2018 == x2), ]
 
-x3 <- 35161
-d3 <- dat[which(dat$med14_2018 == x3), ]
+d3 <- dat[which(dat$med14_2018 >36000 & dat$med14_2018 < 36500), ]
+x3 <- unique(d3$med14_2018)
 
 dy <- 0.01
 text(x = c(x1, x2, x3), 
@@ -286,8 +292,10 @@ ayant reçu au moins eu une injection",
      yaxs = "i", frame.plot = FALSE, ylim = c(0, 1),
      type = "n", axes = FALSE
 )
-axis(1)
-axis(2, pos = 10200)
+axis(1, cex.axis = cexA)
+axis(2, pos = 10200, cex.axis = cexA)
+axis(4, cex.axis = cexA)
+
 par(xpd = FALSE)
 title(main = "Au moins une injection, par classe d'âge")
 
@@ -317,8 +325,8 @@ rect(xleft = xmin - dx, xright = xmin + dx,
 text(x = xmin - dx, y = (as.numeric(max(datmin$taux_cumu_1_inj)) + as.numeric(min(datmin$taux_cumu_1_inj)) )/2, labels = datmin[1, "libelle_commune.x"], cex = cexleg, adj = c(0.5, 0), srt = 90)
 
 # Intermediate
-dat3 <- dat[dat$med14_2018>35000 & dat$med14_2018 < 36000,]
-x3 <- unique(dat3$med14_2018)
+dat3 <- dat[dat$med14_2018 == x3,]
+
 rect(xleft = x3 - dx, xright = x3 + dx,
      ybottom = as.numeric(min(dat3$taux_cumu_1_inj)) - dy, ytop = as.numeric(max(dat3$taux_cumu_1_inj)) + dy, col = colRec, border = gray(0, 0))
 text(x = x3 - dx, y = (as.numeric(max(dat3$taux_cumu_1_inj)) + as.numeric(min(dat3$taux_cumu_1_inj)) )/2, labels = dat3[1, "libelle_commune.x"], cex = cexleg, adj = c(0.5, 0), srt = 90)
@@ -365,8 +373,10 @@ dont la vaccination est terminée",
      yaxs = "i", frame.plot = FALSE, ylim = c(0, 1),
      type = "n", axes = FALSE
 )
-axis(1)
-axis(2, pos = 10200)
+axis(1, cex.axis = cexA)
+axis(2, pos = 10200, cex.axis = cexA)
+axis(4, cex.axis = cexA)
+
 par(xpd = FALSE)
 title(main = "Vaccination terminée, par classe d'âge")
 
@@ -396,8 +406,8 @@ rect(xleft = xmin - dx, xright = xmin + dx,
 text(x = xmin - dx, y = (as.numeric(max(datmin$taux_cumu_termine)) + as.numeric(min(datmin$taux_cumu_termine)) )/2, labels = datmin[1, "libelle_commune.x"], cex = cexleg, adj = c(0.5, 0), srt = 90)
 
 # Intermediate
-dat3 <- dat[dat$med14_2018>35000 & dat$med14_2018 < 36000,]
-x3 <- unique(dat3$med14_2018)
+dat3 <- dat[dat$med14_2018 == x3,]
+
 rect(xleft = x3 - dx, xright = x3 + dx,
      ybottom = as.numeric(min(dat3$taux_cumu_termine)) - dy, ytop = as.numeric(max(dat3$taux_cumu_termine)) + dy, col = colRec, border = gray(0, 0))
 text(x = x3 - dx, y = (as.numeric(max(dat3$taux_cumu_termine)) + as.numeric(min(dat3$taux_cumu_termine)) )/2, labels = dat3[1, "libelle_commune.x"], cex = cexleg, adj = c(0.5, 0), srt = 90)
@@ -577,15 +587,28 @@ Données revenus : https://www.data.gouv.fr/fr/datasets/niveau-de-vie-des-franca
 ```
 
 
-# Plotly
-```{r}
+# Plotly -- interactive figures
+
+
+```{r, results = 'hide', warning=FALSE}
 #install.packages("plotly")
 library(plotly)
+```
 
+Comparaison revenus 2014 et 2018 
+
+```{r}
+dat.all$med14_relDiff <- (dat.all$med14_2018 - dat.all$med14_2014) / dat.all$med14_2014
+
+hist(dat.all$med14_relDiff, xlab = "
+Relative difference between 
+2018 and 2014 median income by commune", main = "income evolution")
 ```
 
 ```{r, eval = FALSE}
-plot_ly(dat.all, x = ~med14_2014, y = ~med14_2018, text = ~paste(commune_residence, libelle_commune.x))
+
+plot_ly(dat.all, x = ~med14_2014, y = ~med14_relDiff, text = ~paste(commune_residence, libelle_commune.x), type = "scatter", mode = "markers")
+
 ```
 
 

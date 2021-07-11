@@ -262,23 +262,70 @@ div.tocify {
 <h1>Initializations</h1>
 <div id="load-data" class="section level2">
 <h2>Load data</h2>
-<p>Niveau de vie par commune</p>
+<div id="niveau-de-vie-par-commune-2014" class="section level3">
+<h3>Niveau de vie par commune (2014)</h3>
 <p>Source : <a href="https://www.data.gouv.fr/fr/datasets/niveau-de-vie-des-francais-par-commune/" class="uri">https://www.data.gouv.fr/fr/datasets/niveau-de-vie-des-francais-par-commune/</a></p>
 <blockquote>
 <p>L’Insee a publié les niveaux de vie des ménages par commune pour l’année 2014. Le dispositif d’analyse, appelé Filosofi, permet de détailler où se situent les zones de pauvreté en France. Date de mise à jour : 31 octobre 2017</p>
 </blockquote>
 <pre class="r"><code>URL &lt;- &quot;https://www.data.gouv.fr/fr/datasets/r/16fce6ae-1907-442d-99b2-9ddcf6c41b03&quot;
 dataFile &lt;- paste0(&quot;data/niveauVie.csv&quot;) # name file with today&#39;s date
-download.file(URL, dataFile) # download file from repo
-dat.niveauVie &lt;- read.csv(dataFile, sep = &quot;;&quot;, stringsAsFactors = FALSE, dec = &quot;,&quot;)
+if(dlData){
+  download.file(URL, dataFile) # download file from repo
+}
+dat.niveauVie2014 &lt;- read.csv(dataFile, sep = &quot;;&quot;, stringsAsFactors = FALSE, dec = &quot;,&quot;)
 
-head(dat.niveauVie)</code></pre>
-<p>Vaccination par commune</p>
+head(dat.niveauVie2014)</code></pre>
+</div>
+<div id="niveau-de-vie-par-commune-2018" class="section level3">
+<h3>Niveau de vie par commune 2018</h3>
+<p>Source : <a href="https://www.insee.fr/fr/statistiques/5009236?sommaire=5009255#consulter" class="uri">https://www.insee.fr/fr/statistiques/5009236?sommaire=5009255#consulter</a></p>
+<!--
+Liste des variables
+
+Code géographique ;
+Libellé géographique ;
+Nombre de ménages fiscaux ;
+Nombre de personnes dans les ménages fiscaux ;
+Médiane du niveau de vie (€) ;
+Part des ménages fiscaux imposés (%) ;
+Taux de pauvreté-Ensemble (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a moins de 30 ans (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a de 30 à 39 ans (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a de 40 à 49 ans (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a de 50 à 59 ans (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a de 60 à 74 ans (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a 75 ans ou plus (%) ;
+Taux de pauvreté des ménages propriétaires de leur logement (%) ;
+Taux de pauvreté des ménages locataires de leur logement (%) ;
+Part des revenus d'activité (%) ;
+dont part des salaires, traitements (%) ;
+dont part des indemnités de chômage (%) ;
+dont part des revenus des activités non salariées (%) ;
+Part des pensions, retraites et rentes (%) ;
+Part des revenus du patrimoine et des autres revenus (%) ;
+Part de l'ensemble des prestations sociales (%) ;
+dont part des prestations familiales (%) ;
+dont part des minima sociaux (%) ;
+dont part des prestations logement (%) ;
+Part des impôts (%) ;
+Rapport interdécile 9e décile/1er decile ;
+1er décile du niveau de vie (€) ;
+9e décile du niveau de vie (€).
+-->
+<pre class="r"><code>dat.niveauVie2018 &lt;- read.csv(&quot;data/cc_filosofi_2018_COM-geo2021.csv&quot;, sep = &quot;;&quot;)
+head(dat.niveauVie2018)</code></pre>
+</div>
+<div id="vaccination-par-commune" class="section level3">
+<h3>Vaccination par commune</h3>
 <pre class="r"><code>URL &lt;- &quot;https://datavaccin-covid.ameli.fr/explore/dataset/donnees-de-vaccination-par-commune/download/?format=csv&amp;timezone=Europe/Berlin&amp;lang=fr&amp;use_labels_for_header=true&amp;csv_separator=%3B&quot;
 dataFile &lt;- paste0(&quot;data/vacciCommunes.csv&quot;) # name file with today&#39;s date
-download.file(URL, dataFile) # download file from repo
+if(dlData){
+  download.file(URL, dataFile) # download file from repo
+}
 dat.vaccin &lt;- read.csv(dataFile, sep = &quot;;&quot;, stringsAsFactors = FALSE, dec = &quot;,&quot;)
 head(dat.vaccin)</code></pre>
+</div>
 </div>
 <div id="clean-data" class="section level2">
 <h2>Clean data</h2>
@@ -290,12 +337,18 @@ dat.vaccin.final &lt;- dat.vaccin[which(dat.vaccin$semaine_injection == maxWeek)
 <p>Merge the two datasets</p>
 <pre class="r"><code>nrow(dat.vaccin.final)
 
-names(dat.niveauVie)
-names(dat.niveauVie) &lt;- c(&quot;commune_residence&quot;, &quot;libelle_commune&quot;, &quot;med14&quot;)
-nrow(dat.niveauVie)
+names(dat.niveauVie2014)
+names(dat.niveauVie2014) &lt;- c(&quot;commune_residence&quot;, &quot;libelle_commune&quot;, &quot;med14_2014&quot;)
+nrow(dat.niveauVie2014)
 
-dat.all &lt;- merge(dat.niveauVie, dat.vaccin.final, by = &quot;commune_residence&quot;)
-nrow(dat.all)</code></pre>
+names(dat.niveauVie2018)[c(1, 4)] &lt;- c(&quot;commune_residence&quot;,  &quot;med14_2018&quot;)
+
+dat.all &lt;- merge(dat.niveauVie2014, dat.vaccin.final, by = &quot;commune_residence&quot;)
+nrow(dat.all)
+dat.all &lt;- merge(dat.all, dat.niveauVie2018, by = &quot;commune_residence&quot;)
+nrow(dat.all)
+
+names(dat.all)</code></pre>
 <p>Add region information</p>
 <pre class="r"><code>dat.all$dep &lt;- substr(dat.all$commune_residence, start = 1, stop = 2)
 unique(dat.all$dep)
@@ -333,97 +386,97 @@ names(colAge) &lt;- ages</code></pre>
 <h1>Model and plot</h1>
 <div id="models" class="section level2">
 <h2>Models</h2>
-<pre class="r"><code>mdl1D &lt;- glm(formula = cbind(effectif_cumu_1_inj, population_carto - effectif_cumu_1_inj) ~ med14 + classe_age + classe_age*med14 + region, data = dat, family = binomial(link = &quot;logit&quot;))
+<pre class="r"><code>mdl1D &lt;- glm(formula = cbind(effectif_cumu_1_inj, population_carto - effectif_cumu_1_inj) ~ med14_2018 + classe_age + classe_age*med14_2018 + region, data = dat, family = binomial(link = &quot;logit&quot;))
 
-mdl1D.noregion &lt;- glm(formula = cbind(effectif_cumu_1_inj, population_carto - effectif_cumu_1_inj) ~ med14 + classe_age, data = dat, family = binomial(link = &quot;logit&quot;))
+mdl1D.noregion &lt;- glm(formula = cbind(effectif_cumu_1_inj, population_carto - effectif_cumu_1_inj) ~ med14_2018 + classe_age, data = dat, family = binomial(link = &quot;logit&quot;))
 
-mdlFin &lt;- glm(formula = cbind(effectif_cumu_termine, population_carto - effectif_cumu_termine) ~ med14 + classe_age + classe_age*med14 + region, data = dat, family = binomial(link = &quot;logit&quot;))
+mdlFin &lt;- glm(formula = cbind(effectif_cumu_termine, population_carto - effectif_cumu_termine) ~ med14_2018 + classe_age + classe_age*med14_2018 + region, data = dat, family = binomial(link = &quot;logit&quot;))
 
-mdlFin.noregion &lt;- glm(formula = cbind(effectif_cumu_termine, population_carto - effectif_cumu_termine) ~ med14 + classe_age, data = dat, family = binomial(link = &quot;logit&quot;))
+mdlFin.noregion &lt;- glm(formula = cbind(effectif_cumu_termine, population_carto - effectif_cumu_termine) ~ med14_2018 + classe_age, data = dat, family = binomial(link = &quot;logit&quot;))
 
 summary(mdl1D)</code></pre>
 <pre><code>## 
 ## Call:
 ## glm(formula = cbind(effectif_cumu_1_inj, population_carto - effectif_cumu_1_inj) ~ 
-##     med14 + classe_age + classe_age * med14 + region, family = binomial(link = &quot;logit&quot;), 
-##     data = dat)
+##     med14_2018 + classe_age + classe_age * med14_2018 + region, 
+##     family = binomial(link = &quot;logit&quot;), data = dat)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -59.953   -3.624    0.085    2.894   73.420  
+## -64.735   -3.479    0.140    2.902   63.076  
 ## 
 ## Coefficients:
-##                            Estimate Std. Error  z value Pr(&gt;|z|)    
-## (Intercept)              -4.459e+00  1.127e-02 -395.808  &lt; 2e-16 ***
-## med14                     7.166e-05  4.415e-07  162.318  &lt; 2e-16 ***
-## classe_age20-39           2.539e+00  1.233e-02  205.936  &lt; 2e-16 ***
-## classe_age40-54           3.239e+00  1.270e-02  254.975  &lt; 2e-16 ***
-## classe_age55-64           4.074e+00  1.386e-02  293.838  &lt; 2e-16 ***
-## classe_age65-74           4.578e+00  1.505e-02  304.111  &lt; 2e-16 ***
-## classe_age75 et +         4.739e+00  1.525e-02  310.691  &lt; 2e-16 ***
-## classe_ageTOUT_AGE        3.019e+00  1.152e-02  262.105  &lt; 2e-16 ***
-## regionIDF                -4.928e-02  1.439e-03  -34.242  &lt; 2e-16 ***
-## regionPACA               -2.191e-01  1.717e-03 -127.585  &lt; 2e-16 ***
-## med14:classe_age20-39     3.470e-06  4.917e-07    7.056 1.71e-12 ***
-## med14:classe_age40-54    -4.721e-06  5.114e-07   -9.231  &lt; 2e-16 ***
-## med14:classe_age55-64    -1.818e-05  5.677e-07  -32.019  &lt; 2e-16 ***
-## med14:classe_age65-74    -2.546e-05  6.220e-07  -40.930  &lt; 2e-16 ***
-## med14:classe_age75 et +  -2.995e-05  6.238e-07  -48.015  &lt; 2e-16 ***
-## med14:classe_ageTOUT_AGE -1.244e-05  4.549e-07  -27.342  &lt; 2e-16 ***
+##                                 Estimate Std. Error  z value Pr(&gt;|z|)    
+## (Intercept)                   -4.446e+00  1.120e-02 -396.875  &lt; 2e-16 ***
+## med14_2018                     6.666e-05  4.111e-07  162.152  &lt; 2e-16 ***
+## classe_age20-39                2.482e+00  1.226e-02  202.402  &lt; 2e-16 ***
+## classe_age40-54                3.216e+00  1.263e-02  254.720  &lt; 2e-16 ***
+## classe_age55-64                4.070e+00  1.377e-02  295.518  &lt; 2e-16 ***
+## classe_age65-74                4.582e+00  1.495e-02  306.457  &lt; 2e-16 ***
+## classe_age75 et +              4.746e+00  1.516e-02  313.040  &lt; 2e-16 ***
+## classe_ageTOUT_AGE             2.995e+00  1.145e-02  261.509  &lt; 2e-16 ***
+## regionIDF                     -5.041e-02  1.440e-03  -35.007  &lt; 2e-16 ***
+## regionPACA                    -2.180e-01  1.718e-03 -126.868  &lt; 2e-16 ***
+## med14_2018:classe_age20-39     5.386e-06  4.580e-07   11.759  &lt; 2e-16 ***
+## med14_2018:classe_age40-54    -3.588e-06  4.760e-07   -7.539 4.74e-14 ***
+## med14_2018:classe_age55-64    -1.695e-05  5.281e-07  -32.100  &lt; 2e-16 ***
+## med14_2018:classe_age65-74    -2.413e-05  5.784e-07  -41.712  &lt; 2e-16 ***
+## med14_2018:classe_age75 et +  -2.838e-05  5.805e-07  -48.883  &lt; 2e-16 ***
+## med14_2018:classe_ageTOUT_AGE -1.074e-05  4.236e-07  -25.354  &lt; 2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 3590876  on 2199  degrees of freedom
-## Residual deviance:  170608  on 2184  degrees of freedom
-## AIC: 188781
+## Residual deviance:  152711  on 2184  degrees of freedom
+## AIC: 170884
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
 <pre class="r"><code>summary(mdlFin)</code></pre>
 <pre><code>## 
 ## Call:
 ## glm(formula = cbind(effectif_cumu_termine, population_carto - 
-##     effectif_cumu_termine) ~ med14 + classe_age + classe_age * 
-##     med14 + region, family = binomial(link = &quot;logit&quot;), data = dat)
+##     effectif_cumu_termine) ~ med14_2018 + classe_age + classe_age * 
+##     med14_2018 + region, family = binomial(link = &quot;logit&quot;), data = dat)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -42.917   -2.950   -0.187    2.296   51.658  
+## -47.096   -2.917   -0.117    2.439   53.165  
 ## 
 ## Coefficients:
-##                            Estimate Std. Error  z value Pr(&gt;|z|)    
-## (Intercept)              -6.158e+00  2.336e-02 -263.615  &lt; 2e-16 ***
-## med14                     7.269e-05  9.040e-07   80.414  &lt; 2e-16 ***
-## classe_age20-39           3.382e+00  2.411e-02  140.252  &lt; 2e-16 ***
-## classe_age40-54           4.117e+00  2.411e-02  170.749  &lt; 2e-16 ***
-## classe_age55-64           5.097e+00  2.449e-02  208.116  &lt; 2e-16 ***
-## classe_age65-74           5.620e+00  2.504e-02  224.417  &lt; 2e-16 ***
-## classe_age75 et +         5.919e+00  2.523e-02  234.625  &lt; 2e-16 ***
-## classe_ageTOUT_AGE        4.120e+00  2.349e-02  175.379  &lt; 2e-16 ***
-## regionIDF                -5.683e-03  1.587e-03   -3.581 0.000342 ***
-## regionPACA                7.114e-02  1.879e-03   37.862  &lt; 2e-16 ***
-## med14:classe_age20-39    -1.677e-05  9.370e-07  -17.894  &lt; 2e-16 ***
-## med14:classe_age40-54    -1.791e-05  9.386e-07  -19.084  &lt; 2e-16 ***
-## med14:classe_age55-64    -2.460e-05  9.581e-07  -25.673  &lt; 2e-16 ***
-## med14:classe_age65-74    -2.226e-05  9.855e-07  -22.590  &lt; 2e-16 ***
-## med14:classe_age75 et +  -2.605e-05  9.912e-07  -26.277  &lt; 2e-16 ***
-## med14:classe_ageTOUT_AGE -2.150e-05  9.109e-07  -23.605  &lt; 2e-16 ***
+##                                 Estimate Std. Error  z value Pr(&gt;|z|)    
+## (Intercept)                   -6.143e+00  2.322e-02 -264.549  &lt; 2e-16 ***
+## med14_2018                     6.751e-05  8.416e-07   80.216  &lt; 2e-16 ***
+## classe_age20-39                3.345e+00  2.397e-02  139.539  &lt; 2e-16 ***
+## classe_age40-54                4.101e+00  2.397e-02  171.083  &lt; 2e-16 ***
+## classe_age55-64                5.088e+00  2.434e-02  209.026  &lt; 2e-16 ***
+## classe_age65-74                5.619e+00  2.489e-02  225.748  &lt; 2e-16 ***
+## classe_age75 et +              5.922e+00  2.508e-02  236.161  &lt; 2e-16 ***
+## classe_ageTOUT_AGE             4.107e+00  2.335e-02  175.907  &lt; 2e-16 ***
+## regionIDF                     -5.207e-03  1.587e-03   -3.281  0.00103 ** 
+## regionPACA                     7.167e-02  1.879e-03   38.136  &lt; 2e-16 ***
+## med14_2018:classe_age20-39    -1.440e-05  8.724e-07  -16.507  &lt; 2e-16 ***
+## med14_2018:classe_age40-54    -1.621e-05  8.738e-07  -18.556  &lt; 2e-16 ***
+## med14_2018:classe_age55-64    -2.275e-05  8.918e-07  -25.514  &lt; 2e-16 ***
+## med14_2018:classe_age65-74    -2.088e-05  9.173e-07  -22.760  &lt; 2e-16 ***
+## med14_2018:classe_age75 et +  -2.455e-05  9.228e-07  -26.609  &lt; 2e-16 ***
+## med14_2018:classe_ageTOUT_AGE -1.972e-05  8.480e-07  -23.250  &lt; 2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 3297582  on 2199  degrees of freedom
-## Residual deviance:   93538  on 2184  degrees of freedom
-## AIC: 111223
+## Residual deviance:   90062  on 2184  degrees of freedom
+## AIC: 107746
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
-<pre class="r"><code># Fit</code></pre>
-<pre class="r"><code>newdata &lt;- expand.grid(med14 = seq(min(dat$med14), max(dat$med14), length.out = 100), classe_age = sort(unique(dat$classe_age)), region = unique(dat$region))
+<pre class="r"><code># Fit
+newdata &lt;- expand.grid(med14_2018 = seq(min(dat$med14_2018), max(dat$med14_2018), length.out = 100), classe_age = sort(unique(dat$classe_age)), region = unique(dat$region))
 nrow(newdata)
 
-newdata.noregion &lt;- expand.grid(med14 = seq(min(dat$med14), max(dat$med14), length.out = 100), classe_age = sort(unique(dat$classe_age)))
+newdata.noregion &lt;- expand.grid(med14_2018 = seq(min(dat$med14_2018), max(dat$med14_2018), length.out = 100), classe_age = sort(unique(dat$classe_age)))
 
 ndt &lt;- newdata
 ndt$prd1D &lt;- predict(mdl1D, newdata = newdata, type = &quot;response&quot;)
@@ -437,46 +490,49 @@ ndt.noregion$prdFin &lt;- predict(mdlFin.noregion, newdata = newdata.noregion, t
 <h2>Plot</h2>
 <pre class="r"><code>marWithDetails &lt;- c(6, 6, 3, 6.75)
 
-textDetails &lt;- &quot;Figure @flodebarre, données trouvées par @humeursdevictor
+textDetails &lt;- &quot;Figure @flodebarre, données vaccination trouvées par @humeursdevictor
 Code: https://github.com/flodebarre/covid_vaccination/blob/main/communes.Rmd
 Données vaccination : https://datavaccin-covid.ameli.fr/explore/dataset/donnees-de-vaccination-par-commune
-Données revenus : https://www.data.gouv.fr/fr/datasets/niveau-de-vie-des-francais-par-commune/&quot;</code></pre>
+Données revenus : https://www.insee.fr/fr/statistiques/5009236?sommaire=5009255#consulter&quot;</code></pre>
+<pre class="r"><code>cexA &lt;- 0.8</code></pre>
 <div id="tous-ages" class="section level3">
 <h3>Tous ages</h3>
 <pre class="r"><code>cla &lt;- &quot;Tout âge&quot;
 par(mar = marWithDetails - c(0, 0, 0, 3), las = 1, mgp = c(1.75, 0.4, 0), tck = -0.02)
 
   subdat &lt;- dat[which(dat$libelle_classe_age == cla), ]
-  plot(subdat$med14, subdat$taux_cumu_1_inj, 
+  plot(subdat$med14_2018, subdat$taux_cumu_1_inj, 
        ylim = c(0, 0.7), 
-       xlab = &quot;Revenu médian dans la commune&quot;, ylab = &quot;Proportion de la population
-ayant reçu au moins une infection&quot;, 
+       xlab = &quot;Revenu médian dans la commune (2018)&quot;, ylab = &quot;Proportion de la population
+ayant reçu au moins une injection&quot;, 
        yaxs = &quot;i&quot;, 
        col = adjustcolor(colRegion[subdat$region], alpha.f = 0.5), 
        pch = pchRegion[subdat$region],
-frame.plot = FALSE)
-  axis(4)
+frame.plot = FALSE, axes = FALSE)
+  axis(1, cex.axis = cexA)
+  axis(2, cex.axis = cexA)
+  axis(4, cex.axis = cexA)
   title(main = &quot;Au moins une injection, tous âges&quot;)
   mtext(textDetails, side = 1, line = 4.5, cex = 0.6, adj = 0, col = gray(0.4))
   legend(&quot;bottomright&quot;, legend = names(colRegion), col = colRegion, pch = pchRegion[names(colRegion)], bty = &quot;n&quot;, title = &quot;Regions&quot;)
   
   
 # Add legends
-x1 &lt;- max(dat$med14)
-d1 &lt;- dat[which(dat$med14 == x1), ]
+x1 &lt;- max(dat$med14_2018)
+d1 &lt;- dat[which(dat$med14_2018 == x1), ]
 
-x2 &lt;- min(dat$med14)
-d2 &lt;- dat[which(dat$med14 == x2), ]
+x2 &lt;- min(dat$med14_2018)
+d2 &lt;- dat[which(dat$med14_2018 == x2), ]
 
-x3 &lt;- 35161
-d3 &lt;- dat[which(dat$med14 == x3), ]
+d3 &lt;- dat[which(dat$med14_2018 &gt;36000 &amp; dat$med14_2018 &lt; 36500), ]
+x3 &lt;- unique(d3$med14_2018)
 
 dy &lt;- 0.01
 text(x = c(x1, x2, x3), 
      y = c(as.numeric(d1[d1$classe_age == &quot;TOUT_AGE&quot;, &quot;taux_cumu_1_inj&quot;]), as.numeric(d2[d2$classe_age == &quot;TOUT_AGE&quot;, &quot;taux_cumu_1_inj&quot;]), as.numeric(d3[d3$classe_age == &quot;TOUT_AGE&quot;, &quot;taux_cumu_1_inj&quot;])) - dy, 
      labels = c(d1[1, &quot;libelle_commune.x&quot;], d2[1, &quot;libelle_commune.x&quot;], d3[1, &quot;libelle_commune.x&quot;]), 
      adj = c(1, 0.5), srt = 90, cex = 0.5)</code></pre>
-<p><img src="communes_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="communes_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 </div>
 <div id="au-moins-une-injection" class="section level3">
 <h3>Au moins une injection</h3>
@@ -488,14 +544,16 @@ lwd.pred &lt;- 1.5
 # Remove all ages
 tmp &lt;- dat[which(dat$classe_age != &quot;TOUT_AGE&quot;),]
 
-plot(tmp$med14, tmp$taux_cumu_1_inj, 
-     xlab = &quot;Revenu médian dans la commune&quot;, ylab = &quot;Proportion de la classe d&#39;âge 
+plot(tmp$med14_2018, tmp$taux_cumu_1_inj, 
+     xlab = &quot;Revenu médian dans la commune (2018)&quot;, ylab = &quot;Proportion de la classe d&#39;âge 
 ayant reçu au moins eu une injection&quot;, 
      yaxs = &quot;i&quot;, frame.plot = FALSE, ylim = c(0, 1),
      type = &quot;n&quot;, axes = FALSE
 )
-axis(1)
-axis(2, pos = 10200)
+axis(1, cex.axis = cexA)
+axis(2, pos = 10200, cex.axis = cexA)
+axis(4, cex.axis = cexA)
+
 par(xpd = FALSE)
 title(main = &quot;Au moins une injection, par classe d&#39;âge&quot;)
 
@@ -511,22 +569,22 @@ cexleg &lt;- 0.6
 colRec &lt;- gray(0.925)
 
 # max
-xmax &lt;- max(dat$med14)
-datmax &lt;- dat[which(dat$med14 == xmax), ]
+xmax &lt;- max(dat$med14_2018)
+datmax &lt;- dat[which(dat$med14_2018 == xmax), ]
 rect(xleft = xmax - dx, xright = xmax + dx,
      ybottom = as.numeric(min(datmax$taux_cumu_1_inj)) - dy, ytop = as.numeric(max(datmax$taux_cumu_1_inj)) + dy, col = colRec, border = gray(0, 0))
 text(x = xmax - dx, y = (as.numeric(max(datmax$taux_cumu_1_inj)) + as.numeric(min(datmax$taux_cumu_1_inj)) )/2, labels = datmax[1, &quot;libelle_commune.x&quot;], cex = cexleg, adj = c(0.5, 0), srt = 90)
 
 # min
-xmin &lt;- min(dat$med14)
-datmin &lt;- dat[which(dat$med14 == xmin), ]
+xmin &lt;- min(dat$med14_2018)
+datmin &lt;- dat[which(dat$med14_2018 == xmin), ]
 rect(xleft = xmin - dx, xright = xmin + dx,
      ybottom = as.numeric(min(datmin$taux_cumu_1_inj)) - dy, ytop = as.numeric(max(datmin$taux_cumu_1_inj)) + dy, col = colRec, border = gray(0, 0))
 text(x = xmin - dx, y = (as.numeric(max(datmin$taux_cumu_1_inj)) + as.numeric(min(datmin$taux_cumu_1_inj)) )/2, labels = datmin[1, &quot;libelle_commune.x&quot;], cex = cexleg, adj = c(0.5, 0), srt = 90)
 
 # Intermediate
-dat3 &lt;- dat[dat$med14&gt;35000 &amp; dat$med14 &lt; 36000,]
-x3 &lt;- unique(dat3$med14)
+dat3 &lt;- dat[dat$med14_2018 == x3,]
+
 rect(xleft = x3 - dx, xright = x3 + dx,
      ybottom = as.numeric(min(dat3$taux_cumu_1_inj)) - dy, ytop = as.numeric(max(dat3$taux_cumu_1_inj)) + dy, col = colRec, border = gray(0, 0))
 text(x = x3 - dx, y = (as.numeric(max(dat3$taux_cumu_1_inj)) + as.numeric(min(dat3$taux_cumu_1_inj)) )/2, labels = dat3[1, &quot;libelle_commune.x&quot;], cex = cexleg, adj = c(0.5, 0), srt = 90)
@@ -535,7 +593,7 @@ mtext(1, line = 4.5, text = textDetails, cex = 0.6, adj = 0, col = gray(0.6))
 
 par(xpd = TRUE)
 
-points(tmp$med14, tmp$taux_cumu_1_inj, 
+points(tmp$med14_2018, tmp$taux_cumu_1_inj, 
      col = adjustcolor(colAge[tmp$libelle_classe_age], alpha.f = alf), 
      pch = pchRegion[tmp$region])
 # Get age classes and sort them by proportion vaccinated for the legend
@@ -543,7 +601,7 @@ mns &lt;- aggregate(as.numeric(dat$taux_cumu_termine), by = list(dat$libelle_cla
 mns2 &lt;- mns[sort(mns$x, index.return = TRUE, decreasing = TRUE)$ix,]
 mns2 &lt;- mns2[mns2$Group.1 != &quot;Tout âge&quot;, ]
 
-legend(x = 1.05*max(tmp$med14), y = 0.5, 
+legend(x = 1.05*max(tmp$med14_2018), y = 0.5, 
        legend = c(mns2$Group.1, names(pchRegion)), 
        col = c(colAge[mns2$Group.1], rep(gray(0.5), 3)), 
        pch = c(rep(NA, nrow(mns2)), pchRegion), 
@@ -554,22 +612,24 @@ for(age in ages[ages!=&quot;Tout âge&quot;]){
   agcl &lt;- dic.ages[age] # Get corresponding age class
   # Get predicted data for this age class (no region)
   subd &lt;- ndt.noregion[ndt.noregion$classe_age == agcl,]
-  lines(subd$med14, subd$prd1D, col = colAge[age], lwd = lwd.pred)
+  lines(subd$med14_2018, subd$prd1D, col = colAge[age], lwd = lwd.pred)
 }</code></pre>
-<p><img src="communes_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><img src="communes_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 </div>
 <div id="vaccination-terminée" class="section level3">
 <h3>Vaccination terminée</h3>
 <pre class="r"><code>par(mar = marWithDetails, las = 1, mgp = c(1.75, 0.4, 0), tck = -0.02)
 
-plot(tmp$med14, tmp$taux_cumu_termine, 
-     xlab = &quot;Revenu médian dans la commune&quot;, ylab = &quot;Proportion de la classe d&#39;âge 
+plot(tmp$med14_2018, tmp$taux_cumu_termine, 
+     xlab = &quot;Revenu médian dans la commune (2018)&quot;, ylab = &quot;Proportion de la classe d&#39;âge 
 dont la vaccination est terminée&quot;, 
      yaxs = &quot;i&quot;, frame.plot = FALSE, ylim = c(0, 1),
      type = &quot;n&quot;, axes = FALSE
 )
-axis(1)
-axis(2, pos = 10200)
+axis(1, cex.axis = cexA)
+axis(2, pos = 10200, cex.axis = cexA)
+axis(4, cex.axis = cexA)
+
 par(xpd = FALSE)
 title(main = &quot;Vaccination terminée, par classe d&#39;âge&quot;)
 
@@ -585,22 +645,22 @@ cexleg &lt;- 0.6
 colRec &lt;- gray(0.925)
 
 # max
-xmax &lt;- max(dat$med14)
-datmax &lt;- dat[which(dat$med14 == xmax), ]
+xmax &lt;- max(dat$med14_2018)
+datmax &lt;- dat[which(dat$med14_2018 == xmax), ]
 rect(xleft = xmax - dx, xright = xmax + dx,
      ybottom = as.numeric(min(datmax$taux_cumu_termine)) - dy, ytop = as.numeric(max(datmax$taux_cumu_termine)) + dy, col = colRec, border = gray(0, 0))
 text(x = xmax - dx, y = (as.numeric(max(datmax$taux_cumu_termine)) + as.numeric(min(datmax$taux_cumu_termine)) )/2, labels = datmax[1, &quot;libelle_commune.x&quot;], cex = cexleg, adj = c(0.5, 0), srt = 90)
 
 # min
-xmin &lt;- min(dat$med14)
-datmin &lt;- dat[which(dat$med14 == xmin), ]
+xmin &lt;- min(dat$med14_2018)
+datmin &lt;- dat[which(dat$med14_2018 == xmin), ]
 rect(xleft = xmin - dx, xright = xmin + dx,
      ybottom = as.numeric(min(datmin$taux_cumu_termine)) - dy, ytop = as.numeric(max(datmin$taux_cumu_termine)) + dy, col = colRec, border = gray(0, 0))
 text(x = xmin - dx, y = (as.numeric(max(datmin$taux_cumu_termine)) + as.numeric(min(datmin$taux_cumu_termine)) )/2, labels = datmin[1, &quot;libelle_commune.x&quot;], cex = cexleg, adj = c(0.5, 0), srt = 90)
 
 # Intermediate
-dat3 &lt;- dat[dat$med14&gt;35000 &amp; dat$med14 &lt; 36000,]
-x3 &lt;- unique(dat3$med14)
+dat3 &lt;- dat[dat$med14_2018 == x3,]
+
 rect(xleft = x3 - dx, xright = x3 + dx,
      ybottom = as.numeric(min(dat3$taux_cumu_termine)) - dy, ytop = as.numeric(max(dat3$taux_cumu_termine)) + dy, col = colRec, border = gray(0, 0))
 text(x = x3 - dx, y = (as.numeric(max(dat3$taux_cumu_termine)) + as.numeric(min(dat3$taux_cumu_termine)) )/2, labels = dat3[1, &quot;libelle_commune.x&quot;], cex = cexleg, adj = c(0.5, 0), srt = 90)
@@ -609,7 +669,7 @@ mtext(1, line = 4.5, text = textDetails, cex = 0.6, adj = 0, col = gray(0.6))
 
 par(xpd = TRUE)
 
-points(tmp$med14, tmp$taux_cumu_termine, 
+points(tmp$med14_2018, tmp$taux_cumu_termine, 
      col = adjustcolor(colAge[tmp$libelle_classe_age], alpha.f = alf), 
      pch = pchRegion[tmp$region])
 # Get age classes and sort them by proportion vaccinated for the legend
@@ -617,7 +677,7 @@ mns &lt;- aggregate(as.numeric(dat$taux_cumu_termine), by = list(dat$libelle_cla
 mns2 &lt;- mns[sort(mns$x, index.return = TRUE, decreasing = TRUE)$ix,]
 mns2 &lt;- mns2[mns2$Group.1 != &quot;Tout âge&quot;, ]
 
-legend(x = 1.05*max(tmp$med14), y = 0.5, 
+legend(x = 1.05*max(tmp$med14_2018), y = 0.5, 
        legend = c(mns2$Group.1, names(pchRegion)), 
        col = c(colAge[mns2$Group.1], rep(gray(0.5), 3)), 
        pch = c(rep(NA, nrow(mns2)), pchRegion), 
@@ -630,9 +690,9 @@ for(age in ages[ages!=&quot;Tout âge&quot;]){
   agcl &lt;- dic.ages[age] # Get corresponding age class
   # Get predicted data for this age class (no region)
   subd &lt;- ndt.noregion[ndt.noregion$classe_age == agcl,]
-  lines(subd$med14, subd$prdFin, col = colAge[age], lwd = lwd.pred)
+  lines(subd$med14_2018, subd$prdFin, col = colAge[age], lwd = lwd.pred)
 }</code></pre>
-<p><img src="communes_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><img src="communes_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 </div>
 </div>
 </div>
@@ -667,13 +727,13 @@ unique(dat.all.time$taux_cumu_1_inj)
 dat$classe_age &lt;- as.factor(dat$classe_age)
 dat$region &lt;- as.factor(dat$region)
 
-mdl1D &lt;- glm(formula = cbind(effectif_cumu_1_inj, population_carto - effectif_cumu_1_inj) ~ time + med14 + classe_age + med14*time + classe_age*time + region + region*time, data = dat, family = binomial(link = &quot;logit&quot;))
+mdl1D &lt;- glm(formula = cbind(effectif_cumu_1_inj, population_carto - effectif_cumu_1_inj) ~ time + med14_2018 + classe_age + med14_2018*time + classe_age*time + region + region*time, data = dat, family = binomial(link = &quot;logit&quot;))
 
-mdl1D.2 &lt;- glm(formula = cbind(effectif_cumu_1_inj, population_carto - effectif_cumu_1_inj) ~ time + med14 + classe_age + med14*time + classe_age*time, data = dat, family = binomial(link = &quot;logit&quot;))
+mdl1D.2 &lt;- glm(formula = cbind(effectif_cumu_1_inj, population_carto - effectif_cumu_1_inj) ~ time + med14_2018 + classe_age + med14_2018*time + classe_age*time, data = dat, family = binomial(link = &quot;logit&quot;))
 
-mdlFin &lt;- glm(formula = cbind(effectif_cumu_termine, population_carto - effectif_cumu_termine) ~ time + med14 + classe_age + med14*time + classe_age*time + region + region*time, data = dat, family = binomial(link = &quot;logit&quot;))
+mdlFin &lt;- glm(formula = cbind(effectif_cumu_termine, population_carto - effectif_cumu_termine) ~ time + med14_2018 + classe_age + med14_2018*time + classe_age*time + region + region*time, data = dat, family = binomial(link = &quot;logit&quot;))
 
-mdlFin.2 &lt;- glm(formula = cbind(effectif_cumu_termine, population_carto - effectif_cumu_termine) ~ time + med14 + classe_age + med14*time + classe_age*time, data = dat, family = binomial(link = &quot;logit&quot;))
+mdlFin.2 &lt;- glm(formula = cbind(effectif_cumu_termine, population_carto - effectif_cumu_termine) ~ time + med14_2018 + classe_age + med14_2018*time + classe_age*time, data = dat, family = binomial(link = &quot;logit&quot;))
 
 summary(mdl1D)
 summary(mdlFin)
@@ -693,7 +753,7 @@ dat$pred1D.response.se.lower &lt;- lgt(dat$pred1D - 1.96 * dat$se1D)
 #with(preddat, lines(0:1000, exp(fit-1.96*se.fit)/(1+exp(fit-1.96*se.fit)), lty=2))
 
 
-newdata &lt;- expand.grid(med14 = seq(min(dat$med14), max(dat$med14), length.out = 100), classe_age = sort(unique(dat$classe_age)), time = seq(min(dat$time), max(dat$time), length.out = 11))
+newdata &lt;- expand.grid(med14_2018 = seq(min(dat$med14_2018), max(dat$med14_2018), length.out = 100), classe_age = sort(unique(dat$classe_age)), time = seq(min(dat$time), max(dat$time), length.out = 11))
 nrow(newdata)
 
 prd1D &lt;- predict(mdl1D.2, newdata = newdata, type = &quot;response&quot;)
@@ -709,7 +769,7 @@ unique(dat$libelle_classe_age)</code></pre>
 <pre class="r"><code>dat.final &lt;- dat[which(dat$time == max(dat$time)),]
 
 tmp &lt;- dat.final[which(dat.final$classe_age != &quot;TOUT_AGE&quot;),]
-plot(tmp$med14, tmp$taux_cumu_1_inj)
+plot(tmp$med14_2018, tmp$taux_cumu_1_inj)
 
 mns &lt;- aggregate(as.numeric(dat.final$taux_cumu_termine), by = list(dat.final$libelle_classe_age), FUN = mean, na.rm = TRUE)
 mns2 &lt;- mns[sort(mns$x, index.return = TRUE, decreasing = TRUE)$ix,]
@@ -719,15 +779,15 @@ mns2 &lt;- mns2[mns2$Group.1 != &quot;Tout âge&quot;, ]
 par(mar = c(4, 3, 2, 6), las = 1)
 alf &lt;- 0.5
 
-plot(tmp$med14, tmp$taux_cumu_1_inj, col = adjustcolor(colAge[tmp$libelle_classe_age], alpha.f = alf), 
+plot(tmp$med14_2018, tmp$taux_cumu_1_inj, col = adjustcolor(colAge[tmp$libelle_classe_age], alpha.f = alf), 
      xlab = xlb, ylab = &quot;Proportion vaccination terminée&quot;, pch = 16, yaxs = &quot;i&quot;, frame.plot = FALSE, ylim = c(0, 1))
 par(xpd = TRUE)
-legend(x = 1.03*max(tmp$med14), y = 1, legend = mns2$Group.1, col = adjustcolor(colAge[mns2$Group.1], alpha.f = alf), pch = 16, bty = &quot;n&quot;, cex = 0.7, pt.cex = 1, xjust = 0)
+legend(x = 1.03*max(tmp$med14_2018), y = 1, legend = mns2$Group.1, col = adjustcolor(colAge[mns2$Group.1], alpha.f = alf), pch = 16, bty = &quot;n&quot;, cex = 0.7, pt.cex = 1, xjust = 0)
 
 for(age in ages[ages!=&quot;Tout âge&quot;]){
   agcl &lt;- dic.ages[age]
   subd &lt;- ndt[ndt$classe_age == agcl,]
-  lines(subd$med14, subd$pred1D, col = colAge[age], lwd = 2)
+  lines(subd$med14_2018, subd$pred1D, col = colAge[age], lwd = 2)
 }
 
 tmp[1,]
@@ -752,9 +812,9 @@ Données revenus : https://www.data.gouv.fr/fr/datasets/niveau-de-vie-des-franca
 <pre class="r"><code>par(mar = c(5, 4, 3, 3), las = 1, mgp = c(1.75, 0.4, 0), tck = -0.02)
 for(cla in unique(dat.all$libelle_classe_age)){
   subdat &lt;- dat.all[which(dat.all$libelle_classe_age == cla), ]
-  plot(subdat$med14, subdat$taux_cumu_1_inj, 
+  plot(subdat$med14_2018, subdat$taux_cumu_1_inj, 
        ylim = c(0, 1), 
-       xlab = &quot;Revenu MED14&quot;, ylab = &quot;Proportion 1ere injection&quot;, 
+       xlab = &quot;Revenu med14_2018&quot;, ylab = &quot;Proportion 1ere injection&quot;, 
        yaxs = &quot;i&quot;, pch = 16, col = adjustcolor(colRegion[subdat$region], alpha.f = 0.5), frame.plot = FALSE)
   axis(4)
   title(main = cla)
@@ -762,26 +822,51 @@ for(cla in unique(dat.all$libelle_classe_age)){
 Données vaccination : https://datavaccin-covid.ameli.fr/explore/dataset/donnees-de-vaccination-par-commune
 Données revenus : https://www.data.gouv.fr/fr/datasets/niveau-de-vie-des-francais-par-commune/&quot;, side = 1, line = 4, cex = 0.6, adj = 0, col = gray(0.4))
 }</code></pre>
+</div>
+<div id="plotly-interactive-figures" class="section level1">
+<h1>Plotly – interactive figures</h1>
 <pre class="r"><code>#install.packages(&quot;plotly&quot;)
-library(plotly)
+library(plotly)</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## 
+## Attaching package: &#39;plotly&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     last_plot</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter</code></pre>
+<pre><code>## The following object is masked from &#39;package:graphics&#39;:
+## 
+##     layout</code></pre>
+<p>Comparaison revenus 2014 et 2018</p>
+<pre class="r"><code>dat.all$med14_relDiff &lt;- (dat.all$med14_2018 - dat.all$med14_2014) / dat.all$med14_2014
 
-#for(cla in unique(dat.all$libelle_classe_age)){
-cla &lt;- &quot;Tout âge&quot;
-  subdat &lt;- dat.all[which(dat.all$libelle_classe_age == cla), ]
+hist(dat.all$med14_relDiff, xlab = &quot;
+Relative difference between 
+2018 and 2014 median income by commune&quot;, main = &quot;income evolution&quot;)</code></pre>
+<p><img src="communes_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<pre class="r"><code>plot_ly(dat.all, x = ~med14_2014, y = ~med14_relDiff, text = ~paste(commune_residence, libelle_commune.x), type = &quot;scatter&quot;, mode = &quot;markers&quot;)</code></pre>
+<pre class="r"><code>cla &lt;- &quot;Tout âge&quot;
+subdat &lt;- dat.all[which(dat.all$libelle_classe_age == cla), ]
 
-fig &lt;- plot_ly(subdat, x = ~med14, y = ~taux_cumu_1_inj, type = &#39;scatter&#39;, mode = &#39;markers&#39;,
+fig &lt;- plot_ly(subdat, x = ~med14_2018, y = ~as.numeric(taux_cumu_1_inj), type = &#39;scatter&#39;, mode = &#39;markers&#39;,
+        color = ~region,
+        symbol = ~region,
         hoverinfo = &#39;text&#39;,
-        text = ~paste(commune_residence, libelle_commune.x)) %&gt;% layout(yaxis = list(title = &quot;Proportion 1ere injection&quot;), xaxis = list(title = &quot;Revenu median&quot;))
+        text = ~paste(commune_residence, libelle_commune.x)) %&gt;% layout(yaxis = list(title = &quot;Proportion 1ere injection&quot;), xaxis = list(title = &quot;Revenu median dans la commune (2018)&quot;))
 fig
-fig2 &lt;- fig %&gt;% layout(yaxis = list(range = c(0, 1000), title = &quot;Proportion 1ere injection&quot;))
-
-fig2
-
-readline(prompt=&quot;Press [enter] to continue&quot;)
-
-
-}
-fig</code></pre>
+fig2 &lt;- fig %&gt;% layout(yaxis = list(range = c(0, 0.75), title = &quot;Proportion 1ere injection&quot;))
+fig2</code></pre>
+<pre class="r"><code># Vaccination terminee
+fig &lt;- plot_ly(subdat, x = ~med14_2018, y = ~as.numeric(taux_cumu_termine), type = &#39;scatter&#39;, mode = &#39;markers&#39;,
+        color = ~region,
+        symbol = ~region,
+        hoverinfo = &#39;text&#39;,
+        text = ~paste(commune_residence, libelle_commune.x)) %&gt;% layout(yaxis = list(title = &quot;Proportion vaccination terminée&quot;), xaxis = list(title = &quot;Revenu median dans la commune (2018)&quot;))
+fig
+fig2 &lt;- fig %&gt;% layout(yaxis = list(range = c(0, 0.75)))
+fig2</code></pre>
 </div>
 
 
