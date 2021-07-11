@@ -488,34 +488,57 @@ ndt.noregion$prdFin &lt;- predict(mdlFin.noregion, newdata = newdata.noregion, t
 </div>
 <div id="plot" class="section level2">
 <h2>Plot</h2>
-<pre class="r"><code>marWithDetails &lt;- c(6, 6, 3, 6.75)
+<pre class="r"><code>marWithDetails &lt;- c(6, 4.5, 3, 8)
 
 textDetails &lt;- &quot;Figure @flodebarre, données vaccination trouvées par @humeursdevictor
 Code: https://github.com/flodebarre/covid_vaccination/blob/main/communes.Rmd
 Données vaccination : https://datavaccin-covid.ameli.fr/explore/dataset/donnees-de-vaccination-par-commune
 Données revenus : https://www.insee.fr/fr/statistiques/5009236?sommaire=5009255#consulter&quot;</code></pre>
-<pre class="r"><code>cexA &lt;- 0.8</code></pre>
+<pre class="r"><code>cexA &lt;- 0.7 # Relative size of the tick labels
+
+thetck &lt;- -0.015 # tick size
+
+themgp &lt;- c(1.8, 0.4, 0) # mgp
+
+legx &lt;- 1.08*max(dat$med14_2018) # x position of the legend
+
+legy &lt;- 0.5
+
+cexleg &lt;- 0.7
+
+axpos &lt;- 0.99*min(dat$med14_2018) # xposition of the left axis</code></pre>
 <div id="tous-ages" class="section level3">
 <h3>Tous ages</h3>
 <pre class="r"><code>cla &lt;- &quot;Tout âge&quot;
-par(mar = marWithDetails - c(0, 0, 0, 3), las = 1, mgp = c(1.75, 0.4, 0), tck = -0.02)
+par(mar = marWithDetails, las = 1, mgp = themgp, tck = thetck)
 
-  subdat &lt;- dat[which(dat$libelle_classe_age == cla), ]
-  plot(subdat$med14_2018, subdat$taux_cumu_1_inj, 
-       ylim = c(0, 0.7), 
+subdat &lt;- dat[which(dat$libelle_classe_age == cla), ]
+
+# initialize plot
+plot(subdat$med14_2018, subdat$taux_cumu_1_inj, 
+       ylim = c(0, 1), 
        xlab = &quot;Revenu médian dans la commune (2018)&quot;, ylab = &quot;Proportion de la population
 ayant reçu au moins une injection&quot;, 
        yaxs = &quot;i&quot;, 
-       col = adjustcolor(colRegion[subdat$region], alpha.f = 0.5), 
-       pch = pchRegion[subdat$region],
-frame.plot = FALSE, axes = FALSE)
+frame.plot = FALSE, axes = FALSE, 
+type = &quot;n&quot;)
   axis(1, cex.axis = cexA)
   axis(2, cex.axis = cexA)
   axis(4, cex.axis = cexA)
   title(main = &quot;Au moins une injection, tous âges&quot;)
-  mtext(textDetails, side = 1, line = 4.5, cex = 0.6, adj = 0, col = gray(0.4))
-  legend(&quot;bottomright&quot;, legend = names(colRegion), col = colRegion, pch = pchRegion[names(colRegion)], bty = &quot;n&quot;, title = &quot;Regions&quot;)
+  mtext(textDetails, side = 1, line = 4.5, cex = 0.6, adj = 0, col = gray(0.6))
+par(xpd = FALSE)  
+for(i in seq(0, 1, by = 0.1)){
+  abline(h = i, lwd = 0.5, col = gray(0.8))
+}
   
+points(subdat$med14_2018, subdat$taux_cumu_1_inj, 
+              col = adjustcolor(colRegion[subdat$region], alpha.f = 0.5), 
+       pch = pchRegion[subdat$region],
+)
+  
+par(xpd = TRUE)
+legend(x = legx, y = legy, legend = names(colRegion), col = colRegion, pch = pchRegion[names(colRegion)], bty = &quot;n&quot;, title = &quot;Regions&quot;, xjust = 0, yjust = 0.5, cex = cexleg, pt.cex = 1)
   
 # Add legends
 x1 &lt;- max(dat$med14_2018)
@@ -529,15 +552,16 @@ x3 &lt;- unique(d3$med14_2018)
 
 dy &lt;- 0.01
 text(x = c(x1, x2, x3), 
-     y = c(as.numeric(d1[d1$classe_age == &quot;TOUT_AGE&quot;, &quot;taux_cumu_1_inj&quot;]), as.numeric(d2[d2$classe_age == &quot;TOUT_AGE&quot;, &quot;taux_cumu_1_inj&quot;]), as.numeric(d3[d3$classe_age == &quot;TOUT_AGE&quot;, &quot;taux_cumu_1_inj&quot;])) - dy, 
+     y = c(as.numeric(d1[d1$classe_age == &quot;TOUT_AGE&quot;, &quot;taux_cumu_1_inj&quot;]), as.numeric(d2[d2$classe_age == &quot;TOUT_AGE&quot;, &quot;taux_cumu_1_inj&quot;]), as.numeric(d3[d3$classe_age == &quot;TOUT_AGE&quot;, &quot;taux_cumu_1_inj&quot;])) + dy, 
      labels = c(d1[1, &quot;libelle_commune.x&quot;], d2[1, &quot;libelle_commune.x&quot;], d3[1, &quot;libelle_commune.x&quot;]), 
-     adj = c(1, 0.5), srt = 90, cex = 0.5)</code></pre>
+     adj = c(0, 0.5), srt = 90, cex = 0.5)</code></pre>
 <p><img src="communes_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<pre class="r"><code>par(xpd = FALSE)  </code></pre>
 </div>
 <div id="au-moins-une-injection" class="section level3">
 <h3>Au moins une injection</h3>
 <p>(Pour faire les choses proprement il faudrait une boucle)</p>
-<pre class="r"><code>par(mar = marWithDetails, las = 1, mgp = c(1.75, 0.4, 0), tck = -0.02)
+<pre class="r"><code>par(mar = marWithDetails, las = 1, mgp = themgp, tck = thetck)
 alf &lt;- 0.4
 lwd.pred &lt;- 1.5
 
@@ -546,16 +570,17 @@ tmp &lt;- dat[which(dat$classe_age != &quot;TOUT_AGE&quot;),]
 
 plot(tmp$med14_2018, tmp$taux_cumu_1_inj, 
      xlab = &quot;Revenu médian dans la commune (2018)&quot;, ylab = &quot;Proportion de la classe d&#39;âge 
-ayant reçu au moins eu une injection&quot;, 
+ayant reçu au moins une injection&quot;, 
      yaxs = &quot;i&quot;, frame.plot = FALSE, ylim = c(0, 1),
      type = &quot;n&quot;, axes = FALSE
 )
 axis(1, cex.axis = cexA)
-axis(2, pos = 10200, cex.axis = cexA)
+axis(2, cex.axis = cexA)
 axis(4, cex.axis = cexA)
 
-par(xpd = FALSE)
 title(main = &quot;Au moins une injection, par classe d&#39;âge&quot;)
+
+par(xpd = FALSE)
 
 for(i in seq(0, 1, by = 0.1)){
   abline(h = i, lwd = 0.5, col = gray(0.8))
@@ -601,12 +626,13 @@ mns &lt;- aggregate(as.numeric(dat$taux_cumu_termine), by = list(dat$libelle_cla
 mns2 &lt;- mns[sort(mns$x, index.return = TRUE, decreasing = TRUE)$ix,]
 mns2 &lt;- mns2[mns2$Group.1 != &quot;Tout âge&quot;, ]
 
-legend(x = 1.05*max(tmp$med14_2018), y = 0.5, 
+# Legend
+legend(x = legx, y = legx, 
        legend = c(mns2$Group.1, names(pchRegion)), 
        col = c(colAge[mns2$Group.1], rep(gray(0.5), 3)), 
        pch = c(rep(NA, nrow(mns2)), pchRegion), 
        lwd = c(rep(lwd.pred, nrow(mns2)), rep(0, length(pchRegion))), 
-       bty = &quot;n&quot;, cex = 0.7, pt.cex = 1, xjust = 0, yjust = 0.5)
+       bty = &quot;n&quot;, cex = cexleg, pt.cex = 1, xjust = 0, yjust = 0.5)
 
 for(age in ages[ages!=&quot;Tout âge&quot;]){
   agcl &lt;- dic.ages[age] # Get corresponding age class
@@ -618,7 +644,7 @@ for(age in ages[ages!=&quot;Tout âge&quot;]){
 </div>
 <div id="vaccination-terminée" class="section level3">
 <h3>Vaccination terminée</h3>
-<pre class="r"><code>par(mar = marWithDetails, las = 1, mgp = c(1.75, 0.4, 0), tck = -0.02)
+<pre class="r"><code>par(mar = marWithDetails, las = 1, mgp = themgp, tck = thetck)
 
 plot(tmp$med14_2018, tmp$taux_cumu_termine, 
      xlab = &quot;Revenu médian dans la commune (2018)&quot;, ylab = &quot;Proportion de la classe d&#39;âge 
@@ -627,7 +653,7 @@ dont la vaccination est terminée&quot;,
      type = &quot;n&quot;, axes = FALSE
 )
 axis(1, cex.axis = cexA)
-axis(2, pos = 10200, cex.axis = cexA)
+axis(2, cex.axis = cexA)
 axis(4, cex.axis = cexA)
 
 par(xpd = FALSE)
@@ -677,12 +703,12 @@ mns &lt;- aggregate(as.numeric(dat$taux_cumu_termine), by = list(dat$libelle_cla
 mns2 &lt;- mns[sort(mns$x, index.return = TRUE, decreasing = TRUE)$ix,]
 mns2 &lt;- mns2[mns2$Group.1 != &quot;Tout âge&quot;, ]
 
-legend(x = 1.05*max(tmp$med14_2018), y = 0.5, 
+legend(x = 1.08*max(tmp$med14_2018), y = 0.5, 
        legend = c(mns2$Group.1, names(pchRegion)), 
        col = c(colAge[mns2$Group.1], rep(gray(0.5), 3)), 
        pch = c(rep(NA, nrow(mns2)), pchRegion), 
        lwd = c(rep(lwd.pred, nrow(mns2)), rep(0, length(pchRegion))), 
-       bty = &quot;n&quot;, cex = 0.7, pt.cex = 1, xjust = 0, yjust = 0.5)
+       bty = &quot;n&quot;, cex = cexleg, pt.cex = 1, xjust = 0, yjust = 0.5)
 
 
 
