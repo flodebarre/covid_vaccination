@@ -60,6 +60,7 @@ head(dat.injection)
 ```{r, results = 'hide'}
 # Departement as numeric
 unique(dat.residence$departement_residence)
+dat.residence$dep_res <- dat.residence$departement_residence
 dat.residence[which(is.element(dat.residence$departement_residence, c("2A", "2B"))), "departement_residence"] <- "20" # Corse 
 
 dat.residence[which(is.element(dat.residence$departement_residence, c("Tout département"))), "departement_residence"] <- NA # Redundant
@@ -156,13 +157,25 @@ sum(final.both$diffInjRes.1D) # NB not the same as before because more geog info
 
 Plot differences per departement 
 ```{r}
-filename <- "injections-residents.png"
+relatif <- TRUE
+
+if(relatif){
+  txt <- "relative"
+}else{
+  txt <- ""
+}
+
+filename <- paste0("injections-residents", txt,".png")
 png(filename = filename, width = 1600, height = 500, res = 100, pointsize = 12)
 
 par(xpd = FALSE)
 # Column to be plotted
-# thecol <- "diffInjRes.1D"
-thecol <- "reldiffInjRes.1D"
+if(relatif){
+  thecol <- "reldiffInjRes.1D"
+}else{
+  thecol <- "diffInjRes.1D"
+}
+
 # Sort data by this columns
 tmp <- final.both[order(final.both[, thecol], decreasing = TRUE), ]
 # Number of different departments
@@ -183,9 +196,9 @@ y0 <- 2.5*min(tmpp) # y position of the point (broken y axis)
 plot(tmp[-n, thecol], xlim = c(1, x0), ylim = c(y0, ymax), axes = FALSE, 
      xlab = "", ylab = "", 
      type = "n")
-mtext("Différence relative", side = 2, las = 3, line = 3)
-mtext("Différence relative entre nombre d'injections dans le département
-et nombre de personnes vaccinées habitant le département")
+mtext(paste0("Différence ", txt), side = 2, las = 3, line = 3)
+mtext(paste0("Différence ", txt, " entre nombre d'injections dans le département
+et nombre de personnes vaccinées habitant le département"))
 axis(2)
 usr <- par("usr")
 
@@ -230,6 +243,10 @@ text(x = c(1 + xposneg/2, xposneg + (x0 - xposneg)/2), y = 0.65*c(usr[4], usr[3]
 
 dev.off()
 system(paste("open", filename))
+```
 
+# Export
+```{r}
+save(final.both, file = paste0("data/outputComparisonDeps_finalCommonDate.Rdata"))
 ```
 
