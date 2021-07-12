@@ -46,6 +46,7 @@ library(viridis)
 
 fra.merged <- merge(fra, final.both, by.x = "CC_2", by.y = "departement_residence")
 
+# Bin data
 fra.merged$tmp <- as.factor(1*(fra.merged$diffInjRes.1D < -100000) + 1*(fra.merged$diffInjRes.1D < -50000) + 1*(fra.merged$diffInjRes.1D < -20000) + 1*(fra.merged$diffInjRes.1D < 20000) + 1*(fra.merged$diffInjRes.1D < 50000) + 1*(fra.merged$diffInjRes.1D < 100000) + 1*(fra.merged$diffInjRes.1D < 200000))
 
 fra.merged$tmp 
