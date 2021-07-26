@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="FD" />
+
+
+<title>Livraisons - vaccination</title>
+
+<script src="livraisons_files/header-attrs-2.7/header-attrs.js"></script>
+<script src="livraisons_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="livraisons_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="livraisons_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="livraisons_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="livraisons_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="livraisons_files/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="livraisons_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="livraisons_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="livraisons_files/navigation-1.1/tabsets.js"></script>
+<script src="livraisons_files/navigation-1.1/codefolding.js"></script>
+<link href="livraisons_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="livraisons_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-sm-12 col-md-4 col-lg-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-sm-12 col-md-8 col-lg-9">
+
+
+
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Livraisons - vaccination</h1>
+<h4 class="author">FD</h4>
+
+</div>
+
+
+<div id="initializations" class="section level1">
+<h1>Initializations</h1>
+</div>
+<div id="load-data-and-clean-data" class="section level1">
+<h1>Load data and clean data</h1>
+<div id="livraisons" class="section level2">
+<h2>Livraisons</h2>
+<p>Source <a href="https://www.data.gouv.fr/en/datasets/donnees-relatives-aux-livraisons-de-vaccins-contre-la-covid-19/" class="uri">https://www.data.gouv.fr/en/datasets/donnees-relatives-aux-livraisons-de-vaccins-contre-la-covid-19/</a></p>
+<pre class="r"><code>URL_livraisons &lt;- &quot;https://www.data.gouv.fr/en/datasets/r/c04da7da-be58-450e-bf3e-5993ce7796d9&quot;
+
+dataFile &lt;- &quot;data/livraisons.csv&quot;
+if(dlData){
+  download.file(URL_livraisons, dataFile)
+}
+dat.livraisons &lt;- read.csv(dataFile, stringsAsFactors = FALSE)
+head(dat.livraisons)
+
+dat.livraisons</code></pre>
+<pre class="r"><code>unique(dat.livraisons$type_de_vaccin)
+
+dat.livraisons.AZ &lt;- dat.livraisons[dat.livraisons$type_de_vaccin == &quot;AstraZeneca&quot;, ]
+dat.livraisons.Js &lt;- dat.livraisons[dat.livraisons$type_de_vaccin == &quot;Janssen&quot;, ]
+dat.livraisons.Md &lt;- dat.livraisons[dat.livraisons$type_de_vaccin == &quot;Moderna&quot;, ]
+dat.livraisons.Pz &lt;- dat.livraisons[dat.livraisons$type_de_vaccin == &quot;Pfizer&quot;, ]
+
+plot(as.Date(dat.livraisons.Pz$date_fin_semaine), dat.livraisons.Pz$nb_doses, type = &quot;h&quot;, frame.plot = FALSE, 
+     xlab = &quot;Date fin de semaine&quot;, ylab = &quot;Nb doses&quot;, 
+     main = &quot;Quality check&quot;)
+points(as.Date(dat.livraisons.AZ$date_fin_semaine), dat.livraisons.AZ$nb_doses, col = 2)
+points(as.Date(dat.livraisons.Js$date_fin_semaine), dat.livraisons.Js$nb_doses, col = 3)
+points(as.Date(dat.livraisons.Md$date_fin_semaine), dat.livraisons.Md$nb_doses, col = 4)
+
+
+names(dat.livraisons.AZ)[2:4] &lt;- c(&quot;typeAZ&quot;, &quot;nb_ucd_AZ&quot;, &quot;nb_doses_AZ&quot;)
+names(dat.livraisons.Js)[2:4] &lt;- c(&quot;typeJs&quot;, &quot;nb_ucd_Js&quot;, &quot;nb_doses_Js&quot;)
+names(dat.livraisons.Md)[2:4] &lt;- c(&quot;typeMd&quot;, &quot;nb_ucd_Md&quot;, &quot;nb_doses_Md&quot;)
+names(dat.livraisons.Pz)[2:4] &lt;- c(&quot;typePz&quot;, &quot;nb_ucd_Pz&quot;, &quot;nb_doses_Pz&quot;)
+
+alltimes &lt;- data.frame(&quot;date_fin_semaine&quot; = sort(unique(dat.livraisons$date_fin_semaine)))
+
+newdat &lt;- data.frame(matrix(0, ncol = 4, nrow = 1))
+names(newdat) &lt;- names(dat.livraisons)
+
+for(tv in unique(dat.livraisons$type_de_vaccin)){
+  print(tv)
+  subdat &lt;- dat.livraisons[dat.livraisons$type_de_vaccin == tv, ]
+  subdat &lt;- merge(alltimes, subdat, all = TRUE, by = &quot;date_fin_semaine&quot;)
+  subdat$type_de_vaccin &lt;- tv
+  # Find first 
+  firstNonNA &lt;- which(!is.na(subdat$nb_ucd))[1]
+  if(firstNonNA &gt; 1){
+    subdat[1:(firstNonNA - 1), c(&quot;nb_ucd&quot;, &quot;nb_doses&quot;)] &lt;- 0
+  }
+  
+  # Then loop on the lines -- maybe there&#39;s a more elegant way, but we have small enough datasets not to think this too hard
+  for(iline in firstNonNA:nrow(subdat)){
+    # If NA on the line, use value of the previous line
+    if(is.na(subdat[iline, &quot;nb_ucd&quot;])){
+      subdat[iline, c(&quot;nb_ucd&quot;, &quot;nb_doses&quot;)] &lt;- subdat[iline - 1, c(&quot;nb_ucd&quot;, &quot;nb_doses&quot;)]
+    }
+  }
+  print(subdat)
+  newdat &lt;- rbind(newdat, subdat)
+}
+# Remove first line put to create the dataframe
+newdat &lt;- newdat[-1, ]
+
+dat.livraisons2 &lt;- newdat
+
+# Quality check
+cols &lt;- 1:4
+names(cols) &lt;- unique(dat.livraisons$type_de_vaccin)
+points(as.Date(dat.livraisons2$date_fin_semaine), 
+     dat.livraisons2$nb_doses, 
+     col = cols[dat.livraisons2$type_de_vaccin], pch = 4)</code></pre>
+<pre class="r"><code>doses.livraisons.total &lt;- aggregate(dat.livraisons2$nb_doses, by = list(&quot;date_fin_semaine&quot; = dat.livraisons2$date_fin_semaine), FUN = sum)
+
+names(doses.livraisons.total)[2] &lt;- &quot;nb_doses&quot;</code></pre>
+</div>
+<div id="personnes-vaccinees" class="section level2">
+<h2>Personnes vaccinees</h2>
+<p>Source <a href="https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/" class="uri">https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/</a></p>
+<blockquote>
+<p>Fichiers avec le nombre de personnes ayant reçu au moins une dose ou deux doses, par vaccin, arrêté à la dernière date disponible :</p>
+<p>vacsi-tot-v-fra-YYYY-MM-DD-HHhmm.csv (échelle nationale)</p>
+<p>Fichiers avec le nombre de personnes ayant reçu au moins une dose ou complètement vaccinées, arrêté à la dernière date disponible :</p>
+<p>vacsi-tot-fra-YYYY-MM-DD-HHhmm.csv (échelle nationale)</p>
+<p>0 : Tous vaccins<br />
+1 : COMIRNATY Pfizer/BioNTech<br />
+2 : Moderna<br />
+3 : AstraZeneka<br />
+4 : Janssen</p>
+</blockquote>
+<pre class="r"><code>URL_v12 &lt;- &quot;https://www.data.gouv.fr/fr/datasets/r/b273cf3b-e9de-437c-af55-eda5979e92fc&quot;
+
+dataFile &lt;- &quot;data/vaccin_12doses.csv&quot;
+if(dlData){
+  download.file(URL_v12, dataFile)
+}
+dat.vaccin12 &lt;- read.csv(dataFile, stringsAsFactors = FALSE, sep = &quot;;&quot;)
+head(dat.vaccin12)
+
+dat.vaccins &lt;- dat.vaccin12[which(dat.vaccin12$vaccin != 0), ]
+
+dic.typeVaccin &lt;- c(&quot;Pfizer&quot;, &quot;Moderna&quot;, &quot;AstraZeneca&quot;, &quot;Janssen&quot;)
+names(dic.typeVaccin) &lt;- as.character(1:4)
+dat.vaccins$typeVaccin &lt;- dic.typeVaccin[dat.vaccins$vaccin]
+
+# Subselect tous vaccins
+dat.vaccin12 &lt;- dat.vaccin12[which(dat.vaccin12$vaccin == 0), ]
+
+# Number of doses
+dat.vaccin12$n_doses &lt;- dat.vaccin12$n_dose1 + dat.vaccin12$n_dose2
+
+dat.vaccin12$n_cum_doses &lt;- cumsum(dat.vaccin12$n_doses)</code></pre>
+<pre class="r"><code># This is actually not needed, but I am keeping it for legacy
+URL_v1c &lt;- &quot;https://www.data.gouv.fr/fr/datasets/r/efe23314-67c4-45d3-89a2-3faef82fae90&quot;
+
+dataFile &lt;- &quot;data/vaccin_1cdoses.csv&quot;
+if(dlData){
+  download.file(URL_v1c, dataFile)
+}
+dat.vaccin1c &lt;- read.csv(dataFile, stringsAsFactors = FALSE, sep = &quot;;&quot;)
+head(dat.vaccin1c)</code></pre>
+<pre class="r"><code>par(las = 1)
+plot(as.Date(dat.vaccin12$jour), dat.vaccin12$n_cum_dose1, type = &quot;l&quot;, 
+     xlab = &quot;date&quot;, ylab = &quot;number individuals&quot;)
+
+lines(as.Date(dat.vaccin12$jour), dat.vaccin12$n_cum_dose2, type = &quot;l&quot;, col = 2)
+
+lines(as.Date(dat.vaccin1c$jour), dat.vaccin1c$n_cum_dose1, type = &quot;l&quot;, col = 3, lty = 2)
+
+lines(as.Date(dat.vaccin1c$jour), dat.vaccin1c$n_cum_complet, type = &quot;l&quot;, col = 4, lty = 1)
+
+legend(&quot;topleft&quot;, col = c(1, 2, 3, 4), lty = c(1, 1, 2, 1), legend = c(&quot;1 dose au moins&quot;, &quot;2 doses&quot;, &quot;1 dose au moins&quot;, &quot;complet&quot;), bty = &quot;n&quot;)</code></pre>
+<p>We can deduce the number of people with complete vaccination after one dose (dose1_complet) and one dose and incomplete vaccination (but actually we do not need this for vaccine doses)</p>
+<pre class="r"><code># Just keeping this for legacy
+# Quality checks
+for(col in c(&quot;n_dose1&quot;, &quot;n_cum_dose1&quot;)){
+  print(all(dat.vaccin12[, col] == dat.vaccin1c[, col]))
+}
+
+dat.vaccin &lt;- merge(dat.vaccin12, dat.vaccin1c[, c(&quot;jour&quot;, &quot;n_complet&quot;, &quot;n_cum_complet&quot;)], by = &quot;jour&quot;)
+
+# Other quality checks (cum sums)
+all(dat.vaccin$n_cum_dose1 == cumsum(dat.vaccin$n_dose1))
+all(dat.vaccin$n_cum_dose2 == cumsum(dat.vaccin$n_dose2))
+all(dat.vaccin$n_cum_complet == cumsum(dat.vaccin$n_complet))
+
+# 1 dose and complete
+dat.vaccin$n_dose1complet &lt;- dat.vaccin$n_complet - dat.vaccin$n_dose2
+dat.vaccin$n_cum_dose1complet &lt;- cumsum(dat.vaccin$n_dose1complet)
+
+# 1 dose and incomplete
+dat.vaccin$n_dose1incomplet &lt;- dat.vaccin$n_dose1 - dat.vaccin$n_complet
+dat.vaccin$n_cum_dose1incomplet &lt;- cumsum(dat.vaccin$n_dose1incomplet)
+
+# Quality check
+all(dat.vaccin$n_cum_dose1 == dat.vaccin$n_cum_dose2 + dat.vaccin$n_cum_dose1complet + dat.vaccin$n_cum_dose1incomplet)</code></pre>
+<div id="homogenize-datasets" class="section level3">
+<h3>Homogenize datasets</h3>
+<p>Function to add NA lines or fill in with info from previous date</p>
+<pre class="r"><code># All dates
+xx &lt;- sort(unique(dat.vaccin12$jour))
+
+fillTable &lt;- function(mat, x = xx){
+  # mat is the matrix with same columns as dat.vaccins, 
+  # x is the full vector of dates; 
+  #   the dates in the data must be included in x
+  
+  # Check that dates are sorted
+  check1 &lt;- all(mat[order(mat$jour), &quot;jour&quot;] == mat$jour)
+  if(!check1) stop(&quot;make sure to order dates&quot;)
+  
+  # Check that no duplicated date
+  if(any(duplicated(mat$jour))) stop(&quot;There are duplicated dates (maybe multiple vaccine types?)&quot;)
+  
+  # Check that all dates are included in x
+  if(!all(is.element(unique(mat$jour), x))) stop(&quot;x does not contain all the dates of the dataset&quot;)
+  
+  # New dataset will all the dates that we want
+  newmat &lt;- merge(data.frame(jour = x), mat, by = &quot;jour&quot;, all = TRUE) # Fill with NA the missing dates
+  
+  # Find first non NA value, fill previous lines with 0
+  firstNonNA &lt;- which(!is.na(newmat$n_dose1))[1]
+  if(firstNonNA &gt; 1){ # If there are lines before
+    newmat[1:(firstNonNA - 1), c(&quot;n_dose1&quot;, &quot;n_dose2&quot;, &quot;n_cum_dose1&quot;, &quot;n_cum_dose2&quot;)] &lt;- 0
+  }
+  
+  # Then loop on the lines -- maybe there&#39;s a more elegant way, but we have small enough datasets not to think this too hard
+  for(iline in firstNonNA:nrow(newdat)){
+    # If NA on the line, use value of the previous line
+    if(is.na(newmat[iline, &quot;n_dose1&quot;])){
+      newmat[iline, -c(&quot;jour&quot;)] &lt;- newmat[iline - 1, -c(&quot;jour&quot;)]
+    }
+  }
+  newmat
+}
+
+# Compute them for each vaccine type
+dat.Pz &lt;- fillTable(dat.vaccins[dat.vaccins$typeVaccin == &quot;Pfizer&quot;, ])
+dat.Md &lt;- fillTable(dat.vaccins[dat.vaccins$typeVaccin == &quot;Moderna&quot;, ])
+dat.AZ &lt;- fillTable(dat.vaccins[dat.vaccins$typeVaccin == &quot;AstraZeneca&quot;, ])
+dat.Js &lt;- fillTable(dat.vaccins[dat.vaccins$typeVaccin == &quot;Janssen&quot;, ])
+
+# Re-bind the dataset
+dat.vaccins &lt;- rbind(dat.Pz, dat.Md, dat.AZ, dat.Js)
+names(dat.vaccins) &lt;- names(dat.Pz)
+
+# Sum first dose and second dose to have the total number of injected doses
+dat.vaccins$n_cum &lt;- dat.vaccins$n_cum_dose1 + dat.vaccins$n_cum_dose2</code></pre>
+</div>
+</div>
+</div>
+<div id="combine-datasets" class="section level1">
+<h1>Combine datasets</h1>
+<div id="all-vaccines" class="section level2">
+<h2>All vaccines</h2>
+<pre class="r"><code>col_injections &lt;- &quot;#2a9d8f&quot;
+col_doses &lt;- &quot;#e76f51&quot;
+lwdd &lt;- 2
+
+yy &lt;- pretty(seq(0, max(doses.livraisons.total$nb_doses), 5))/10^6
+# yy 
+xx &lt;- seq(as.Date(&quot;2020-12-01&quot;), as.Date(&quot;2021-08-01&quot;), by = &quot;month&quot;)
+# xx
+
+par(mar = c(4.5, 4, 2, 4), las = 1)
+plot(as.Date(doses.livraisons.total$date_fin_semaine), doses.livraisons.total$nb_doses/(10^6), type = &quot;n&quot;, 
+     xlab = &quot;&quot;, 
+     ylab = &quot;&quot;, 
+     col = col_doses, lwd = lwdd, 
+     ylim = range(yy), 
+     yaxs = &quot;i&quot;, xaxs = &quot;i&quot;, 
+     frame.plot = FALSE)
+
+for(i in seq(0, max(yy), by = 10)) abline(h = i, col = gray(0.9))
+
+legend(&quot;topleft&quot;, col = c(col_doses, col_injections), lty = 1, legend = c(&quot;Total doses livrées&quot;, &quot;Total doses injectées&quot;), lwd = lwdd, title = &quot;En millions:&quot;, box.lwd = 0.0, inset = c(0.02, 0), bg = gray(1, 0.5), bty = &quot;o&quot;)
+
+
+
+axis(1, at = xx, labels = format(xx, &quot;%b&quot;))
+axis(2)
+
+lines(as.Date(doses.livraisons.total$date_fin_semaine), doses.livraisons.total$nb_doses/(10^6), col = col_doses, lwd = lwdd)
+lines(as.Date(dat.vaccin12$jour), dat.vaccin12$n_cum_doses/10^6, type = &quot;l&quot;, col = col_injections, lwd = lwdd)
+
+xmax &lt;- max(c(as.Date(dat.vaccin12$jour), as.Date(doses.livraisons.total$date_fin_semaine)))
+
+par(xpd = TRUE)
+text(rep(as.Date(xmax), 2), c(max(dat.vaccin12$n_cum_doses/10^6), max(doses.livraisons.total$nb_doses/(10^6))), 
+     labels = paste(round(c(max(dat.vaccin12$n_cum_doses/10^6), max(doses.livraisons.total$nb_doses/(10^6))), 1), &quot;Mio&quot;), 
+     col = c(col_injections, col_doses), adj = c(0, 0.5))
+par(xpd = FALSE)
+
+mtext(side = 1, adj = 0, text = paste0(format(Sys.time(), &quot;%Y-%m-%d&quot;), &quot; | Données : 
+- Livraisons https://www.data.gouv.fr/en/datasets/donnees-relatives-aux-livraisons-de-vaccins-contre-la-covid-19/
+- Injections https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/&quot;), cex = 0.6, col = gray(0.5), line = 3)</code></pre>
+<p><img src="livraisons_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
+<div id="by-type-of-vaccine" class="section level2">
+<h2>By type of vaccine</h2>
+<div id="livraisons-et-injections" class="section level3">
+<h3>Livraisons et injections</h3>
+<pre class="r"><code># Define colors of vaccine types
+colType &lt;- c(&quot;blue&quot;, &quot;red&quot;, &quot;orange&quot;, rgb(0, 0.6, 0))
+names(colType) &lt;- c(&quot;Pfizer&quot;, &quot;Moderna&quot;, &quot;AstraZeneca&quot;, &quot;Janssen&quot;)
+
+# Define pch of vaccine types
+pchType &lt;- 0:3
+names(pchType) &lt;- names(colType)
+
+# Line width
+lwdd &lt;- 2
+
+# Denominator for scale
+# (1 for full value, 10^6 if by million)
+denom &lt;- 10^6
+
+par(las = 1)
+layout(matrix(1:4, ncol = 2))
+
+  # For each vaccine type
+  for(typ in names(colType)){
+    # Subsets of the data with this type
+  subliv &lt;- dat.livraisons2[which(dat.livraisons2$type_de_vaccin == typ), ]
+  subdoses &lt;- dat.vaccins[dat.vaccins$typeVaccin == typ, ]
+  
+  # Set ymax value (same scale for smaller values)
+  ymax &lt;- 1.05 * max(subliv$nb_doses)
+  if(ymax &lt; 12*10^6) ymax &lt;- 12*10^6
+  
+  par(mar = c(2, 3, 2, 2), 
+      mgp = c(1.5, 0.25, 0), tck = -0.015, xpd = TRUE, 
+      las = 1)
+  
+  plot(as.Date(subliv$date_fin_semaine), subliv$nb_doses/denom,
+       col = colType[typ], pch = pchType[typ], 
+       type = &quot;o&quot;, 
+       ylim = c(0, ymax/denom), 
+       xlab = &quot;&quot;, ylab = &quot;en millions&quot;, main = typ, yaxs = &quot;i&quot;)
+  
+  legend(&quot;topleft&quot;, col = colType[typ], pch = c(pchType[typ], NA), lty = 1, lwd = c(1, lwdd), legend = c(&quot;livraisons&quot;, &quot;injections&quot;), bty = &quot;n&quot;, inset = c(0.01, 0))
+  
+  lines(as.Date(subdoses$jour), subdoses$n_cum/denom, col = colType[typ], lwd = lwdd, pch = pchType[typ])
+  
+  axis(4)
+  par(xpd = FALSE)
+}</code></pre>
+<p><img src="livraisons_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
+<div id="ecart-entre-livraisons-et-injections" class="section level3">
+<h3>Ecart entre livraisons et injections</h3>
+<pre class="r"><code># Combine the two datasets to make sure we get the same dates
+dat.combined &lt;- merge(dat.livraisons2, dat.vaccins, by.x = c(&quot;date_fin_semaine&quot;, &quot;type_de_vaccin&quot;), by.y = c(&quot;jour&quot;, &quot;typeVaccin&quot;), all = TRUE)
+
+# Compute remaining number of doses
+dat.combined$remaining &lt;- dat.combined$nb_doses - dat.combined$n_cum
+
+par(mfrow = c(1, 1), xpd = FALSE, 
+    mgp = c(1.25, 0.25, 0), tck = -0.01, 
+    mar = c(4, 3, 3, 3), las = 1)
+
+plot(as.Date(dat.combined$date_fin_semaine), dat.combined$remaining/denom, col = colType[dat.combined$type_de_vaccin], type = &quot;n&quot;, yaxs = &quot;i&quot;, 
+     xlab = &quot;&quot;, ylab = &quot;en millions&quot;, 
+     axes = FALSE, main = &quot;Doses disponibles&quot;)
+
+mtext(&quot;date fin semaine&quot;, side = 1, line = 3)
+
+# x axis
+xx &lt;- sort(unique(dat.livraisons2$date_fin_semaine))
+if(max(xx) &gt; max(dat.vaccins$jour)){xx &lt;- xx[1:(length(xx)-1)]}
+axis(1, at = as.Date(xx), labels = format.Date(xx, &quot;%Y-%m-%d&quot;), las = 3, cex.axis = 0.6)
+
+axis(2)
+axis(4)
+
+# Graduations
+for(i in seq(0, 5, by = 0.5)){
+  abline(h = i, col = gray(0.9))
+}
+
+cexx &lt;- 0.75 # marker size
+par(xpd = TRUE)
+for(typ in names(colType)){
+  # Subset of the data for this vaccine type
+  subdat &lt;- dat.combined[dat.combined$type_de_vaccin == typ, ]
+  # Remove NAs
+  # (injections by day, livraisons by week)
+  # (necessary to plot the line between markers)
+  subdat &lt;- subdat[!is.na(subdat$remaining/denom), ]  
+  
+  points(as.Date(subdat$date_fin_semaine), subdat$remaining/denom, type = &quot;o&quot;, lty = 1, col = colType[typ], pch = pchType[typ], cex = cexx)
+}
+
+legend(&quot;topleft&quot;, inset = c(0.01, 0), box.lwd = 0, legend = names(colType), lty = 1, col = colType, pch = pchType, pt.cex = cexx)</code></pre>
+<p><img src="livraisons_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

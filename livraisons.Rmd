@@ -1,0 +1,417 @@
+---
+title: "Livraisons - vaccination"
+author: "FD"
+output: 
+  html_document: 
+      code_folding: hide
+      toc: TRUE
+      toc_float: TRUE
+      self_contained: no
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list = ls())
+```
+
+```{r, include = FALSE}
+dlData <- FALSE
+# Whether to download the data again
+```
+
+# Initializations
+
+# Load data and clean data
+
+## Livraisons
+
+Source <https://www.data.gouv.fr/en/datasets/donnees-relatives-aux-livraisons-de-vaccins-contre-la-covid-19/>
+
+```{r, results = "hide"}
+URL_livraisons <- "https://www.data.gouv.fr/en/datasets/r/c04da7da-be58-450e-bf3e-5993ce7796d9"
+
+dataFile <- "data/livraisons.csv"
+if(dlData){
+  download.file(URL_livraisons, dataFile)
+}
+dat.livraisons <- read.csv(dataFile, stringsAsFactors = FALSE)
+head(dat.livraisons)
+
+dat.livraisons
+```
+
+
+```{r, results = "hide", fig.show='hide'}
+unique(dat.livraisons$type_de_vaccin)
+
+dat.livraisons.AZ <- dat.livraisons[dat.livraisons$type_de_vaccin == "AstraZeneca", ]
+dat.livraisons.Js <- dat.livraisons[dat.livraisons$type_de_vaccin == "Janssen", ]
+dat.livraisons.Md <- dat.livraisons[dat.livraisons$type_de_vaccin == "Moderna", ]
+dat.livraisons.Pz <- dat.livraisons[dat.livraisons$type_de_vaccin == "Pfizer", ]
+
+plot(as.Date(dat.livraisons.Pz$date_fin_semaine), dat.livraisons.Pz$nb_doses, type = "h", frame.plot = FALSE, 
+     xlab = "Date fin de semaine", ylab = "Nb doses", 
+     main = "Quality check")
+points(as.Date(dat.livraisons.AZ$date_fin_semaine), dat.livraisons.AZ$nb_doses, col = 2)
+points(as.Date(dat.livraisons.Js$date_fin_semaine), dat.livraisons.Js$nb_doses, col = 3)
+points(as.Date(dat.livraisons.Md$date_fin_semaine), dat.livraisons.Md$nb_doses, col = 4)
+
+
+names(dat.livraisons.AZ)[2:4] <- c("typeAZ", "nb_ucd_AZ", "nb_doses_AZ")
+names(dat.livraisons.Js)[2:4] <- c("typeJs", "nb_ucd_Js", "nb_doses_Js")
+names(dat.livraisons.Md)[2:4] <- c("typeMd", "nb_ucd_Md", "nb_doses_Md")
+names(dat.livraisons.Pz)[2:4] <- c("typePz", "nb_ucd_Pz", "nb_doses_Pz")
+
+alltimes <- data.frame("date_fin_semaine" = sort(unique(dat.livraisons$date_fin_semaine)))
+
+newdat <- data.frame(matrix(0, ncol = 4, nrow = 1))
+names(newdat) <- names(dat.livraisons)
+
+for(tv in unique(dat.livraisons$type_de_vaccin)){
+  print(tv)
+  subdat <- dat.livraisons[dat.livraisons$type_de_vaccin == tv, ]
+  subdat <- merge(alltimes, subdat, all = TRUE, by = "date_fin_semaine")
+  subdat$type_de_vaccin <- tv
+  # Find first 
+  firstNonNA <- which(!is.na(subdat$nb_ucd))[1]
+  if(firstNonNA > 1){
+    subdat[1:(firstNonNA - 1), c("nb_ucd", "nb_doses")] <- 0
+  }
+  
+  # Then loop on the lines -- maybe there's a more elegant way, but we have small enough datasets not to think this too hard
+  for(iline in firstNonNA:nrow(subdat)){
+    # If NA on the line, use value of the previous line
+    if(is.na(subdat[iline, "nb_ucd"])){
+      subdat[iline, c("nb_ucd", "nb_doses")] <- subdat[iline - 1, c("nb_ucd", "nb_doses")]
+    }
+  }
+  print(subdat)
+  newdat <- rbind(newdat, subdat)
+}
+# Remove first line put to create the dataframe
+newdat <- newdat[-1, ]
+
+dat.livraisons2 <- newdat
+
+# Quality check
+cols <- 1:4
+names(cols) <- unique(dat.livraisons$type_de_vaccin)
+points(as.Date(dat.livraisons2$date_fin_semaine), 
+     dat.livraisons2$nb_doses, 
+     col = cols[dat.livraisons2$type_de_vaccin], pch = 4)
+
+
+doses.livraisons.total <- aggregate(dat.livraisons2$nb_doses, by = list("date_fin_semaine" = dat.livraisons2$date_fin_semaine), FUN = sum)
+
+names(doses.livraisons.total)[2] <- "nb_doses"
+```
+
+## Personnes vaccinees
+
+Source <https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/>
+
+> Fichiers avec le nombre de personnes ayant reçu au moins une dose ou deux doses, par vaccin, arrêté à la dernière date disponible :
+>
+> vacsi-tot-v-fra-YYYY-MM-DD-HHhmm.csv (échelle nationale)
+>
+> Fichiers avec le nombre de personnes ayant reçu au moins une dose ou complètement vaccinées, arrêté à la dernière date disponible :
+> 
+> vacsi-tot-fra-YYYY-MM-DD-HHhmm.csv (échelle nationale)
+> 
+> 0 : Tous vaccins  
+> 1 : COMIRNATY Pfizer/BioNTech  
+> 2 : Moderna    
+> 3 : AstraZeneka  
+> 4 : Janssen  
+> 
+
+```{r, results = "hide"}
+URL_v12 <- "https://www.data.gouv.fr/fr/datasets/r/b273cf3b-e9de-437c-af55-eda5979e92fc"
+
+dataFile <- "data/vaccin_12doses.csv"
+if(dlData){
+  download.file(URL_v12, dataFile)
+}
+dat.vaccin12 <- read.csv(dataFile, stringsAsFactors = FALSE, sep = ";")
+head(dat.vaccin12)
+
+dat.vaccins <- dat.vaccin12[which(dat.vaccin12$vaccin != 0), ]
+
+dic.typeVaccin <- c("Pfizer", "Moderna", "AstraZeneca", "Janssen")
+names(dic.typeVaccin) <- as.character(1:4)
+dat.vaccins$typeVaccin <- dic.typeVaccin[dat.vaccins$vaccin]
+
+# Subselect tous vaccins
+dat.vaccin12 <- dat.vaccin12[which(dat.vaccin12$vaccin == 0), ]
+
+# Number of doses
+dat.vaccin12$n_doses <- dat.vaccin12$n_dose1 + dat.vaccin12$n_dose2
+
+dat.vaccin12$n_cum_doses <- cumsum(dat.vaccin12$n_doses)
+```
+
+```{r, eval = FALSE}
+# This is actually not needed, but I am keeping it for legacy
+URL_v1c <- "https://www.data.gouv.fr/fr/datasets/r/efe23314-67c4-45d3-89a2-3faef82fae90"
+
+dataFile <- "data/vaccin_1cdoses.csv"
+if(dlData){
+  download.file(URL_v1c, dataFile)
+}
+dat.vaccin1c <- read.csv(dataFile, stringsAsFactors = FALSE, sep = ";")
+head(dat.vaccin1c)
+```
+
+```{r, eval = FALSE}
+par(las = 1)
+plot(as.Date(dat.vaccin12$jour), dat.vaccin12$n_cum_dose1, type = "l", 
+     xlab = "date", ylab = "number individuals")
+
+lines(as.Date(dat.vaccin12$jour), dat.vaccin12$n_cum_dose2, type = "l", col = 2)
+
+lines(as.Date(dat.vaccin1c$jour), dat.vaccin1c$n_cum_dose1, type = "l", col = 3, lty = 2)
+
+lines(as.Date(dat.vaccin1c$jour), dat.vaccin1c$n_cum_complet, type = "l", col = 4, lty = 1)
+
+legend("topleft", col = c(1, 2, 3, 4), lty = c(1, 1, 2, 1), legend = c("1 dose au moins", "2 doses", "1 dose au moins", "complet"), bty = "n")
+```
+
+We can deduce the number of people with complete vaccination after one dose (dose1_complet) and one dose and incomplete vaccination (but actually we do not need this for vaccine doses)
+
+```{r, eval = FALSE}
+# Just keeping this for legacy
+# Quality checks
+for(col in c("n_dose1", "n_cum_dose1")){
+  print(all(dat.vaccin12[, col] == dat.vaccin1c[, col]))
+}
+
+dat.vaccin <- merge(dat.vaccin12, dat.vaccin1c[, c("jour", "n_complet", "n_cum_complet")], by = "jour")
+
+# Other quality checks (cum sums)
+all(dat.vaccin$n_cum_dose1 == cumsum(dat.vaccin$n_dose1))
+all(dat.vaccin$n_cum_dose2 == cumsum(dat.vaccin$n_dose2))
+all(dat.vaccin$n_cum_complet == cumsum(dat.vaccin$n_complet))
+
+# 1 dose and complete
+dat.vaccin$n_dose1complet <- dat.vaccin$n_complet - dat.vaccin$n_dose2
+dat.vaccin$n_cum_dose1complet <- cumsum(dat.vaccin$n_dose1complet)
+
+# 1 dose and incomplete
+dat.vaccin$n_dose1incomplet <- dat.vaccin$n_dose1 - dat.vaccin$n_complet
+dat.vaccin$n_cum_dose1incomplet <- cumsum(dat.vaccin$n_dose1incomplet)
+
+# Quality check
+all(dat.vaccin$n_cum_dose1 == dat.vaccin$n_cum_dose2 + dat.vaccin$n_cum_dose1complet + dat.vaccin$n_cum_dose1incomplet)
+
+```
+
+
+### Homogenize datasets
+
+Function to add NA lines or fill in with info from previous date
+
+```{r, results = "hide"}
+# All dates
+xx <- sort(unique(dat.vaccin12$jour))
+
+fillTable <- function(mat, x = xx){
+  # mat is the matrix with same columns as dat.vaccins, 
+  # x is the full vector of dates; 
+  #   the dates in the data must be included in x
+  
+  # Check that dates are sorted
+  check1 <- all(mat[order(mat$jour), "jour"] == mat$jour)
+  if(!check1) stop("make sure to order dates")
+  
+  # Check that no duplicated date
+  if(any(duplicated(mat$jour))) stop("There are duplicated dates (maybe multiple vaccine types?)")
+  
+  # Check that all dates are included in x
+  if(!all(is.element(unique(mat$jour), x))) stop("x does not contain all the dates of the dataset")
+  
+  # New dataset will all the dates that we want
+  newmat <- merge(data.frame(jour = x), mat, by = "jour", all = TRUE) # Fill with NA the missing dates
+  
+  # Find first non NA value, fill previous lines with 0
+  firstNonNA <- which(!is.na(newmat$n_dose1))[1]
+  if(firstNonNA > 1){ # If there are lines before
+    newmat[1:(firstNonNA - 1), c("n_dose1", "n_dose2", "n_cum_dose1", "n_cum_dose2")] <- 0
+  }
+  
+  # Then loop on the lines -- maybe there's a more elegant way, but we have small enough datasets not to think this too hard
+  for(iline in firstNonNA:nrow(newdat)){
+    # If NA on the line, use value of the previous line
+    if(is.na(newmat[iline, "n_dose1"])){
+      newmat[iline, -c("jour")] <- newmat[iline - 1, -c("jour")]
+    }
+  }
+  newmat
+}
+
+# Compute them for each vaccine type
+dat.Pz <- fillTable(dat.vaccins[dat.vaccins$typeVaccin == "Pfizer", ])
+dat.Md <- fillTable(dat.vaccins[dat.vaccins$typeVaccin == "Moderna", ])
+dat.AZ <- fillTable(dat.vaccins[dat.vaccins$typeVaccin == "AstraZeneca", ])
+dat.Js <- fillTable(dat.vaccins[dat.vaccins$typeVaccin == "Janssen", ])
+
+# Re-bind the dataset
+dat.vaccins <- rbind(dat.Pz, dat.Md, dat.AZ, dat.Js)
+names(dat.vaccins) <- names(dat.Pz)
+
+# Sum first dose and second dose to have the total number of injected doses
+dat.vaccins$n_cum <- dat.vaccins$n_cum_dose1 + dat.vaccins$n_cum_dose2
+```
+
+# Combine datasets
+
+## All vaccines
+
+```{r}
+col_injections <- "#2a9d8f"
+col_doses <- "#e76f51"
+lwdd <- 2
+
+yy <- pretty(seq(0, max(doses.livraisons.total$nb_doses), 5))/10^6
+# yy 
+xx <- seq(as.Date("2020-12-01"), as.Date("2021-08-01"), by = "month")
+# xx
+
+par(mar = c(4.5, 4, 2, 4), las = 1)
+plot(as.Date(doses.livraisons.total$date_fin_semaine), doses.livraisons.total$nb_doses/(10^6), type = "n", 
+     xlab = "", 
+     ylab = "", 
+     col = col_doses, lwd = lwdd, 
+     ylim = range(yy), 
+     yaxs = "i", xaxs = "i", 
+     frame.plot = FALSE)
+
+for(i in seq(0, max(yy), by = 10)) abline(h = i, col = gray(0.9))
+
+legend("topleft", col = c(col_doses, col_injections), lty = 1, legend = c("Total doses livrées", "Total doses injectées"), lwd = lwdd, title = "En millions:", box.lwd = 0.0, inset = c(0.02, 0), bg = gray(1, 0.5), bty = "o")
+
+
+
+axis(1, at = xx, labels = format(xx, "%b"))
+axis(2)
+
+lines(as.Date(doses.livraisons.total$date_fin_semaine), doses.livraisons.total$nb_doses/(10^6), col = col_doses, lwd = lwdd)
+lines(as.Date(dat.vaccin12$jour), dat.vaccin12$n_cum_doses/10^6, type = "l", col = col_injections, lwd = lwdd)
+
+xmax <- max(c(as.Date(dat.vaccin12$jour), as.Date(doses.livraisons.total$date_fin_semaine)))
+
+par(xpd = TRUE)
+text(rep(as.Date(xmax), 2), c(max(dat.vaccin12$n_cum_doses/10^6), max(doses.livraisons.total$nb_doses/(10^6))), 
+     labels = paste(round(c(max(dat.vaccin12$n_cum_doses/10^6), max(doses.livraisons.total$nb_doses/(10^6))), 1), "Mio"), 
+     col = c(col_injections, col_doses), adj = c(0, 0.5))
+par(xpd = FALSE)
+
+mtext(side = 1, adj = 0, text = paste0(format(Sys.time(), "%Y-%m-%d"), " | Données : 
+- Livraisons https://www.data.gouv.fr/en/datasets/donnees-relatives-aux-livraisons-de-vaccins-contre-la-covid-19/
+- Injections https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/"), cex = 0.6, col = gray(0.5), line = 3)
+```
+
+
+## By type of vaccine
+
+### Livraisons et injections 
+
+```{r}
+# Define colors of vaccine types
+colType <- c("blue", "red", "orange", rgb(0, 0.6, 0))
+names(colType) <- c("Pfizer", "Moderna", "AstraZeneca", "Janssen")
+
+# Define pch of vaccine types
+pchType <- 0:3
+names(pchType) <- names(colType)
+
+# Line width
+lwdd <- 2
+
+# Denominator for scale
+# (1 for full value, 10^6 if by million)
+denom <- 10^6
+
+par(las = 1)
+layout(matrix(1:4, ncol = 2))
+
+  # For each vaccine type
+  for(typ in names(colType)){
+    # Subsets of the data with this type
+  subliv <- dat.livraisons2[which(dat.livraisons2$type_de_vaccin == typ), ]
+  subdoses <- dat.vaccins[dat.vaccins$typeVaccin == typ, ]
+  
+  # Set ymax value (same scale for smaller values)
+  ymax <- 1.05 * max(subliv$nb_doses)
+  if(ymax < 12*10^6) ymax <- 12*10^6
+  
+  par(mar = c(2, 3, 2, 2), 
+      mgp = c(1.5, 0.25, 0), tck = -0.015, xpd = TRUE, 
+      las = 1)
+  
+  plot(as.Date(subliv$date_fin_semaine), subliv$nb_doses/denom,
+       col = colType[typ], pch = pchType[typ], 
+       type = "o", 
+       ylim = c(0, ymax/denom), 
+       xlab = "", ylab = "en millions", main = typ, yaxs = "i")
+  
+  legend("topleft", col = colType[typ], pch = c(pchType[typ], NA), lty = 1, lwd = c(1, lwdd), legend = c("livraisons", "injections"), bty = "n", inset = c(0.01, 0))
+  
+  lines(as.Date(subdoses$jour), subdoses$n_cum/denom, col = colType[typ], lwd = lwdd, pch = pchType[typ])
+  
+  axis(4)
+  par(xpd = FALSE)
+}
+
+```
+
+### Ecart entre livraisons et injections 
+
+```{r}
+# Combine the two datasets to make sure we get the same dates
+dat.combined <- merge(dat.livraisons2, dat.vaccins, by.x = c("date_fin_semaine", "type_de_vaccin"), by.y = c("jour", "typeVaccin"), all = TRUE)
+
+# Compute remaining number of doses
+dat.combined$remaining <- dat.combined$nb_doses - dat.combined$n_cum
+
+par(mfrow = c(1, 1), xpd = FALSE, 
+    mgp = c(1.25, 0.25, 0), tck = -0.01, 
+    mar = c(4, 3, 3, 3), las = 1)
+
+plot(as.Date(dat.combined$date_fin_semaine), dat.combined$remaining/denom, col = colType[dat.combined$type_de_vaccin], type = "n", yaxs = "i", 
+     xlab = "", ylab = "en millions", 
+     axes = FALSE, main = "Doses disponibles")
+
+mtext("date fin semaine", side = 1, line = 3)
+
+# x axis
+xx <- sort(unique(dat.livraisons2$date_fin_semaine))
+if(max(xx) > max(dat.vaccins$jour)){xx <- xx[1:(length(xx)-1)]}
+axis(1, at = as.Date(xx), labels = format.Date(xx, "%Y-%m-%d"), las = 3, cex.axis = 0.6)
+
+axis(2)
+axis(4)
+
+# Graduations
+for(i in seq(0, 5, by = 0.5)){
+  abline(h = i, col = gray(0.9))
+}
+
+cexx <- 0.75 # marker size
+par(xpd = TRUE)
+for(typ in names(colType)){
+  # Subset of the data for this vaccine type
+  subdat <- dat.combined[dat.combined$type_de_vaccin == typ, ]
+  # Remove NAs
+  # (injections by day, livraisons by week)
+  # (necessary to plot the line between markers)
+  subdat <- subdat[!is.na(subdat$remaining/denom), ]  
+  
+  points(as.Date(subdat$date_fin_semaine), subdat$remaining/denom, type = "o", lty = 1, col = colType[typ], pch = pchType[typ], cex = cexx)
+}
+
+legend("topleft", inset = c(0.01, 0), box.lwd = 0, legend = names(colType), lty = 1, col = colType, pch = pchType, pt.cex = cexx)
+
+```
+
