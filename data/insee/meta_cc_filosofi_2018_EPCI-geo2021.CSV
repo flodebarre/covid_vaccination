@@ -1,0 +1,1267 @@
+COD_VAR;LIB_VAR;LIB_VAR_LONG;COD_MOD;LIB_MOD;TYPE_VAR;LONG_VAR
+NBMENFISC18;Nombre de ménages fiscaux;Nombre de ménages fiscaux;;;NUM;7
+NBPERSMENFISC18;Nombre de personnes dans les ménages fiscaux;Nombre de personnes dans les ménages fiscaux;;;NUM;7
+MED18;Médiane du niveau vie (€);Médiane du niveau de vie (€);;;NUM;5
+PIMP18;Part des ménages fiscaux imposés (%);Part des ménages fiscaux imposés (%);;;NUM;4
+TP6018;Taux de pauvreté-Ensemble (%);Taux de pauvreté-Ensemble (%);;;NUM;4
+TP60AGE118;Taux de pauvreté-moins de 30 ans (%);Taux de pauvreté des personnes dans les ménages dont le référent fiscal a moins de 30 ans (%);;;NUM;4
+TP60AGE218;Taux de pauvreté-30 à 39 ans  (%);Taux de pauvreté des personnes dans les ménages dont le référent fiscal a de 30 à 39 ans (%);;;NUM;4
+TP60AGE318;Taux de pauvreté-40 à 49 ans (%);Taux de pauvreté des personnes dans les ménages dont le référent fiscal a de 40 à 49 ans (%);;;NUM;4
+TP60AGE418;Taux de pauvreté-50 à 59 ans (%);Taux de pauvreté des personnes dans les ménages dont le référent fiscal a de 50 à 59 ans (%);;;NUM;4
+TP60AGE518;Taux de pauvreté-60 à 74 ans (%);Taux de pauvreté des personnes dans les ménages dont le référent fiscal a de 60 à 74 ans (%);;;NUM;4
+TP60AGE618;Taux de pauvreté-75 ans ou plus (%);Taux de pauvreté des personnes dans les ménages dont le référent fiscal a 75 ans ou plus (%);;;NUM;4
+TP60TOL118;Taux de pauvreté-propriétaires (%);Taux de pauvreté des personnes dans les ménages propriétaires de leur logement (%);;;NUM;4
+TP60TOL218;Taux de pauvreté-locataires (%);Taux de pauvreté des personnes dans les ménages locataires de leur logement (%);;;NUM;4
+PACT18;Part des revenus d'activité (%);Part des revenus d'activité (%);;;NUM;4
+PTSA18;dont part des salaires et traitements (%);dont part des salaires et traitements (%);;;NUM;4
+PCHO18;dont part des indemnités de chômage (%);dont part des indemnités de chômage (%);;;NUM;3
+PBEN18;dont part des revenus des activités non salariées (%);dont part des revenus des activités non salariées (%);;;NUM;4
+PPEN18;Part des pensions, retraites et rentes (%);Part des pensions, retraites et rentes (%);;;NUM;4
+PPAT18;Part des revenus du patrimoine et autres revenus (%);Part des revenus du patrimoine et des autres revenus (%);;;NUM;4
+PPSOC18;Part de l'ensemble des prestations sociales (%);Part de l'ensemble des prestations sociales (%);;;NUM;4
+PPFAM18;dont part des prestations familiales (%);dont part des prestations familiales (%);;;NUM;3
+PPMINI18;dont part des minima sociaux (%);dont part des minima sociaux (%);;;NUM;4
+PPLOGT18;dont part des prestations logement (%);dont part des prestations logement (%);;;NUM;3
+PIMPOT18;Part des impôts (%);Part des impôts (%);;;NUM;5
+D118;1er décile du niveau de vie (€);1er décile du niveau de vie (€);;;NUM;5
+D918;9e décile du niveau de vie (€);9e décile du niveau de vie (€);;;NUM;5
+RD18;Rapport interdécile 9e décile/1er décile;Rapport interdécile 9e décile/1er décile;;;NUM;3
+CODGEO;Code géographique;Code géographique;200000172;CC Faucigny-Glières;CHAR;9
+CODGEO;Code géographique;Code géographique;200000438;CC du Pays de Pontchâteau Saint-Gildas-des-Bois;CHAR;9
+CODGEO;Code géographique;Code géographique;200000545;CC des Portes de Romilly-sur-Seine;CHAR;9
+CODGEO;Code géographique;Code géographique;200000628;CC Rhône Lez Provence;CHAR;9
+CODGEO;Code géographique;Code géographique;200000800;CC Cœur de Sologne;CHAR;9
+CODGEO;Code géographique;Code géographique;200000925;CC de la Plaine Dijonnaise;CHAR;9
+CODGEO;Code géographique;Code géographique;200000933;CC Sauldre et Sologne;CHAR;9
+CODGEO;Code géographique;Code géographique;200004802;CC du Pays de Fayence;CHAR;9
+CODGEO;Code géographique;Code géographique;200005932;CC des Portes de Sologne;CHAR;9
+CODGEO;Code géographique;Code géographique;200005957;CC de la Région de Rambervillers;CHAR;9
+CODGEO;Code géographique;Code géographique;200006682;CA Beaune, Côte et Sud - Communauté Beaune-Chagny-Nolay;CHAR;9
+CODGEO;Code géographique;Code géographique;200006716;CC du Nogentais;CHAR;9
+CODGEO;Code géographique;Code géographique;200006930;CC du Haut-Allier;CHAR;9
+CODGEO;Code géographique;Code géographique;200006971;CC du Perche;CHAR;9
+CODGEO;Code géographique;Code géographique;200007052;CC de la Marche Berrichonne;CHAR;9
+CODGEO;Code géographique;Code géographique;200007177;CC Pays de Nérondes;CHAR;9
+CODGEO;Code géographique;Code géographique;200010650;CA du Grand Dole;CHAR;9
+CODGEO;Code géographique;Code géographique;200010700;CA Caux Seine Agglo;CHAR;9
+CODGEO;Code géographique;Code géographique;200011773;CA Annemasse-les Voirons-Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200011781;CC Portes du Berry entre Loire et Val d'Aubois;CHAR;9
+CODGEO;Code géographique;Code géographique;200013050;CC Sauer-Pechelbronn;CHAR;9
+CODGEO;Code géographique;Code géographique;200015162;CC de l'Oriente;CHAR;9
+CODGEO;Code géographique;Code géographique;200016905;CC du Pays de Lamastre;CHAR;9
+CODGEO;Code géographique;Code géographique;200017341;CC Lodévois et Larzac;CHAR;9
+CODGEO;Code géographique;Code géographique;200017846;CA Étampois Sud-Essonne;CHAR;9
+CODGEO;Code géographique;Code géographique;200018083;CC de Desvres-Samer;CHAR;9
+CODGEO;Code géographique;Code géographique;200018166;CC Le Grésivaudan;CHAR;9
+CODGEO;Code géographique;Code géographique;200018406;CC du Romorantinais et du Monestois;CHAR;9
+CODGEO;Code géographique;Code géographique;200018521;CC du Val de Bouzanne;CHAR;9
+CODGEO;Code géographique;Code géographique;200022986;CC du Grand Pic Saint-Loup;CHAR;9
+CODGEO;Code géographique;Code géographique;200023075;CC du Pays de Maîche;CHAR;9
+CODGEO;Code géographique;Code géographique;200023125;CC Les Portes Briardes entre Villes et Forêts;CHAR;9
+CODGEO;Code géographique;Code géographique;200023240;CC Pays de Nemours;CHAR;9
+CODGEO;Code géographique;Code géographique;200023299;CC Cœur de Tarentaise;CHAR;9
+CODGEO;Code géographique;Code géographique;200023307;CA du Grand Villeneuvois;CHAR;9
+CODGEO;Code géographique;Code géographique;200023372;CC de la Vallée de Chamonix-Mont-Blanc;CHAR;9
+CODGEO;Code géographique;Code géographique;200023414;Métropole Rouen Normandie;CHAR;9
+CODGEO;Code géographique;Code géographique;200023620;CC de la Gascogne Toulousaine;CHAR;9
+CODGEO;Code géographique;Code géographique;200023737;CA du Grand Cahors;CHAR;9
+CODGEO;Code géographique;Code géographique;200023778;CC du Pays de Saint-Gilles-Croix-de-Vie;CHAR;9
+CODGEO;Code géographique;Code géographique;200023794;CC de Blaye;CHAR;9
+CODGEO;Code géographique;Code géographique;200023919;CC Gâtinais Val de Loing;CHAR;9
+CODGEO;Code géographique;Code géographique;200026573;CC Haut-Jura Saint-Claude;CHAR;9
+CODGEO;Code géographique;Code géographique;200027027;CC Arc Sud Bretagne;CHAR;9
+CODGEO;Code géographique;Code géographique;200027076;CC Arnon Boischaut Cher;CHAR;9
+CODGEO;Code géographique;Code géographique;200027100;CC Méditerranée Porte des Maures;CHAR;9
+CODGEO;Code géographique;Code géographique;200027183;CU Perpignan Méditerranée Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;200027217;CC Sarlat-Périgord Noir;CHAR;9
+CODGEO;Code géographique;Code géographique;200027308;CC d'Auberive Vingeanne et Montsaugeonnais;CHAR;9
+CODGEO;Code géographique;Code géographique;200029734;CC des 4B Sud Charente;CHAR;9
+CODGEO;Code géographique;Code géographique;200029999;CC Rives de l'Ain - Pays du Cerdon;CHAR;9
+CODGEO;Code géographique;Code géographique;200030195;Métropole Nice Côte d'Azur;CHAR;9
+CODGEO;Code géographique;Code géographique;200030385;CA de Blois Agglopolys;CHAR;9
+CODGEO;Code géographique;Code géographique;200030435;CC d'Aire-sur-l'Adour;CHAR;9
+CODGEO;Code géographique;Code géographique;200030526;CC du Ried de Marckolsheim;CHAR;9
+CODGEO;Code géographique;Code géographique;200030633;CA du Caudrésis et du Catésis;CHAR;9
+CODGEO;Code géographique;Code géographique;200030658;CC du Trièves;CHAR;9
+CODGEO;Code géographique;Code géographique;200030674;CA Val de Garonne Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200032514;CC Berry-Loire-Vauvise;CHAR;9
+CODGEO;Code géographique;Code géographique;200033025;CA de Bar-le-Duc - Sud Meuse;CHAR;9
+CODGEO;Code géographique;Code géographique;200033090;CC Plaines et Monts de France;CHAR;9
+CODGEO;Code géographique;Code géographique;200033116;CC Cluses-Arve et Montagnes;CHAR;9
+CODGEO;Code géographique;Code géographique;200033173;CC de la Haute Vallée de Chevreuse;CHAR;9
+CODGEO;Code géographique;Code géographique;200033181;CA Chartres Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;200033298;CC des Coëvrons;CHAR;9
+CODGEO;Code géographique;Code géographique;200033579;CU d'Arras;CHAR;9
+CODGEO;Code géographique;Code géographique;200033827;CC de Fium'orbu Castellu;CHAR;9
+CODGEO;Code géographique;Code géographique;200033868;CC des Ballons des Hautes-Vosges;CHAR;9
+CODGEO;Code géographique;Code géographique;200034023;CC Tarn-Agout;CHAR;9
+CODGEO;Code géographique;Code géographique;200034031;CC des Monts d'Alban et du Villefranchois;CHAR;9
+CODGEO;Code géographique;Code géographique;200034049;CC Centre Tarn;CHAR;9
+CODGEO;Code géographique;Code géographique;200034056;CC du Lautrécois et du Pays d'Agout;CHAR;9
+CODGEO;Code géographique;Code géographique;200034064;CC du Cordais et du Causse (4 C);CHAR;9
+CODGEO;Code géographique;Code géographique;200034098;CC des Montagnes du Giffre;CHAR;9
+CODGEO;Code géographique;Code géographique;200034130;CC Gally Mauldre;CHAR;9
+CODGEO;Code géographique;Code géographique;200034197;CC de Montaigne Montravel et Gurson;CHAR;9
+CODGEO;Code géographique;Code géographique;200034205;CC de la Costa Verde;CHAR;9
+CODGEO;Code géographique;Code géographique;200034270;CC du Pays de Barr;CHAR;9
+CODGEO;Code géographique;Code géographique;200034379;CC Pays d'Uzès;CHAR;9
+CODGEO;Code géographique;Code géographique;200034411;CC du Piémont Cévenol;CHAR;9
+CODGEO;Code géographique;Code géographique;200034601;CC Causses Aigoual Cévennes;CHAR;9
+CODGEO;Code géographique;Code géographique;200034635;CC du Kochersberg;CHAR;9
+CODGEO;Code géographique;Code géographique;200034692;CA du Gard Rhodanien;CHAR;9
+CODGEO;Code géographique;Code géographique;200034700;CA Durance-Lubéron-Verdon Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200034718;CC de Vitry, Champagne et Der;CHAR;9
+CODGEO;Code géographique;Code géographique;200034726;CC Bastides de Lomagne;CHAR;9
+CODGEO;Code géographique;Code géographique;200034825;CA du Grand Guéret;CHAR;9
+CODGEO;Code géographique;Code géographique;200034833;CC des Bastides Dordogne-Périgord;CHAR;9
+CODGEO;Code géographique;Code géographique;200034874;CC Côtes de Meuse Woëvre;CHAR;9
+CODGEO;Code géographique;Code géographique;200034882;CC Pays du Mont-Blanc;CHAR;9
+CODGEO;Code géographique;Code géographique;200034957;CC du Frontonnais;CHAR;9
+CODGEO;Code géographique;Code géographique;200035087;CA Terre de Provence;CHAR;9
+CODGEO;Code géographique;Code géographique;200035103;CC de la Vallée de la Haute-Sarthe;CHAR;9
+CODGEO;Code géographique;Code géographique;200035111;CC des Sources de l'Orne;CHAR;9
+CODGEO;Code géographique;Code géographique;200035129;CC de Cèze Cévennes;CHAR;9
+CODGEO;Code géographique;Code géographique;200035137;CC Marche Occitane - Val d'Anglin;CHAR;9
+CODGEO;Code géographique;Code géographique;200035202;CC Charlieu-Belmont;CHAR;9
+CODGEO;Code géographique;Code géographique;200035319;CA Var Estérel Méditerranée (Cavem);CHAR;9
+CODGEO;Code géographique;Code géographique;200035327;CC Cazals-Salviac;CHAR;9
+CODGEO;Code géographique;Code géographique;200035442;CC du Sud-Artois;CHAR;9
+CODGEO;Code géographique;Code géographique;200035459;CA d'Agen;CHAR;9
+CODGEO;Code géographique;Code géographique;200035533;CC du Grand Saint-Émilionnais;CHAR;9
+CODGEO;Code géographique;Code géographique;200035541;CC des Landes d'Armagnac;CHAR;9
+CODGEO;Code géographique;Code géographique;200035632;CC Armagnac Adour;CHAR;9
+CODGEO;Code géographique;Code géographique;200035707;CC Piège Lauragais Malepère;CHAR;9
+CODGEO;Code géographique;Code géographique;200035715;CA Carcassonne Agglo;CHAR;9
+CODGEO;Code géographique;Code géographique;200035723;CC Ventoux Sud;CHAR;9
+CODGEO;Code géographique;Code géographique;200035731;CA Roannais Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200035756;CC Astarac Arros en Gascogne;CHAR;9
+CODGEO;Code géographique;Code géographique;200035764;CC de la Beauce Loirétaine;CHAR;9
+CODGEO;Code géographique;Code géographique;200035772;CC du Pays du Saintois;CHAR;9
+CODGEO;Code géographique;Code géographique;200035814;CA Flers Agglo;CHAR;9
+CODGEO;Code géographique;Code géographique;200035848;CC du Châtillonnais en Berry;CHAR;9
+CODGEO;Code géographique;Code géographique;200035855;CC Castelnaudary Lauragais Audois;CHAR;9
+CODGEO;Code géographique;Code géographique;200035863;CC Région Lézignanaise, Corbières et Minervois;CHAR;9
+CODGEO;Code géographique;Code géographique;200035970;CC Vexin Centre;CHAR;9
+CODGEO;Code géographique;Code géographique;200036069;CC du Pays de Mortagne-au-Perche;CHAR;9
+CODGEO;Code géographique;Code géographique;200036077;CC du Golfe de Saint-Tropez;CHAR;9
+CODGEO;Code géographique;Code géographique;200036135;CC Cœur de France;CHAR;9
+CODGEO;Code géographique;Code géographique;200036150;CC des Hauts du Val de Saône;CHAR;9
+CODGEO;Code géographique;Code géographique;200036465;CC de Thann-Cernay;CHAR;9
+CODGEO;Code géographique;Code géographique;200036473;CA de Saintes;CHAR;9
+CODGEO;Code géographique;Code géographique;200036499;CC de Marana-Golo;CHAR;9
+CODGEO;Code géographique;Code géographique;200036523;CC des Bastides en Haut-Agenais Périgord;CHAR;9
+CODGEO;Code géographique;Code géographique;200036549;CC Val de Gray;CHAR;9
+CODGEO;Code géographique;Code géographique;200036572;CC Porte d'Aquitaine en Pays de Serres;CHAR;9
+CODGEO;Code géographique;Code géographique;200037059;CC de la Haute-Somme;CHAR;9
+CODGEO;Code géographique;Code géographique;200037133;CC du Provinois;CHAR;9
+CODGEO;Code géographique;Code géographique;200038958;CC de la Pieve de l'Ornano et du Taravo;CHAR;9
+CODGEO;Code géographique;Code géographique;200038990;CC de Saint-Méen Montauban;CHAR;9
+CODGEO;Code géographique;Code géographique;200039022;CA Vitré Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200039055;CC Ouche et Montagne;CHAR;9
+CODGEO;Code géographique;Code géographique;200039063;CC Forêts, Seine et Suzon;CHAR;9
+CODGEO;Code géographique;Code géographique;200039204;CC de Lacq-Orthez;CHAR;9
+CODGEO;Code géographique;Code géographique;200039519;CC du Quercy Blanc;CHAR;9
+CODGEO;Code géographique;Code géographique;200039642;CC Le Tonnerrois en Bourgogne;CHAR;9
+CODGEO;Code géographique;Code géographique;200039709;CC du Serein;CHAR;9
+CODGEO;Code géographique;Code géographique;200039758;CC Avallon, Vézelay, Morvan;CHAR;9
+CODGEO;Code géographique;Code géographique;200039808;CC des Gorges de l'Ardèche;CHAR;9
+CODGEO;Code géographique;Code géographique;200039824;CC Ardèche des Sources et Volcans;CHAR;9
+CODGEO;Code géographique;Code géographique;200039832;CC Pays des Vans en Cévennes;CHAR;9
+CODGEO;Code géographique;Code géographique;200039857;CA du Pays de Grasse;CHAR;9
+CODGEO;Code géographique;Code géographique;200039865;Metz Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;200039907;CC du Sud Messin;CHAR;9
+CODGEO;Code géographique;Code géographique;200039915;CA Cannes Pays de Lérins;CHAR;9
+CODGEO;Code géographique;Code géographique;200039931;CC Alpes d'Azur;CHAR;9
+CODGEO;Code géographique;Code géographique;200039949;CC Rives de Moselle;CHAR;9
+CODGEO;Code géographique;Code géographique;200040038;CC Saône Doubs Bresse;CHAR;9
+CODGEO;Code géographique;Code géographique;200040095;CC Isle Vern Salembre en Périgord;CHAR;9
+CODGEO;Code géographique;Code géographique;200040111;CC Cœur de Chartreuse;CHAR;9
+CODGEO;Code géographique;Code géographique;200040137;CC des Lacs de Champagne;CHAR;9
+CODGEO;Code géographique;Code géographique;200040178;CC de l'Outre-Forêt;CHAR;9
+CODGEO;Code géographique;Code géographique;200040202;CC Provence Verdon;CHAR;9
+CODGEO;Code géographique;Code géographique;200040210;CC Lacs et Gorges du Verdon;CHAR;9
+CODGEO;Code géographique;Code géographique;200040244;CA du Bocage Bressuirais;CHAR;9
+CODGEO;Code géographique;Code géographique;200040251;CC Bassée-Montois;CHAR;9
+CODGEO;Code géographique;Code géographique;200040277;CA du Pays de Dreux;CHAR;9
+CODGEO;Code géographique;Code géographique;200040293;CC du Clunisois;CHAR;9
+CODGEO;Code géographique;Code géographique;200040350;CC Bugey Sud;CHAR;9
+CODGEO;Code géographique;Code géographique;200040384;CC Isle Double Landais;CHAR;9
+CODGEO;Code géographique;Code géographique;200040392;CA Le Grand Périgueux;CHAR;9
+CODGEO;Code géographique;Code géographique;200040400;CC du Périgord Ribéracois;CHAR;9
+CODGEO;Code géographique;Code géographique;200040418;CC du Pays de Serres en Quercy;CHAR;9
+CODGEO;Code géographique;Code géographique;200040426;CC du Val de l'Oise;CHAR;9
+CODGEO;Code géographique;Code géographique;200040442;CA Luberon Monts de Vaucluse;CHAR;9
+CODGEO;Code géographique;Code géographique;200040459;CA Montélimar Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200040475;CC Loué - Brûlon - Noyen;CHAR;9
+CODGEO;Code géographique;Code géographique;200040491;CC Porte de Drômardèche;CHAR;9
+CODGEO;Code géographique;Code géographique;200040509;CC du Crestois et de Pays de Saillans Cœur de Drôme;CHAR;9
+CODGEO;Code géographique;Code géographique;200040558;CC Écueillé-Valençay;CHAR;9
+CODGEO;Code géographique;Code géographique;200040566;CA de l'Ouest Rhodanien;CHAR;9
+CODGEO;Code géographique;Code géographique;200040574;CC Beaujolais Pierres Dorées;CHAR;9
+CODGEO;Code géographique;Code géographique;200040590;CA Villefranche Beaujolais Saône;CHAR;9
+CODGEO;Code géographique;Code géographique;200040624;CC Pays d'Apt-Luberon;CHAR;9
+CODGEO;Code géographique;Code géographique;200040657;CC de la Matheysine;CHAR;9
+CODGEO;Code géographique;Code géographique;200040681;CC Enclave des Papes-Pays de Grignan;CHAR;9
+CODGEO;Code géographique;Code géographique;200040715;Grenoble-Alpes-Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;200040764;CC du Sud Corse;CHAR;9
+CODGEO;Code géographique;Code géographique;200040772;CC du Perche et Haut Vendômois;CHAR;9
+CODGEO;Code géographique;Code géographique;200040798;CC Val Vanoise;CHAR;9
+CODGEO;Code géographique;Code géographique;200040814;CC Briance Sud Haute Vienne;CHAR;9
+CODGEO;Code géographique;Code géographique;200040830;CC du Pays de Fénelon;CHAR;9
+CODGEO;Code géographique;Code géographique;200040889;CC de Portes Sud Périgord;CHAR;9
+CODGEO;Code géographique;Code géographique;200040905;CC Carmausin-Ségala;CHAR;9
+CODGEO;Code géographique;Code géographique;200040947;CC de Flandre Intérieure;CHAR;9
+CODGEO;Code géographique;Code géographique;200040954;CC des Hauts de Flandre;CHAR;9
+CODGEO;Code géographique;Code géographique;200041010;CC Cœur de Savoie;CHAR;9
+CODGEO;Code géographique;Code géographique;200041051;CC Vallée de la Dordogne et Forêt Bessède;CHAR;9
+CODGEO;Code géographique;Code géographique;200041150;CC du Terrassonnais en Périgord Noir Thenon Hautefort;CHAR;9
+CODGEO;Code géographique;Code géographique;200041168;CC de la Vallée de l'Homme;CHAR;9
+CODGEO;Code géographique;Code géographique;200041283;CC de la Plaine du Rhin;CHAR;9
+CODGEO;Code géographique;Code géographique;200041317;CA du Niortais;CHAR;9
+CODGEO;Code géographique;Code géographique;200041325;CC du Pays Rhénan;CHAR;9
+CODGEO;Code géographique;Code géographique;200041333;CC de Parthenay-Gâtine;CHAR;9
+CODGEO;Code géographique;Code géographique;200041366;CC Rhône Crussol;CHAR;9
+CODGEO;Code géographique;Code géographique;200041416;CC Airvaudais-Val du Thouet;CHAR;9
+CODGEO;Code géographique;Code géographique;200041440;CC de Domme-Villefranche du Périgord;CHAR;9
+CODGEO;Code géographique;Code géographique;200041465;CC Val Eyrieux;CHAR;9
+CODGEO;Code géographique;Code géographique;200041499;CC Aunis Atlantique;CHAR;9
+CODGEO;Code géographique;Code géographique;200041515;CC du Bassin de Pont-à-Mousson;CHAR;9
+CODGEO;Code géographique;Code géographique;200041523;CC de la Haute-Saintonge;CHAR;9
+CODGEO;Code géographique;Code géographique;200041556;CC Portes de la Creuse en Marche;CHAR;9
+CODGEO;Code géographique;Code géographique;200041572;CC Dronne et Belle;CHAR;9
+CODGEO;Code géographique;Code géographique;200041614;CC Aunis Sud;CHAR;9
+CODGEO;Code géographique;Code géographique;200041622;CC Ardennes Thiérache;CHAR;9
+CODGEO;Code géographique;Code géographique;200041630;CA Ardenne Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;200041689;CC des Vals de Saintonge Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200041721;CC de la Haute Comté;CHAR;9
+CODGEO;Code géographique;Code géographique;200041762;CA Rochefort Océan;CHAR;9
+CODGEO;Code géographique;Code géographique;200041788;CA du Pays Nord Martinique;CHAR;9
+CODGEO;Code géographique;Code géographique;200041853;CC du Pays de Montbozon et du Chanois;CHAR;9
+CODGEO;Code géographique;Code géographique;200041861;CC du Triangle Vert;CHAR;9
+CODGEO;Code géographique;Code géographique;200041879;CC Terres de Saône;CHAR;9
+CODGEO;Code géographique;Code géographique;200041887;CC du Val Marnaysien;CHAR;9
+CODGEO;Code géographique;Code géographique;200041960;CC Pévèle-Carembault;CHAR;9
+CODGEO;Code géographique;Code géographique;200041994;CC Haut Val de Sèvre;CHAR;9
+CODGEO;Code géographique;Code géographique;200042000;CC Bruyères-Vallons des Vosges;CHAR;9
+CODGEO;Code géographique;Code géographique;200042174;CA Lorient Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200042182;CC du Mont des Avaloirs;CHAR;9
+CODGEO;Code géographique;Code géographique;200042190;CA de la Porte du Hainaut;CHAR;9
+CODGEO;Code géographique;Code géographique;200042372;CC des Coteaux Arrats Gimone;CHAR;9
+CODGEO;Code géographique;Code géographique;200042414;CC Bresse Revermont 71;CHAR;9
+CODGEO;Code géographique;Code géographique;200042463;CC de la Montagne Noire;CHAR;9
+CODGEO;Code géographique;Code géographique;200042497;CC Dombes Saône Vallée;CHAR;9
+CODGEO;Code géographique;Code géographique;200042604;CC de Granville, Terre et Mer;CHAR;9
+CODGEO;Code géographique;Code géographique;200042620;CC de la Région de Suippes;CHAR;9
+CODGEO;Code géographique;Code géographique;200042646;CC Grand Orb;CHAR;9
+CODGEO;Code géographique;Code géographique;200042653;CC Sud-Hérault;CHAR;9
+CODGEO;Code géographique;Code géographique;200042703;CC de l'Argonne Champenoise;CHAR;9
+CODGEO;Code géographique;Code géographique;200042729;CC de la Baie du Cotentin;CHAR;9
+CODGEO;Code géographique;Code géographique;200042901;CC Drôme Sud Provence;CHAR;9
+CODGEO;Code géographique;Code géographique;200042935;CA Haut - Bugey Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200042943;CC du Cap Corse;CHAR;9
+CODGEO;Code géographique;Code géographique;200042992;CC Perthois-Bocage et Der;CHAR;9
+CODGEO;Code géographique;Code géographique;200043016;CC Val de Charente;CHAR;9
+CODGEO;Code géographique;Code géographique;200043065;CC du Val d'Amboise;CHAR;9
+CODGEO;Code géographique;Code géographique;200043081;CC Chinon, Vienne et Loire;CHAR;9
+CODGEO;Code géographique;Code géographique;200043123;CC Auray Quiberon Terre Atlantique;CHAR;9
+CODGEO;Code géographique;Code géographique;200043156;CC du Pays Rethélois;CHAR;9
+CODGEO;Code géographique;Code géographique;200043172;CA du Bassin de Brive;CHAR;9
+CODGEO;Code géographique;Code géographique;200043263;CC Cœur de l'Avesnois;CHAR;9
+CODGEO;Code géographique;Code géographique;200043321;CC du Pays de Mormal;CHAR;9
+CODGEO;Code géographique;Code géographique;200043354;CC de Villedieu Intercom;CHAR;9
+CODGEO;Code géographique;Code géographique;200043396;CA Maubeuge Val de Sambre;CHAR;9
+CODGEO;Code géographique;Code géographique;200043404;CC du Sud Avesnois;CHAR;9
+CODGEO;Code géographique;Code géographique;200043438;CC de la Moivre à la Coole;CHAR;9
+CODGEO;Code géographique;Code géographique;200043495;CA du Pays de Laon;CHAR;9
+CODGEO;Code géographique;Code géographique;200043602;CC des Albères, de la Côte Vermeille et de l'Illibéris;CHAR;9
+CODGEO;Code géographique;Code géographique;200043628;CC des Vallées du Clain;CHAR;9
+CODGEO;Code géographique;Code géographique;200043693;CC Terre Lorraine du Longuyonnais;CHAR;9
+CODGEO;Code géographique;Code géographique;200043776;CC Pyrénées Audoises;CHAR;9
+CODGEO;Code géographique;Code géographique;200043974;CC du Sud Gironde;CHAR;9
+CODGEO;Code géographique;Code géographique;200043982;CC du Bazadais;CHAR;9
+CODGEO;Code géographique;Code géographique;200043990;CC Vallons de Haute-Bretagne Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200044014;CC Creuse Grand Sud;CHAR;9
+CODGEO;Code géographique;Code géographique;200044030;CC des Sept Vallées;CHAR;9
+CODGEO;Code géographique;Code géographique;200044048;CC Osartis Marquion;CHAR;9
+CODGEO;Code géographique;Code géographique;200044253;CC du Bassin de Joinville en Champagne;CHAR;9
+CODGEO;Code géographique;Code géographique;200044394;CC du Réolais en Sud Gironde;CHAR;9
+CODGEO;Code géographique;Code géographique;200044469;CC du Pays de Mirepoix;CHAR;9
+CODGEO;Code géographique;Code géographique;200044618;CA Douaisis Agglo;CHAR;9
+CODGEO;Code géographique;Code géographique;200046977;Métropole de Lyon;CHAR;9
+CODGEO;Code géographique;Code géographique;200048551;CC du Pays de Craon;CHAR;9
+CODGEO;Code géographique;Code géographique;200049187;CA du Grand Verdun;CHAR;9
+CODGEO;Code géographique;Code géographique;200049211;CC Conflent-Canigó;CHAR;9
+CODGEO;Code géographique;Code géographique;200049484;CC Berry Grand Sud;CHAR;9
+CODGEO;Code géographique;Code géographique;200054781;Métropole du Grand Paris;CHAR;9
+CODGEO;Code géographique;Code géographique;200054807;Métropole d'Aix-Marseille-Provence;CHAR;9
+CODGEO;Code géographique;Code géographique;200055481;CC Beauce Val de Loire;CHAR;9
+CODGEO;Code géographique;Code géographique;200055655;CA Roissy Pays de France;CHAR;9
+CODGEO;Code géographique;Code géographique;200055887;CC Mayenne Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200056232;CA Communauté Paris-Saclay;CHAR;9
+CODGEO;Code géographique;Code géographique;200056380;CA Plaine Vallée;CHAR;9
+CODGEO;Code géographique;Code géographique;200057859;CA Cœur d'Essonne Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200057958;CA Paris - Vallée de la Marne;CHAR;9
+CODGEO;Code géographique;Code géographique;200058360;CC Entre Beauce et Perche;CHAR;9
+CODGEO;Code géographique;Code géographique;200058477;CA Val d'Yerres Val de Seine;CHAR;9
+CODGEO;Code géographique;Code géographique;200058485;CA Val Parisis;CHAR;9
+CODGEO;Code géographique;Code géographique;200058519;CA Saint-Germain Boucles de Seine;CHAR;9
+CODGEO;Code géographique;Code géographique;200058782;CA de Saint-Quentin-en-Yvelines;CHAR;9
+CODGEO;Code géographique;Code géographique;200059228;CA Grand Paris Sud Seine Essonne Sénart;CHAR;9
+CODGEO;Code géographique;Code géographique;200059392;CC Bièvre Isère;CHAR;9
+CODGEO;Code géographique;Code géographique;200059400;CC Porte Océane du Limousin;CHAR;9
+CODGEO;Code géographique;Code géographique;200059889;CU Grand Paris Seine et Oise;CHAR;9
+CODGEO;Code géographique;Code géographique;200060010;CA Mauges Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200065563;CC Normandie-Cabourg-Pays d'Auge;CHAR;9
+CODGEO;Code géographique;Code géographique;200065589;CC Val ès Dunes;CHAR;9
+CODGEO;Code géographique;Code géographique;200065597;CU Caen la Mer;CHAR;9
+CODGEO;Code géographique;Code géographique;200065647;CA Pays de Montbéliard Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200065787;CC de Pont-Audemer / Val de Risle;CHAR;9
+CODGEO;Code géographique;Code géographique;200065886;CA Loire Forez Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200065894;CC de Forez-Est;CHAR;9
+CODGEO;Code géographique;Code géographique;200065928;CA Lannion-Trégor Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200066009;CA Mulhouse Alsace Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200066017;CC Lieuvin Pays d'Auge;CHAR;9
+CODGEO;Code géographique;Code géographique;200066025;CC Pays Rhin - Brisach;CHAR;9
+CODGEO;Code géographique;Code géographique;200066033;CC Sud Alsace Largue;CHAR;9
+CODGEO;Code géographique;Code géographique;200066041;CC Sundgau;CHAR;9
+CODGEO;Code géographique;Code géographique;200066058;CA Saint-Louis Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200066108;CC des Portes de Meuse;CHAR;9
+CODGEO;Code géographique;Code géographique;200066116;CC Argonne-Meuse;CHAR;9
+CODGEO;Code géographique;Code géographique;200066124;CA Gaillac-Graulhet;CHAR;9
+CODGEO;Code géographique;Code géographique;200066132;CC du Pays de Stenay et du Val Dunois;CHAR;9
+CODGEO;Code géographique;Code géographique;200066140;CC de l'Aire à l'Argonne;CHAR;9
+CODGEO;Code géographique;Code géographique;200066157;CC de Commercy - Void - Vaucouleurs;CHAR;9
+CODGEO;Code géographique;Code géographique;200066165;CC Val de Meuse - Voie Sacrée;CHAR;9
+CODGEO;Code géographique;Code géographique;200066173;CC de Damvillers Spincourt;CHAR;9
+CODGEO;Code géographique;Code géographique;200066223;CC Arize Lèze;CHAR;9
+CODGEO;Code géographique;Code géographique;200066231;CC des Portes d'Ariège Pyrénées;CHAR;9
+CODGEO;Code géographique;Code géographique;200066280;CC du Pithiverais;CHAR;9
+CODGEO;Code géographique;Code géographique;200066322;CC Terres des Confluences;CHAR;9
+CODGEO;Code géographique;Code géographique;200066330;CC Terres du Haut Berry;CHAR;9
+CODGEO;Code géographique;Code géographique;200066348;CC du Minervois au Caroux;CHAR;9
+CODGEO;Code géographique;Code géographique;200066355;CA Sète Agglopôle Méditerranée;CHAR;9
+CODGEO;Code géographique;Code géographique;200066363;CC de la Haute Ariège;CHAR;9
+CODGEO;Code géographique;Code géographique;200066371;CC Causses et Vallée de la Dordogne;CHAR;9
+CODGEO;Code géographique;Code géographique;200066389;CA Saint-Lô Agglo;CHAR;9
+CODGEO;Code géographique;Code géographique;200066405;CC Roumois Seine;CHAR;9
+CODGEO;Code géographique;Code géographique;200066413;CC Intercom Bernay Terres de Normandie;CHAR;9
+CODGEO;Code géographique;Code géographique;200066462;CC Interco Normandie Sud Eure;CHAR;9
+CODGEO;Code géographique;Code géographique;200066512;CC Élan Limousin Avenir Nature;CHAR;9
+CODGEO;Code géographique;Code géographique;200066520;CC Ouest Limousin;CHAR;9
+CODGEO;Code géographique;Code géographique;200066553;CC des Monts de Lacaune et de la Montagne du Haut Languedoc;CHAR;9
+CODGEO;Code géographique;Code géographique;200066561;CC Sidobre Vals et Plateaux;CHAR;9
+CODGEO;Code géographique;Code géographique;200066587;CC des Monts du Lyonnais;CHAR;9
+CODGEO;Code géographique;Code géographique;200066603;CC du Pays de Lubersac-Pompadour;CHAR;9
+CODGEO;Code géographique;Code géographique;200066637;CC Hautes Terres Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200066645;CC Vézère-Monédières-Millesources;CHAR;9
+CODGEO;Code géographique;Code géographique;200066652;CC Grand Sud Tarn et Garonne;CHAR;9
+CODGEO;Code géographique;Code géographique;200066660;CC Saint-Flour Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200066678;CC de la Châtaigneraie Cantalienne;CHAR;9
+CODGEO;Code géographique;Code géographique;200066710;CC Cingal-Suisse Normande;CHAR;9
+CODGEO;Code géographique;Code géographique;200066728;CC Vallées de l'Orne et de l'Odon;CHAR;9
+CODGEO;Code géographique;Code géographique;200066744;CC Haute-Corrèze Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200066751;CC Xaintrie Val'Dordogne;CHAR;9
+CODGEO;Code géographique;Code géographique;200066769;CC Midi Corrézien;CHAR;9
+CODGEO;Code géographique;Code géographique;200066777;CC Ploërmel Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200066785;CC de l'Oust à Brocéliande;CHAR;9
+CODGEO;Code géographique;Code géographique;200066793;CA du Grand Annecy;CHAR;9
+CODGEO;Code géographique;Code géographique;200066801;CC Isigny-Omaha Intercom;CHAR;9
+CODGEO;Code géographique;Code géographique;200066819;CC du Volvestre;CHAR;9
+CODGEO;Code géographique;Code géographique;200066827;CC du Pays de Honfleur-Beuzeville;CHAR;9
+CODGEO;Code géographique;Code géographique;200066835;CC de Sézanne-Sud Ouest Marnais;CHAR;9
+CODGEO;Code géographique;Code géographique;200066850;CC des Paysages de la Champagne;CHAR;9
+CODGEO;Code géographique;Code géographique;200066868;CC Presqu'île de Crozon-Aulne maritime;CHAR;9
+CODGEO;Code géographique;Code géographique;200066876;CA de Châlons-en-Champagne;CHAR;9
+CODGEO;Code géographique;Code géographique;200066884;CC Quercy Vert-Aveyron;CHAR;9
+CODGEO;Code géographique;Code géographique;200066892;CC de Vendeuvre-Soulaines;CHAR;9
+CODGEO;Code géographique;Code géographique;200066918;CA Alès Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200066926;CA Grand Auch Cœur de Gascogne;CHAR;9
+CODGEO;Code géographique;Code géographique;200066975;CC Senlis Sud Oise;CHAR;9
+CODGEO;Code géographique;Code géographique;200067023;CC Coutances Mer et Bocage;CHAR;9
+CODGEO;Code géographique;Code géographique;200067031;CC Côte Ouest Centre Manche;CHAR;9
+CODGEO;Code géographique;Code géographique;200067049;CC Spelunca-Liamone;CHAR;9
+CODGEO;Code géographique;Code géographique;200067064;CC Decazeville Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200067072;CC Haut-Léon Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200067080;CC Chablis Villages et Terroirs;CHAR;9
+CODGEO;Code géographique;Code géographique;200067106;CA du Pays Basque;CHAR;9
+CODGEO;Code géographique;Code géographique;200067114;CA de l'Auxerrois;CHAR;9
+CODGEO;Code géographique;Code géographique;200067122;CC Coteaux et Plaines du Pays Lafrançaisain;CHAR;9
+CODGEO;Code géographique;Code géographique;200067130;CC de Puisaye-Forterre;CHAR;9
+CODGEO;Code géographique;Code géographique;200067155;CC Saint Affricain, Roquefort, Sept Vallons;CHAR;9
+CODGEO;Code géographique;Code géographique;200067163;CC Monts, Rance et Rougier;CHAR;9
+CODGEO;Code géographique;Code géographique;200067171;CC Aubrac, Carladez et Viadène;CHAR;9
+CODGEO;Code géographique;Code géographique;200067189;CC Creuse Sud Ouest;CHAR;9
+CODGEO;Code géographique;Code géographique;200067197;CC Monts d'Arrée Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200067205;CA du Cotentin;CHAR;9
+CODGEO;Code géographique;Code géographique;200067213;CU du Grand Reims;CHAR;9
+CODGEO;Code géographique;Code géographique;200067221;CC Centre Morbihan Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200067239;CC des Luys en Béarn;CHAR;9
+CODGEO;Code géographique;Code géographique;200067247;CC Pleyben-Châteaulin-Porzay;CHAR;9
+CODGEO;Code géographique;Code géographique;200067254;CA Pau Béarn Pyrénées;CHAR;9
+CODGEO;Code géographique;Code géographique;200067262;CC du Haut-Béarn;CHAR;9
+CODGEO;Code géographique;Code géographique;200067288;CC du Béarn des Gaves;CHAR;9
+CODGEO;Code géographique;Code géographique;200067296;CC du Nord Est Béarn;CHAR;9
+CODGEO;Code géographique;Code géographique;200067304;CC Serein et Armance;CHAR;9
+CODGEO;Code géographique;Code géographique;200067320;CC Serre-Ponçon Val d'Avance;CHAR;9
+CODGEO;Code géographique;Code géographique;200067346;CA Pornic Agglo Pays de Retz;CHAR;9
+CODGEO;Code géographique;Code géographique;200067361;CC Grand-Figeac;CHAR;9
+CODGEO;Code géographique;Code géographique;200067379;CC Côtes de Champagne et Val de Saulx;CHAR;9
+CODGEO;Code géographique;Code géographique;200067429;CC Haut Nivernais-Val d'Yonne;CHAR;9
+CODGEO;Code géographique;Code géographique;200067437;CA Provence-Alpes-Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200067445;CC Buëch-Dévoluy;CHAR;9
+CODGEO;Code géographique;Code géographique;200067452;CC du Guillestrois et du Queyras;CHAR;9
+CODGEO;Code géographique;Code géographique;200067460;CC Loudéac Communauté - Bretagne Centre;CHAR;9
+CODGEO;Code géographique;Code géographique;200067478;CC Comtal Lot et Truyère;CHAR;9
+CODGEO;Code géographique;Code géographique;200067486;CC Bouzonvillois-Trois Frontières;CHAR;9
+CODGEO;Code géographique;Code géographique;200067502;CA Saint-Avold Synergie;CHAR;9
+CODGEO;Code géographique;Code géographique;200067544;CC Creuse Confluence;CHAR;9
+CODGEO;Code géographique;Code géographique;200067551;CA Thonon Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200067593;CC Marche et Combraille en Aquitaine;CHAR;9
+CODGEO;Code géographique;Code géographique;200067627;CC Billom Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200067635;CA Clisson Sèvre et Maine Agglo;CHAR;9
+CODGEO;Code géographique;Code géographique;200067643;CC Meurthe, Mortagne, Moselle;CHAR;9
+CODGEO;Code géographique;Code géographique;200067650;CC Houve-Pays Boulageois;CHAR;9
+CODGEO;Code géographique;Code géographique;200067668;CC de la Cléry, du Betz et de l'Ouanne;CHAR;9
+CODGEO;Code géographique;Code géographique;200067676;CC Canaux et Forêts en Gâtinais;CHAR;9
+CODGEO;Code géographique;Code géographique;200067684;CA Épernay, Coteaux et Plaine de Champagne;CHAR;9
+CODGEO;Code géographique;Code géographique;200067692;CC Tannay-Brinon-Corbigny;CHAR;9
+CODGEO;Code géographique;Code géographique;200067700;CC Sud Nivernais;CHAR;9
+CODGEO;Code géographique;Code géographique;200067742;CC Serre-Ponçon;CHAR;9
+CODGEO;Code géographique;Code géographique;200067759;CC Vallées et Plateau d'Ardenne;CHAR;9
+CODGEO;Code géographique;Code géographique;200067767;CC du Royans-Vercors;CHAR;9
+CODGEO;Code géographique;Code géographique;200067783;CC de Hanau-La Petite Pierre;CHAR;9
+CODGEO;Code géographique;Code géographique;200067791;CA Pays Foix-Varilhes;CHAR;9
+CODGEO;Code géographique;Code géographique;200067817;CC Saône-Beaujolais;CHAR;9
+CODGEO;Code géographique;Code géographique;200067825;CA Gap-Tallard-Durance;CHAR;9
+CODGEO;Code géographique;Code géographique;200067841;CC de l'Alsace Bossue;CHAR;9
+CODGEO;Code géographique;Code géographique;200067866;CC Sèvre et Loire;CHAR;9
+CODGEO;Code géographique;Code géographique;200067874;CA de Haguenau;CHAR;9
+CODGEO;Code géographique;Code géographique;200067882;CC Bazois Loire Morvan;CHAR;9
+CODGEO;Code géographique;Code géographique;200067890;CC Morvan Sommets et Grands Lacs;CHAR;9
+CODGEO;Code géographique;Code géographique;200067908;CC Amognes Cœur du Nivernais;CHAR;9
+CODGEO;Code géographique;Code géographique;200067916;CC Cœur de Loire;CHAR;9
+CODGEO;Code géographique;Code géographique;200067924;CC du Canton d'Erstein;CHAR;9
+CODGEO;Code géographique;Code géographique;200067932;CA Golfe du Morbihan - Vannes Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200067940;CC Couserans-Pyrénées;CHAR;9
+CODGEO;Code géographique;Code géographique;200067957;CC Haut Chemin-Pays de Pange;CHAR;9
+CODGEO;Code géographique;Code géographique;200067965;CA de la Région de Compiègne et de la Basse Automne;CHAR;9
+CODGEO;Code géographique;Code géographique;200067973;CC Thelloise;CHAR;9
+CODGEO;Code géographique;Code géographique;200067981;CA Guingamp-Paimpol Agglomération de l'Armor à l'Argoat;CHAR;9
+CODGEO;Code géographique;Code géographique;200067999;CA du Beauvaisis;CHAR;9
+CODGEO;Code géographique;Code géographique;200068005;CC de l'Oise Picarde;CHAR;9
+CODGEO;Code géographique;Code géographique;200068047;CA Creil Sud Oise;CHAR;9
+CODGEO;Code géographique;Code géographique;200068070;CC Loue-Lison;CHAR;9
+CODGEO;Code géographique;Code géographique;200068088;CC Les Bertranges;CHAR;9
+CODGEO;Code géographique;Code géographique;200068096;CC Champsaur-Valgaudemar;CHAR;9
+CODGEO;Code géographique;Code géographique;200068104;CA de la Provence Verte;CHAR;9
+CODGEO;Code géographique;Code géographique;200068112;CC du Pays de Saverne;CHAR;9
+CODGEO;Code géographique;Code géographique;200068120;CA Quimper Bretagne Occidentale;CHAR;9
+CODGEO;Code géographique;Code géographique;200068146;CC Sarrebourg Moselle Sud;CHAR;9
+CODGEO;Code géographique;Code géographique;200068229;CC des Baronnies en Drôme Provençale;CHAR;9
+CODGEO;Code géographique;Code géographique;200068278;CC Berry Loire Puisaye;CHAR;9
+CODGEO;Code géographique;Code géographique;200068294;CC des Deux Vallées Vertes;CHAR;9
+CODGEO;Code géographique;Code géographique;200068369;CC de Mirecourt Dompaire;CHAR;9
+CODGEO;Code géographique;Code géographique;200068377;CC de la Porte des Vosges Méridionales;CHAR;9
+CODGEO;Code géographique;Code géographique;200068435;CC Cœur du Perche;CHAR;9
+CODGEO;Code géographique;Code géographique;200068443;CC Andaine - Passais;CHAR;9
+CODGEO;Code géographique;Code géographique;200068450;CC Argentan Intercom;CHAR;9
+CODGEO;Code géographique;Code géographique;200068468;CC des Pays de L'Aigle;CHAR;9
+CODGEO;Code géographique;Code géographique;200068484;CC des Causses à l'Aubrac;CHAR;9
+CODGEO;Code géographique;Code géographique;200068500;CA de Cambrai;CHAR;9
+CODGEO;Code géographique;Code géographique;200068534;CC Terroir de Caux;CHAR;9
+CODGEO;Code géographique;Code géographique;200068542;CC Les Balcons du Dauphiné;CHAR;9
+CODGEO;Code géographique;Code géographique;200068559;CC de l'Ouest Vosgien;CHAR;9
+CODGEO;Code géographique;Code géographique;200068567;CC Les Vals du Dauphiné;CHAR;9
+CODGEO;Code géographique;Code géographique;200068625;CC Alpes-Provence-Verdon - Sources de Lumière;CHAR;9
+CODGEO;Code géographique;Code géographique;200068641;CA Le Muretain Agglo;CHAR;9
+CODGEO;Code géographique;Code géographique;200068658;CA de Chaumont;CHAR;9
+CODGEO;Code géographique;Code géographique;200068666;CA de Saint-Dizier Der et Blaise;CHAR;9
+CODGEO;Code géographique;Code géographique;200068674;CA Grand Lac;CHAR;9
+CODGEO;Code géographique;Code géographique;200068682;CC Terre d'Eau;CHAR;9
+CODGEO;Code géographique;Code géographique;200068757;CA d'Épinal;CHAR;9
+CODGEO;Code géographique;Code géographique;200068765;CC du Sisteronais-Buëch;CHAR;9
+CODGEO;Code géographique;Code géographique;200068773;CC des Vosges côté Sud Ouest;CHAR;9
+CODGEO;Code géographique;Code géographique;200068781;CA Valence Romans Agglo;CHAR;9
+CODGEO;Code géographique;Code géographique;200068799;CC Intercom de la Vire au Noireau;CHAR;9
+CODGEO;Code géographique;Code géographique;200068807;CC du Bassin Auterivain Haut-Garonnais;CHAR;9
+CODGEO;Code géographique;Code géographique;200068815;CC Cœur de Garonne;CHAR;9
+CODGEO;Code géographique;Code géographique;200068831;CC Pays Ségali Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200068856;CC des Hauts du Perche;CHAR;9
+CODGEO;Code géographique;Code géographique;200068864;CC de la Mossig et du Vignoble;CHAR;9
+CODGEO;Code géographique;Code géographique;200068872;CC Éguzon - Argenton - Vallée de la Creuse;CHAR;9
+CODGEO;Code géographique;Code géographique;200068880;CC Champagne Boischauts;CHAR;9
+CODGEO;Code géographique;Code géographique;200068914;CC La Rochefoucauld - Porte du Périgord;CHAR;9
+CODGEO;Code géographique;Code géographique;200068922;CC du Confluent et des Coteaux de Prayssas;CHAR;9
+CODGEO;Code géographique;Code géographique;200068930;CC Fumel Vallée du Lot;CHAR;9
+CODGEO;Code géographique;Code géographique;200068948;CC Albret Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200068955;CC Anjou Loir et Sarthe;CHAR;9
+CODGEO;Code géographique;Code géographique;200068963;CC Maine Cœur de Sarthe;CHAR;9
+CODGEO;Code géographique;Code géographique;200068989;CA Dinan Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200068997;CA Arlysère;CHAR;9
+CODGEO;Code géographique;Code géographique;200069003;CC du Barséquanais en Champagne;CHAR;9
+CODGEO;Code géographique;Code géographique;200069029;CA des Deux Baies en Montreuillois;CHAR;9
+CODGEO;Code géographique;Code géographique;200069037;CA du Pays de Saint-Omer;CHAR;9
+CODGEO;Code géographique;Code géographique;200069052;CA Grand Belfort;CHAR;9
+CODGEO;Code géographique;Code géographique;200069060;CC des Vosges du Sud;CHAR;9
+CODGEO;Code géographique;Code géographique;200069086;CC Leff Armor Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200069094;CC Isle et Crempse-en-Périgord;CHAR;9
+CODGEO;Code géographique;Code géographique;200069102;CC Randon - Margeride;CHAR;9
+CODGEO;Code géographique;Code géographique;200069110;CA du Grand Chambéry;CHAR;9
+CODGEO;Code géographique;Code géographique;200069128;CC Mont Lozère;CHAR;9
+CODGEO;Code géographique;Code géographique;200069136;CC des Cévennes au Mont Lozère;CHAR;9
+CODGEO;Code géographique;Code géographique;200069144;CC des Hautes Terres de l'Aubrac;CHAR;9
+CODGEO;Code géographique;Code géographique;200069151;CC Gorges Causses Cévennes;CHAR;9
+CODGEO;Code géographique;Code géographique;200069169;CC Dômes Sancy Artense;CHAR;9
+CODGEO;Code géographique;Code géographique;200069177;CC Mond'Arverne Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200069185;CC des Terres d'Apcher-Margeride-Aubrac;CHAR;9
+CODGEO;Code géographique;Code géographique;200069193;CC de la Dombes;CHAR;9
+CODGEO;Code géographique;Code géographique;200069227;CC Pays Fort Sancerrois Val de Loire;CHAR;9
+CODGEO;Code géographique;Code géographique;200069235;CC du Haut Pays du Montreuillois;CHAR;9
+CODGEO;Code géographique;Code géographique;200069250;CA Troyes Champagne Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;200069268;CC Aubrac Lot Causses Tarn;CHAR;9
+CODGEO;Code géographique;Code géographique;200069300;CA Tarbes-Lourdes-Pyrénées;CHAR;9
+CODGEO;Code géographique;Code géographique;200069383;CC Ouest Aveyron Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200069391;CA de Lamballe Terre et Mer;CHAR;9
+CODGEO;Code géographique;Code géographique;200069409;CA Saint-Brieuc Armor Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200069417;CC Pays d'Orthe et Arrigans;CHAR;9
+CODGEO;Code géographique;Code géographique;200069425;CA Mont-Saint-Michel-Normandie;CHAR;9
+CODGEO;Code géographique;Code géographique;200069433;CC de Vezouze en Piémont;CHAR;9
+CODGEO;Code géographique;Code géographique;200069441;CC du Pays de Bitche;CHAR;9
+CODGEO;Code géographique;Code géographique;200069458;CC des Vallées d'Auge et du Merlerault;CHAR;9
+CODGEO;Code géographique;Code géographique;200069482;CC des Campagnes de l'Artois;CHAR;9
+CODGEO;Code géographique;Code géographique;200069516;CC Seulles Terre et Mer;CHAR;9
+CODGEO;Code géographique;Code géographique;200069524;CC Pré-Bocage Intercom;CHAR;9
+CODGEO;Code géographique;Code géographique;200069532;CA Lisieux Normandie;CHAR;9
+CODGEO;Code géographique;Code géographique;200069540;CC Norge et Tille;CHAR;9
+CODGEO;Code géographique;Code géographique;200069565;CC des Lacs et Montagnes du Haut-Doubs;CHAR;9
+CODGEO;Code géographique;Code géographique;200069581;CC Convergence Garonne;CHAR;9
+CODGEO;Code géographique;Code géographique;200069599;CC Rurales de l'Entre-deux-Mers;CHAR;9
+CODGEO;Code géographique;Code géographique;200069615;CC Bresse Haute Seille;CHAR;9
+CODGEO;Code géographique;Code géographique;200069623;CC Champagnole Nozeroy Jura;CHAR;9
+CODGEO;Code géographique;Code géographique;200069631;CC Terres de Chalosse;CHAR;9
+CODGEO;Code géographique;Code géographique;200069649;CC Chalosse Tursan;CHAR;9
+CODGEO;Code géographique;Code géographique;200069656;CC Cœur Haute Lande;CHAR;9
+CODGEO;Code géographique;Code géographique;200069664;CC Meuse Rognon;CHAR;9
+CODGEO;Code géographique;Code géographique;200069672;CC du Ternois;CHAR;9
+CODGEO;Code géographique;Code géographique;200069698;CC Mâconnais - Tournugeois;CHAR;9
+CODGEO;Code géographique;Code géographique;200069722;CC Interrégionale Aumale - Blangy-sur-Bresle;CHAR;9
+CODGEO;Code géographique;Code géographique;200069730;CC des Quatre Rivières;CHAR;9
+CODGEO;Code géographique;Code géographique;200069748;CC Val de Gâtine;CHAR;9
+CODGEO;Code géographique;Code géographique;200069755;CC Mellois-en-Poitou;CHAR;9
+CODGEO;Code géographique;Code géographique;200069763;CC du Haut-Poitou;CHAR;9
+CODGEO;Code géographique;Code géographique;200069821;CA Fécamp Caux Littoral Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200069839;CC de la Côte d'Albâtre;CHAR;9
+CODGEO;Code géographique;Code géographique;200069847;CC Plateau de Caux-Doudeville-Yerville;CHAR;9
+CODGEO;Code géographique;Code géographique;200069854;CU du Grand Poitiers;CHAR;9
+CODGEO;Code géographique;Code géographique;200069912;CC des Forêts du Perche;CHAR;9
+CODGEO;Code géographique;Code géographique;200069953;CC des Portes Euréliennes d'Île-de-France;CHAR;9
+CODGEO;Code géographique;Code géographique;200069961;CC du Grand Châteaudun;CHAR;9
+CODGEO;Code géographique;Code géographique;200069995;CC Médoc Cœur de Presqu'île;CHAR;9
+CODGEO;Code géographique;Code géographique;200070035;CC du Civraisien en Poitou;CHAR;9
+CODGEO;Code géographique;Code géographique;200070043;CC Vienne et Gartempe;CHAR;9
+CODGEO;Code géographique;Code géographique;200070068;CC Communauté Bray-Eawy;CHAR;9
+CODGEO;Code géographique;Code géographique;200070092;CA du Libournais;CHAR;9
+CODGEO;Code géographique;Code géographique;200070100;CC du Val de Sully;CHAR;9
+CODGEO;Code géographique;Code géographique;200070118;CC Val de Saône Centre;CHAR;9
+CODGEO;Code géographique;Code géographique;200070126;CC Seine et Aube;CHAR;9
+CODGEO;Code géographique;Code géographique;200070142;CC Lyons Andelle;CHAR;9
+CODGEO;Code géographique;Code géographique;200070159;CC Cœur de Beauce;CHAR;9
+CODGEO;Code géographique;Code géographique;200070167;CC Terres de Perche;CHAR;9
+CODGEO;Code géographique;Code géographique;200070183;CC des Terres du Val de Loire;CHAR;9
+CODGEO;Code géographique;Code géographique;200070233;CC Terres-de-Montaigu, communauté de communes Montaigu-Rocheservière;CHAR;9
+CODGEO;Code géographique;Code géographique;200070282;CC Lavalette Tude Dronne;CHAR;9
+CODGEO;Code géographique;Code géographique;200070290;CC Coeur du Pays Haut;CHAR;9
+CODGEO;Code géographique;Code géographique;200070308;CA Mâconnais Beaujolais Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200070316;CC Entre Arroux, Loire et Somme;CHAR;9
+CODGEO;Code géographique;Code géographique;200070324;CC du Territoire de Lunéville à Baccarat;CHAR;9
+CODGEO;Code géographique;Code géographique;200070332;CC des Savoir-Faire;CHAR;9
+CODGEO;Code géographique;Code géographique;200070340;CC Haute-Maurienne Vanoise;CHAR;9
+CODGEO;Code géographique;Code géographique;200070365;CC Corbières Salanque Méditerranée;CHAR;9
+CODGEO;Code géographique;Code géographique;200070373;CC Loir-Lucé-Bercé;CHAR;9
+CODGEO;Code géographique;Code géographique;200070407;CA Pays d'Issoire;CHAR;9
+CODGEO;Code géographique;Code géographique;200070431;CC Saint-Marcellin Vercors Isère Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200070449;CC Inter-Caux-Vexin;CHAR;9
+CODGEO;Code géographique;Code géographique;200070464;CC Cœur de Maurienne Arvan;CHAR;9
+CODGEO;Code géographique;Code géographique;200070506;CC Pays de Nexon Monts de Chalus;CHAR;9
+CODGEO;Code géographique;Code géographique;200070514;CA du Grand Cognac;CHAR;9
+CODGEO;Code géographique;Code géographique;200070530;CC du Grand Autunois Morvan;CHAR;9
+CODGEO;Code géographique;Code géographique;200070548;CC La Clayette Chauffailles en Brionnais;CHAR;9
+CODGEO;Code géographique;Code géographique;200070555;CC de la Veyle;CHAR;9
+CODGEO;Code géographique;Code géographique;200070563;CC Terres Touloises;CHAR;9
+CODGEO;Code géographique;Code géographique;200070571;CC Cœur de Berry;CHAR;9
+CODGEO;Code géographique;Code géographique;200070589;CC de Seille et Grand Couronné;CHAR;9
+CODGEO;Code géographique;Code géographique;200070647;CA Bergeracoise;CHAR;9
+CODGEO;Code géographique;Code géographique;200070662;CC Bretagne porte de Loire Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200070670;CC du Pays de Dol et de la Baie du Mont Saint-Michel;CHAR;9
+CODGEO;Code géographique;Code géographique;200070688;CC Couesnon Marches de Bretagne;CHAR;9
+CODGEO;Code géographique;Code géographique;200070712;CC Thiers Dore et Montagne;CHAR;9
+CODGEO;Code géographique;Code géographique;200070720;CC Médoc Atlantique;CHAR;9
+CODGEO;Code géographique;Code géographique;200070738;CC Mad et Moselle;CHAR;9
+CODGEO;Code géographique;Code géographique;200070746;CA Sarreguemines Confluences;CHAR;9
+CODGEO;Code géographique;Code géographique;200070753;CA Riom Limagne et Volcans;CHAR;9
+CODGEO;Code géographique;Code géographique;200070761;CC Ambert Livradois Forez;CHAR;9
+CODGEO;Code géographique;Code géographique;200070779;CC Brie des Rivières et Châteaux;CHAR;9
+CODGEO;Code géographique;Code géographique;200070787;CC du Plateau de Lannemezan;CHAR;9
+CODGEO;Code géographique;Code géographique;200070795;CC du Pays de Trie et du Magnoac;CHAR;9
+CODGEO;Code géographique;Code géographique;200070803;CC des Coteaux du Val-d'Arros;CHAR;9
+CODGEO;Code géographique;Code géographique;200070811;CC Pyrénées Vallées des Gaves;CHAR;9
+CODGEO;Code géographique;Code géographique;200070829;CC Neste Barousse;CHAR;9
+CODGEO;Code géographique;Code géographique;200070845;CC Orne Lorraine Confluences;CHAR;9
+CODGEO;Code géographique;Code géographique;200070852;CC Usses et Rhône;CHAR;9
+CODGEO;Code géographique;Code géographique;200070894;CC de Gevrey-Chambertin et de Nuits-Saint-Georges;CHAR;9
+CODGEO;Code géographique;Code géographique;200070902;CC Auxonne Pontailler Val de Saône;CHAR;9
+CODGEO;Code géographique;Code géographique;200070910;CC Tille et Venelle;CHAR;9
+CODGEO;Code géographique;Code géographique;200070928;CC Terre de Picardie;CHAR;9
+CODGEO;Code géographique;Code géographique;200070936;CC Ponthieu-Marquenterre;CHAR;9
+CODGEO;Code géographique;Code géographique;200070944;CC du Vimeu;CHAR;9
+CODGEO;Code géographique;Code géographique;200070951;CC du Territoire Nord Picardie;CHAR;9
+CODGEO;Code géographique;Code géographique;200070969;CC Avre Luce Noye;CHAR;9
+CODGEO;Code géographique;Code géographique;200070977;CC du Grand Roye;CHAR;9
+CODGEO;Code géographique;Code géographique;200070985;CC de l'Est de la Somme;CHAR;9
+CODGEO;Code géographique;Code géographique;200070993;CA de la Baie de Somme;CHAR;9
+CODGEO;Code géographique;Code géographique;200071017;CC des Terres d'Auxois;CHAR;9
+CODGEO;Code géographique;Code géographique;200071025;CC Haute-Provence-Pays de Banon;CHAR;9
+CODGEO;Code géographique;Code géographique;200071033;CC Jabron-Lure-Vançon-Durance;CHAR;9
+CODGEO;Code géographique;Code géographique;200071041;CC du Chaourçois et du Val d'Armance;CHAR;9
+CODGEO;Code géographique;Code géographique;200071058;CC Les Avant-Monts;CHAR;9
+CODGEO;Code géographique;Code géographique;200071066;CA de Saint-Dié-des-Vosges;CHAR;9
+CODGEO;Code géographique;Code géographique;200071074;CC Les Portes de l'Ile de France;CHAR;9
+CODGEO;Code géographique;Code géographique;200071082;CA Montluçon Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200071116;CA ECLA  (Espace Communautaire Lons Agglomération);CHAR;9
+CODGEO;Code géographique;Code géographique;200071140;CA Moulins Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200071157;CC des Hautes-Vosges;CHAR;9
+CODGEO;Code géographique;Code géographique;200071165;CA Les Sables d'Olonne Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200071173;CC du Pays Arnay Liernais;CHAR;9
+CODGEO;Code géographique;Code géographique;200071181;CC Somme Sud-Ouest;CHAR;9
+CODGEO;Code géographique;Code géographique;200071199;CC Plaine Limagne;CHAR;9
+CODGEO;Code géographique;Code géographique;200071207;CC de Pouilly-en-Auxois/Bligny-sur-Ouche;CHAR;9
+CODGEO;Code géographique;Code géographique;200071215;CC Chavanon Combrailles et Volcans;CHAR;9
+CODGEO;Code géographique;Code géographique;200071223;CC Nièvre et Somme;CHAR;9
+CODGEO;Code géographique;Code géographique;200071298;CC des Terres du Lauragais;CHAR;9
+CODGEO;Code géographique;Code géographique;200071314;CC des Hauts Tolosans;CHAR;9
+CODGEO;Code géographique;Code géographique;200071363;CA Vichy Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200071371;CC Bresse et Saône;CHAR;9
+CODGEO;Code géographique;Code géographique;200071389;CC Saint-Pourçain Sioule Limagne;CHAR;9
+CODGEO;Code géographique;Code géographique;200071405;CC Ardèche Rhône Coiron;CHAR;9
+CODGEO;Code géographique;Code géographique;200071413;CA Privas Centre Ardèche;CHAR;9
+CODGEO;Code géographique;Code géographique;200071454;CA Evreux Portes de Normandie;CHAR;9
+CODGEO;Code géographique;Code géographique;200071470;CC Entr'Allier Besbre et Loire;CHAR;9
+CODGEO;Code géographique;Code géographique;200071496;CC du Bocage Bourbonnais;CHAR;9
+CODGEO;Code géographique;Code géographique;200071504;CC des Collines du Perche Normand;CHAR;9
+CODGEO;Code géographique;Code géographique;200071512;CC Commentry Montmarault Néris Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200071520;CC Domfront Tinchebray Interco;CHAR;9
+CODGEO;Code géographique;Code géographique;200071538;CC Terres de Bresse;CHAR;9
+CODGEO;Code géographique;Code géographique;200071546;CC Sud Retz Atlantique;CHAR;9
+CODGEO;Code géographique;Code géographique;200071553;CC Loire Layon Aubance;CHAR;9
+CODGEO;Code géographique;Code géographique;200071579;CC Bresse Louhannaise Intercom';CHAR;9
+CODGEO;Code géographique;Code géographique;200071587;CC Loches Sud Touraine;CHAR;9
+CODGEO;Code géographique;Code géographique;200071595;CC Arbois, Poligny, Salins, Cœur du Jura;CHAR;9
+CODGEO;Code géographique;Code géographique;200071629;CC Challans-Gois Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200071645;CC Saint Cyr Mère Boitier entre Charolais et Mâconnais;CHAR;9
+CODGEO;Code géographique;Code géographique;200071652;CC du Pays Fertois et du Bocage Carrougien;CHAR;9
+CODGEO;Code géographique;Code géographique;200071678;CA du Choletais;CHAR;9
+CODGEO;Code géographique;Code géographique;200071751;CA du Bassin de Bourg-en-Bresse;CHAR;9
+CODGEO;Code géographique;Code géographique;200071769;CC Picardie des Châteaux;CHAR;9
+CODGEO;Code géographique;Code géographique;200071777;CC d'Arcis, Mailly, Ramerupt;CHAR;9
+CODGEO;Code géographique;Code géographique;200071785;CA Chauny-Tergnier-La Fère;CHAR;9
+CODGEO;Code géographique;Code géographique;200071819;CC du Périgord Nontronnais;CHAR;9
+CODGEO;Code géographique;Code géographique;200071827;CA du Grand Angoulême;CHAR;9
+CODGEO;Code géographique;Code géographique;200071843;CC du Vexin Normand;CHAR;9
+CODGEO;Code géographique;Code géographique;200071850;CC du Pithiverais-Gâtinais;CHAR;9
+CODGEO;Code géographique;Code géographique;200071868;CC des Vallées du Haut-Anjou;CHAR;9
+CODGEO;Code géographique;Code géographique;200071876;CA Saumur Val de Loire;CHAR;9
+CODGEO;Code géographique;Code géographique;200071884;CC Le Grand Charolais;CHAR;9
+CODGEO;Code géographique;Code géographique;200071892;CA du Saint-Quentinois;CHAR;9
+CODGEO;Code géographique;Code géographique;200071900;CC Vendée Grand Littoral;CHAR;9
+CODGEO;Code géographique;Code géographique;200071918;CC du Pays de Saint-Fulgent - Les Essarts;CHAR;9
+CODGEO;Code géographique;Code géographique;200071926;CC du Limouxin;CHAR;9
+CODGEO;Code géographique;Code géographique;200071934;CC Pays de Fontenay-Vendée;CHAR;9
+CODGEO;Code géographique;Code géographique;200071942;CC Haut Limousin en Marche;CHAR;9
+CODGEO;Code géographique;Code géographique;200071967;CC Pays d'Évian Vallée d'Abondance;CHAR;9
+CODGEO;Code géographique;Code géographique;200071983;CC Thiérache Sambre et Oise;CHAR;9
+CODGEO;Code géographique;Code géographique;200071991;CC Retz-en-Valois;CHAR;9
+CODGEO;Code géographique;Code géographique;200072007;CC de la Montagne d'Ardèche;CHAR;9
+CODGEO;Code géographique;Code géographique;200072015;CA Annonay Rhône Agglo;CHAR;9
+CODGEO;Code géographique;Code géographique;200072023;CC Cœur de Charente;CHAR;9
+CODGEO;Code géographique;Code géographique;200072031;CA de la Région de Château-Thierry;CHAR;9
+CODGEO;Code géographique;Code géographique;200072049;CC de Charente Limousine;CHAR;9
+CODGEO;Code géographique;Code géographique;200072056;CC Porte du Jura;CHAR;9
+CODGEO;Code géographique;Code géographique;200072064;CC Val-de-Cher-Controis;CHAR;9
+CODGEO;Code géographique;Code géographique;200072072;CA Territoires Vendômois;CHAR;9
+CODGEO;Code géographique;Code géographique;200072080;CC du Pays de Saint-Éloy;CHAR;9
+CODGEO;Code géographique;Code géographique;200072098;CC Combrailles Sioule et Morge;CHAR;9
+CODGEO;Code géographique;Code géographique;200072106;CC Adour Madiran;CHAR;9
+CODGEO;Code géographique;Code géographique;200072130;CA du Pays de Meaux;CHAR;9
+CODGEO;Code géographique;Code géographique;200072304;CC Vallée de l'Ubaye - Serre-Ponçon;CHAR;9
+CODGEO;Code géographique;Code géographique;200072312;CA Seine Normandie Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200072320;CC Val de Gers;CHAR;9
+CODGEO;Code géographique;Code géographique;200072346;CA du Pays de Fontainebleau;CHAR;9
+CODGEO;Code géographique;Code géographique;200072452;CA Fougères Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200072460;CA de Béthune-Bruay, Artois-Lys Romane;CHAR;9
+CODGEO;Code géographique;Code géographique;200072478;CC Pays d'Opale;CHAR;9
+CODGEO;Code géographique;Code géographique;200072544;CC des Deux Morin;CHAR;9
+CODGEO;Code géographique;Code géographique;200072635;CC Pyrénées Haut Garonnaises;CHAR;9
+CODGEO;Code géographique;Code géographique;200072643;CC Cœur et Coteaux du Comminges;CHAR;9
+CODGEO;Code géographique;Code géographique;200072650;CC Touraine Vallée de l'Indre;CHAR;9
+CODGEO;Code géographique;Code géographique;200072668;CC Touraine Val de Vienne;CHAR;9
+CODGEO;Code géographique;Code géographique;200072676;CC Maine Saosnois;CHAR;9
+CODGEO;Code géographique;Code géographique;200072684;CC Le Gesnois Bilurien;CHAR;9
+CODGEO;Code géographique;Code géographique;200072692;CC des Vallées de la Braye et de l'Anille;CHAR;9
+CODGEO;Code géographique;Code géographique;200072700;CC Haute Sarthe Alpes Mancelles;CHAR;9
+CODGEO;Code géographique;Code géographique;200072718;CC de la Champagne Conlinoise et du Pays de Sillé;CHAR;9
+CODGEO;Code géographique;Code géographique;200072726;CC Châteaubriant-Derval;CHAR;9
+CODGEO;Code géographique;Code géographique;200072734;CC Estuaire et Sillon;CHAR;9
+CODGEO;Code géographique;Code géographique;200072825;CC Mirebellois et Fontenois;CHAR;9
+CODGEO;Code géographique;Code géographique;200072874;CC Val Briard;CHAR;9
+CODGEO;Code géographique;Code géographique;200072882;CC de Vie et Boulogne;CHAR;9
+CODGEO;Code géographique;Code géographique;200072981;CC Touraine Ouest Val de Loire;CHAR;9
+CODGEO;Code géographique;Code géographique;200072999;CC du Grand Langres;CHAR;9
+CODGEO;Code géographique;Code géographique;200073013;CC Carnelle Pays-De-France;CHAR;9
+CODGEO;Code géographique;Code géographique;200073096;CA Arche Agglo;CHAR;9
+CODGEO;Code géographique;Code géographique;200073104;CC de l'Île-Rousse - Balagne;CHAR;9
+CODGEO;Code géographique;Code géographique;200073112;CC Sud Sarthe;CHAR;9
+CODGEO;Code géographique;Code géographique;200073120;CC Nebbiu - Conca d'Oro;CHAR;9
+CODGEO;Code géographique;Code géographique;200073138;CC Pasquale Paoli;CHAR;9
+CODGEO;Code géographique;Code géographique;200073146;CC Cagire Garonne Salat;CHAR;9
+CODGEO;Code géographique;Code géographique;200073161;CC Touraine-Est Vallées;CHAR;9
+CODGEO;Code géographique;Code géographique;200073237;CC de Gâtine et Choisilles - Pays de Racan;CHAR;9
+CODGEO;Code géographique;Code géographique;200073245;CC du Bassin d'Aubenas;CHAR;9
+CODGEO;Code géographique;Code géographique;200073252;CC de la Castagniccia-Casinca;CHAR;9
+CODGEO;Code géographique;Code géographique;200073260;CC Sud Vendée Littoral;CHAR;9
+CODGEO;Code géographique;Code géographique;200073344;CA Rambouillet Territoires;CHAR;9
+CODGEO;Code géographique;Code géographique;200073393;CC des Rives du Haut-Allier;CHAR;9
+CODGEO;Code géographique;Code géographique;200073401;CC Mézenc-Loire-Meygal;CHAR;9
+CODGEO;Code géographique;Code géographique;200073419;CA du Puy-en-Velay;CHAR;9
+CODGEO;Code géographique;Code géographique;200073427;CC Marches du Velay-Rochebaron;CHAR;9
+CODGEO;Code géographique;Code géographique;200077014;CA Vienne Condrieu;CHAR;9
+CODGEO;Code géographique;Code géographique;200083392;CA Laval Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;200084952;CU Le Havre Seine Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;200085728;CC Brioude Sud Auvergne;CHAR;9
+CODGEO;Code géographique;Code géographique;200085751;CC d'Entre Bièvre et Rhône;CHAR;9
+CODGEO;Code géographique;Code géographique;200089456;CA Seine-Eure;CHAR;9
+CODGEO;Code géographique;Code géographique;200090504;CA Coulommiers Pays de Brie;CHAR;9
+CODGEO;Code géographique;Code géographique;200090561;CC Vierzon-Sologne-Berry;CHAR;9
+CODGEO;Code géographique;Code géographique;200090579;CC Terre d'Émeraude Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;200090751;CA Grand Calais Terres et Mers;CHAR;9
+CODGEO;Code géographique;Code géographique;200093201;Métropole Européenne de Lille;CHAR;9
+CODGEO;Code géographique;Code géographique;240100610;CC de la Côtière à Montluel;CHAR;9
+CODGEO;Code géographique;Code géographique;240100750;CA du Pays de Gex;CHAR;9
+CODGEO;Code géographique;Code géographique;240100800;CC de Miribel et du Plateau;CHAR;9
+CODGEO;Code géographique;Code géographique;240100883;CC de la Plaine de l'Ain;CHAR;9
+CODGEO;Code géographique;Code géographique;240100891;CC du Pays Bellegardien (CCPB);CHAR;9
+CODGEO;Code géographique;Code géographique;240200444;CC de la Thiérache du Centre;CHAR;9
+CODGEO;Code géographique;Code géographique;240200469;CC du Pays de la Serre;CHAR;9
+CODGEO;Code géographique;Code géographique;240200477;CA GrandSoissons Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;240200493;CC du Pays du Vermandois;CHAR;9
+CODGEO;Code géographique;Code géographique;240200501;CC du Val de l'Aisne;CHAR;9
+CODGEO;Code géographique;Code géographique;240200519;CC du Canton d'Oulchy-le-Château;CHAR;9
+CODGEO;Code géographique;Code géographique;240200576;CC de la Champagne Picarde;CHAR;9
+CODGEO;Code géographique;Code géographique;240200584;CC du Canton de Charly-sur-Marne;CHAR;9
+CODGEO;Code géographique;Code géographique;240200592;CC du Chemin des Dames;CHAR;9
+CODGEO;Code géographique;Code géographique;240200600;CC des Trois Rivières;CHAR;9
+CODGEO;Code géographique;Code géographique;240200634;CC des Portes de la Thiérache;CHAR;9
+CODGEO;Code géographique;Code géographique;240300491;CC du Pays de Lapalisse;CHAR;9
+CODGEO;Code géographique;Code géographique;240300558;CC du Pays de Tronçais;CHAR;9
+CODGEO;Code géographique;Code géographique;240300566;CC du Val de Cher;CHAR;9
+CODGEO;Code géographique;Code géographique;240300657;CC du Pays d'Huriel;CHAR;9
+CODGEO;Code géographique;Code géographique;240400440;CC Pays Forcalquier et Montagne de Lure;CHAR;9
+CODGEO;Code géographique;Code géographique;240500439;CC du Briançonnais;CHAR;9
+CODGEO;Code géographique;Code géographique;240500462;CC du Pays des Ecrins;CHAR;9
+CODGEO;Code géographique;Code géographique;240600551;CA de la Riviera Française;CHAR;9
+CODGEO;Code géographique;Code géographique;240600585;CA de Sophia Antipolis;CHAR;9
+CODGEO;Code géographique;Code géographique;240600593;CC du Pays des Paillons;CHAR;9
+CODGEO;Code géographique;Code géographique;240700302;CC du Pays Beaume-Drobie;CHAR;9
+CODGEO;Code géographique;Code géographique;240700617;CC Val de Ligne;CHAR;9
+CODGEO;Code géographique;Code géographique;240700716;CC du Val d'Ay;CHAR;9
+CODGEO;Code géographique;Code géographique;240700815;CC Berg et Coiron;CHAR;9
+CODGEO;Code géographique;Code géographique;240700864;CC du Rhône aux Gorges de l'Ardèche;CHAR;9
+CODGEO;Code géographique;Code géographique;240800821;CC Ardenne, Rives de Meuse;CHAR;9
+CODGEO;Code géographique;Code géographique;240800847;CC des Portes du Luxembourg;CHAR;9
+CODGEO;Code géographique;Code géographique;240800862;CC des Crêtes Préardennaises;CHAR;9
+CODGEO;Code géographique;Code géographique;240800920;CC de l'Argonne Ardennaise;CHAR;9
+CODGEO;Code géographique;Code géographique;240900431;CC du Pays de Tarascon;CHAR;9
+CODGEO;Code géographique;Code géographique;240900464;CC du Pays d'Olmes;CHAR;9
+CODGEO;Code géographique;Code géographique;241000223;CC Forêts, Lacs, Terres en Champagne;CHAR;9
+CODGEO;Code géographique;Code géographique;241000405;CC de la Région de Bar-sur-Aube;CHAR;9
+CODGEO;Code géographique;Code géographique;241000447;CC du Pays d'Othe;CHAR;9
+CODGEO;Code géographique;Code géographique;241000488;CC de l'Orvin et de l'Ardusson;CHAR;9
+CODGEO;Code géographique;Code géographique;241100593;CA Le Grand Narbonne;CHAR;9
+CODGEO;Code géographique;Code géographique;241200187;CA Rodez Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;241200542;CC du Réquistanais;CHAR;9
+CODGEO;Code géographique;Code géographique;241200567;CC de Millau Grands Causses;CHAR;9
+CODGEO;Code géographique;Code géographique;241200625;CC du Pays Rignacois;CHAR;9
+CODGEO;Code géographique;Code géographique;241200641;CC Conques-Marcillac;CHAR;9
+CODGEO;Code géographique;Code géographique;241200658;CC du Pays de Salars;CHAR;9
+CODGEO;Code géographique;Code géographique;241200674;CC du Plateau de Montbazens;CHAR;9
+CODGEO;Code géographique;Code géographique;241200765;CC de Lévézou Pareloup;CHAR;9
+CODGEO;Code géographique;Code géographique;241200807;CC Aveyron Bas Ségala Viaur;CHAR;9
+CODGEO;Code géographique;Code géographique;241200906;CC Larzac et Vallées;CHAR;9
+CODGEO;Code géographique;Code géographique;241200914;CC de la Muse et des Raspes du Tarn;CHAR;9
+CODGEO;Code géographique;Code géographique;241300375;CC Vallée des Baux-Alpilles (CC VBA);CHAR;9
+CODGEO;Code géographique;Code géographique;241300417;CA d'Arles-Crau-Camargue-Montagnette;CHAR;9
+CODGEO;Code géographique;Code géographique;241400415;CC Cœur Côte Fleurie;CHAR;9
+CODGEO;Code géographique;Code géographique;241400514;CC du Pays de Falaise;CHAR;9
+CODGEO;Code géographique;Code géographique;241400555;CC de Bayeux Intercom;CHAR;9
+CODGEO;Code géographique;Code géographique;241400860;CC Cœur de Nacre;CHAR;9
+CODGEO;Code géographique;Code géographique;241400878;CC Terre d'Auge;CHAR;9
+CODGEO;Code géographique;Code géographique;241500230;CA du Bassin d'Aurillac;CHAR;9
+CODGEO;Code géographique;Code géographique;241500255;CC du Pays Gentiane;CHAR;9
+CODGEO;Code géographique;Code géographique;241500271;CC du Pays de Mauriac;CHAR;9
+CODGEO;Code géographique;Code géographique;241501055;CC Sumène - Artense;CHAR;9
+CODGEO;Code géographique;Code géographique;241501089;CC Cère et Goul en Carladès;CHAR;9
+CODGEO;Code géographique;Code géographique;241501139;CC du Pays de Salers;CHAR;9
+CODGEO;Code géographique;Code géographique;241600303;CC du Rouillacais;CHAR;9
+CODGEO;Code géographique;Code géographique;241700434;CA de la Rochelle;CHAR;9
+CODGEO;Code géographique;Code géographique;241700459;CC de l'Île de Ré;CHAR;9
+CODGEO;Code géographique;Code géographique;241700517;CC Cœur de Saintonge;CHAR;9
+CODGEO;Code géographique;Code géographique;241700624;CC de l'Île d'Oléron;CHAR;9
+CODGEO;Code géographique;Code géographique;241700632;CC de Gémozac et de la Saintonge Viticole;CHAR;9
+CODGEO;Code géographique;Code géographique;241700640;CA Royan Atlantique;CHAR;9
+CODGEO;Code géographique;Code géographique;241700699;CC du Bassin de Marennes;CHAR;9
+CODGEO;Code géographique;Code géographique;241800374;CC La Septaine;CHAR;9
+CODGEO;Code géographique;Code géographique;241800424;CC Le Dunois;CHAR;9
+CODGEO;Code géographique;Code géographique;241800432;CC Les Trois Provinces;CHAR;9
+CODGEO;Code géographique;Code géographique;241800457;CC Fercher Pays Florentais;CHAR;9
+CODGEO;Code géographique;Code géographique;241800507;CA Bourges Plus;CHAR;9
+CODGEO;Code géographique;Code géographique;241900133;CC de Ventadour - Egletons - Monédières;CHAR;9
+CODGEO;Code géographique;Code géographique;241927201;CA Tulle Agglo;CHAR;9
+CODGEO;Code géographique;Code géographique;241927243;CC du Pays d'Uzerche;CHAR;9
+CODGEO;Code géographique;Code géographique;242000354;CA de Bastia;CHAR;9
+CODGEO;Code géographique;Code géographique;242000495;CC de l'Alta Rocca;CHAR;9
+CODGEO;Code géographique;Code géographique;242000503;CC Celavu-Prunelli;CHAR;9
+CODGEO;Code géographique;Code géographique;242010056;CA du Pays Ajaccien;CHAR;9
+CODGEO;Code géographique;Code géographique;242010130;CC du Sartenais Valinco Taravo;CHAR;9
+CODGEO;Code géographique;Code géographique;242020071;CC du Centre Corse;CHAR;9
+CODGEO;Code géographique;Code géographique;242020105;CC de Calvi Balagne;CHAR;9
+CODGEO;Code géographique;Code géographique;242100154;CC des Vallées de la Tille et de l'Ignon;CHAR;9
+CODGEO;Code géographique;Code géographique;242100410;Dijon Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;242101434;CC du Pays Châtillonnais;CHAR;9
+CODGEO;Code géographique;Code géographique;242101442;CC de Saulieu;CHAR;9
+CODGEO;Code géographique;Code géographique;242101459;CC du Pays d'Alésia et de la Seine;CHAR;9
+CODGEO;Code géographique;Code géographique;242101491;CC du Montbardois;CHAR;9
+CODGEO;Code géographique;Code géographique;242101509;CC Rives de Saône;CHAR;9
+CODGEO;Code géographique;Code géographique;242200715;CC du Kreiz-Breizh (CCKB);CHAR;9
+CODGEO;Code géographique;Code géographique;242300135;CC du Pays Sostranien;CHAR;9
+CODGEO;Code géographique;Code géographique;242320000;CC de Bénévent Grand Bourg;CHAR;9
+CODGEO;Code géographique;Code géographique;242320109;CC du Pays Dunois;CHAR;9
+CODGEO;Code géographique;Code géographique;242400752;CC Périgord-Limousin;CHAR;9
+CODGEO;Code géographique;Code géographique;242400935;CC du Pays de Saint-Aulaye;CHAR;9
+CODGEO;Code géographique;Code géographique;242401024;CC Isle-Loue-Auvézère en Périgord;CHAR;9
+CODGEO;Code géographique;Code géographique;242500320;CC de Montbenoît;CHAR;9
+CODGEO;Code géographique;Code géographique;242500338;CC du Grand Pontarlier;CHAR;9
+CODGEO;Code géographique;Code géographique;242500361;CU Grand Besançon Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;242504116;CC du Val de Morteau;CHAR;9
+CODGEO;Code géographique;Code géographique;242504181;CC des Portes du Haut-Doubs;CHAR;9
+CODGEO;Code géographique;Code géographique;242504355;CC du Plateau de Russey;CHAR;9
+CODGEO;Code géographique;Code géographique;242504371;CC du Pays de Sancey-Belleherbe;CHAR;9
+CODGEO;Code géographique;Code géographique;242504447;CC du Doubs Baumois;CHAR;9
+CODGEO;Code géographique;Code géographique;242504488;CC Altitude 800;CHAR;9
+CODGEO;Code géographique;Code géographique;242504496;CC du Plateau de Frasne et du Val de Drugeon (CFD);CHAR;9
+CODGEO;Code géographique;Code géographique;242600252;CC du Val de Drôme en Biovallée;CHAR;9
+CODGEO;Code géographique;Code géographique;242600492;CC Dieulefit-Bourdeaux;CHAR;9
+CODGEO;Code géographique;Code géographique;242600534;CC du Diois;CHAR;9
+CODGEO;Code géographique;Code géographique;242700276;CC du Pays de Conches;CHAR;9
+CODGEO;Code géographique;Code géographique;242700607;CC du Pays du Neubourg;CHAR;9
+CODGEO;Code géographique;Code géographique;242852465;CC du Bonnevalais;CHAR;9
+CODGEO;Code géographique;Code géographique;242900074;CC du Pays d'Iroise;CHAR;9
+CODGEO;Code géographique;Code géographique;242900314;Brest Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;242900553;CC du Pays des Abers;CHAR;9
+CODGEO;Code géographique;Code géographique;242900561;CC de Haute-Cornouaille;CHAR;9
+CODGEO;Code géographique;Code géographique;242900629;CC Cap Sizun - Pointe du Raz;CHAR;9
+CODGEO;Code géographique;Code géographique;242900645;CC Douarnenez Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;242900660;CC du Pays Fouesnantais;CHAR;9
+CODGEO;Code géographique;Code géographique;242900694;CA Quimperlé Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;242900702;CC du Pays Bigouden Sud;CHAR;9
+CODGEO;Code géographique;Code géographique;242900710;CC du Haut Pays Bigouden;CHAR;9
+CODGEO;Code géographique;Code géographique;242900744;CC Poher communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;242900751;CC du Pays de Landivisiau;CHAR;9
+CODGEO;Code géographique;Code géographique;242900769;CA Concarneau Cornouaille Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;242900793;CC Communauté Lesneven Côte des Légendes;CHAR;9
+CODGEO;Code géographique;Code géographique;242900801;CC du Pays de Landerneau-Daoulas;CHAR;9
+CODGEO;Code géographique;Code géographique;242900835;CA Morlaix Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;243000270;CC du Pays Viganais;CHAR;9
+CODGEO;Code géographique;Code géographique;243000296;CC du Pays de Sommières;CHAR;9
+CODGEO;Code géographique;Code géographique;243000569;CC Rhony, Vistre, Vidourle;CHAR;9
+CODGEO;Code géographique;Code géographique;243000585;CC Beaucaire Terre d'Argence;CHAR;9
+CODGEO;Code géographique;Code géographique;243000593;CC de Petite Camargue;CHAR;9
+CODGEO;Code géographique;Code géographique;243000643;CA de Nîmes Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;243000650;CC Terre de Camargue;CHAR;9
+CODGEO;Code géographique;Code géographique;243000684;CC du Pont du Gard;CHAR;9
+CODGEO;Code géographique;Code géographique;243100518;Toulouse Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;243100567;CC Lauragais Revel Sorezois;CHAR;9
+CODGEO;Code géographique;Code géographique;243100633;CA du Sicoval;CHAR;9
+CODGEO;Code géographique;Code géographique;243100732;CC des Coteaux du Girou;CHAR;9
+CODGEO;Code géographique;Code géographique;243100773;CC de Val'Aïgo;CHAR;9
+CODGEO;Code géographique;Code géographique;243100781;CC de la Save au Touch;CHAR;9
+CODGEO;Code géographique;Code géographique;243100815;CC des Coteaux Bellevue;CHAR;9
+CODGEO;Code géographique;Code géographique;243200391;CC de la Lomagne Gersoise;CHAR;9
+CODGEO;Code géographique;Code géographique;243200409;CC du Bas Armagnac;CHAR;9
+CODGEO;Code géographique;Code géographique;243200417;CC de la Tenarèze;CHAR;9
+CODGEO;Code géographique;Code géographique;243200425;CC Cœur d'Astarac en Gascogne;CHAR;9
+CODGEO;Code géographique;Code géographique;243200458;CC du Grand Armagnac;CHAR;9
+CODGEO;Code géographique;Code géographique;243200508;CC Bastides et Vallons du Gers;CHAR;9
+CODGEO;Code géographique;Code géographique;243200599;CC du Saves;CHAR;9
+CODGEO;Code géographique;Code géographique;243200607;CC Artagnan de Fezensac;CHAR;9
+CODGEO;Code géographique;Code géographique;243300316;Bordeaux Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;243300563;CA Bassin d'Arcachon Sud-Pôle Atlantique (COBAS);CHAR;9
+CODGEO;Code géographique;Code géographique;243300811;CC de l'Estuaire;CHAR;9
+CODGEO;Code géographique;Code géographique;243301165;CC Jalle-Eau-Bourde;CHAR;9
+CODGEO;Code géographique;Code géographique;243301181;CC Latitude Nord Gironde;CHAR;9
+CODGEO;Code géographique;Code géographique;243301215;CC du Créonnais;CHAR;9
+CODGEO;Code géographique;Code géographique;243301223;CC du Grand Cubzaguais;CHAR;9
+CODGEO;Code géographique;Code géographique;243301249;CC du Secteur de Saint-Loubès;CHAR;9
+CODGEO;Code géographique;Code géographique;243301264;CC de Montesquieu;CHAR;9
+CODGEO;Code géographique;Code géographique;243301355;CC des Coteaux Bordelais;CHAR;9
+CODGEO;Code géographique;Code géographique;243301371;CC du Pays Foyen;CHAR;9
+CODGEO;Code géographique;Code géographique;243301389;CC Médullienne;CHAR;9
+CODGEO;Code géographique;Code géographique;243301397;CC du Fronsadais;CHAR;9
+CODGEO;Code géographique;Code géographique;243301405;CC du Val de l'Eyre;CHAR;9
+CODGEO;Code géographique;Code géographique;243301439;CC des Portes de l'Entre-deux-Mers;CHAR;9
+CODGEO;Code géographique;Code géographique;243301447;CC Médoc Estuaire;CHAR;9
+CODGEO;Code géographique;Code géographique;243301454;CC Castillon/Pujols;CHAR;9
+CODGEO;Code géographique;Code géographique;243301504;CA du Bassin d'Arcachon Nord;CHAR;9
+CODGEO;Code géographique;Code géographique;243400017;Montpellier Méditerranée Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;243400355;CC du Clermontais;CHAR;9
+CODGEO;Code géographique;Code géographique;243400470;CA du Pays de l'Or;CHAR;9
+CODGEO;Code géographique;Code géographique;243400488;CC La Domitienne;CHAR;9
+CODGEO;Code géographique;Code géographique;243400520;CC du Pays de Lunel;CHAR;9
+CODGEO;Code géographique;Code géographique;243400694;CC Vallée de l'Hérault;CHAR;9
+CODGEO;Code géographique;Code géographique;243400736;CC des Cévennes Gangeoises et Suménoises;CHAR;9
+CODGEO;Code géographique;Code géographique;243400769;CA de Béziers-Méditerranée;CHAR;9
+CODGEO;Code géographique;Code géographique;243400819;CA Hérault-Méditerranée;CHAR;9
+CODGEO;Code géographique;Code géographique;243500139;Rennes Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;243500550;CC Montfort Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;243500618;CC de Brocéliande;CHAR;9
+CODGEO;Code géographique;Code géographique;243500634;CC Roche aux Fées Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;243500659;CC Pays de Châteaugiron Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;243500667;CC du Val d'Ille-Aubigné;CHAR;9
+CODGEO;Code géographique;Code géographique;243500725;CC Côte d'Émeraude;CHAR;9
+CODGEO;Code géographique;Code géographique;243500733;CC Bretagne Romantique;CHAR;9
+CODGEO;Code géographique;Code géographique;243500741;CA Redon Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;243500774;CC Liffré-Cormier Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;243500782;CA du Pays de Saint Malo Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;243600202;CC Chabris - Pays de Bazelle;CHAR;9
+CODGEO;Code géographique;Code géographique;243600236;CC du Pays d'Issoudun;CHAR;9
+CODGEO;Code géographique;Code géographique;243600293;CC de la Région de Levroux;CHAR;9
+CODGEO;Code géographique;Code géographique;243600301;CC Val de l'Indre - Brenne;CHAR;9
+CODGEO;Code géographique;Code géographique;243600319;CC Brenne - Val de Creuse;CHAR;9
+CODGEO;Code géographique;Code géographique;243600327;CA Châteauroux Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;243600343;CC Cœur de Brenne;CHAR;9
+CODGEO;Code géographique;Code géographique;243600350;CC de la Châtre et Sainte-Sévère;CHAR;9
+CODGEO;Code géographique;Code géographique;243700499;CC du Castelrenaudais;CHAR;9
+CODGEO;Code géographique;Code géographique;243700754;Tours Métropole Val de Loire;CHAR;9
+CODGEO;Code géographique;Code géographique;243700820;CC de Bléré Val de Cher;CHAR;9
+CODGEO;Code géographique;Code géographique;243800604;CA Porte de l'Isère (C.A.P.I);CHAR;9
+CODGEO;Code géographique;Code géographique;243800745;CC de l'Oisans;CHAR;9
+CODGEO;Code géographique;Code géographique;243800935;CC Lyon Saint Exupéry en Dauphiné;CHAR;9
+CODGEO;Code géographique;Code géographique;243800984;CA du Pays Voironnais;CHAR;9
+CODGEO;Code géographique;Code géographique;243801024;CC du Massif du Vercors;CHAR;9
+CODGEO;Code géographique;Code géographique;243801073;CC de Bièvre Est;CHAR;9
+CODGEO;Code géographique;Code géographique;243801255;CC des Collines du Nord Dauphiné;CHAR;9
+CODGEO;Code géographique;Code géographique;243900354;CC de la Station des Rousses-Haut Jura;CHAR;9
+CODGEO;Code géographique;Code géographique;243900420;CC du Val d'Amour;CHAR;9
+CODGEO;Code géographique;Code géographique;243900479;CC du Haut-Jura - ARCADE;CHAR;9
+CODGEO;Code géographique;Code géographique;243900560;CC Jura Nord;CHAR;9
+CODGEO;Code géographique;Code géographique;243900610;CC La Grandvallière;CHAR;9
+CODGEO;Code géographique;Code géographique;243901089;CC de la Plaine Jurassienne;CHAR;9
+CODGEO;Code géographique;Code géographique;244000543;CC de Mimizan;CHAR;9
+CODGEO;Code géographique;Code géographique;244000659;CC du Seignanx;CHAR;9
+CODGEO;Code géographique;Code géographique;244000675;CA du Grand Dax;CHAR;9
+CODGEO;Code géographique;Code géographique;244000691;CC du Pays Morcenais;CHAR;9
+CODGEO;Code géographique;Code géographique;244000766;CC du Pays Tarusate;CHAR;9
+CODGEO;Code géographique;Code géographique;244000774;CC du Pays de Villeneuve en Armagnac Landais;CHAR;9
+CODGEO;Code géographique;Code géographique;244000808;CA Mont-de-Marsan Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;244000824;CC du Pays Grenadois;CHAR;9
+CODGEO;Code géographique;Code géographique;244000857;CC Côte Landes Nature;CHAR;9
+CODGEO;Code géographique;Code géographique;244000865;CC Maremne Adour Côte Sud;CHAR;9
+CODGEO;Code géographique;Code géographique;244000873;CC des Grands Lacs;CHAR;9
+CODGEO;Code géographique;Code géographique;244000881;CC Coteaux et Vallées des Luys;CHAR;9
+CODGEO;Code géographique;Code géographique;244100293;CC des Collines du Perche;CHAR;9
+CODGEO;Code géographique;Code géographique;244100780;CC de la Sologne des Étangs;CHAR;9
+CODGEO;Code géographique;Code géographique;244100798;CC du Grand Chambord;CHAR;9
+CODGEO;Code géographique;Code géographique;244100806;CC de la Sologne des Rivières;CHAR;9
+CODGEO;Code géographique;Code géographique;244200614;CC des Vals d'Aix et Isable;CHAR;9
+CODGEO;Code géographique;Code géographique;244200622;CC des Monts du Pilat;CHAR;9
+CODGEO;Code géographique;Code géographique;244200630;CC du Pays entre Loire et Rhône;CHAR;9
+CODGEO;Code géographique;Code géographique;244200770;Saint-Etienne Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;244200820;CC du Pays d'Urfé;CHAR;9
+CODGEO;Code géographique;Code géographique;244200895;CC du Pilat Rhodanien;CHAR;9
+CODGEO;Code géographique;Code géographique;244300307;CC du Pays de Montfaucon;CHAR;9
+CODGEO;Code géographique;Code géographique;244301016;CC des Sucs;CHAR;9
+CODGEO;Code géographique;Code géographique;244301099;CC Auzon Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;244301107;CC du Haut-Lignon;CHAR;9
+CODGEO;Code géographique;Code géographique;244301123;CC des Pays de Cayres et de Pradelles;CHAR;9
+CODGEO;Code géographique;Code géographique;244301131;CC Loire et Semène;CHAR;9
+CODGEO;Code géographique;Code géographique;244400404;Nantes Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;244400438;CC de Grand Lieu;CHAR;9
+CODGEO;Code géographique;Code géographique;244400453;CC de la Région de Blain;CHAR;9
+CODGEO;Code géographique;Code géographique;244400503;CC d'Erdre et Gesvres;CHAR;9
+CODGEO;Code géographique;Code géographique;244400537;CC de Nozay;CHAR;9
+CODGEO;Code géographique;Code géographique;244400552;CC du Pays d'Ancenis;CHAR;9
+CODGEO;Code géographique;Code géographique;244400586;CC du Sud-Estuaire;CHAR;9
+CODGEO;Code géographique;Code géographique;244400610;CA de la Presqu'île de Guérande Atlantique (Cap Atlantique);CHAR;9
+CODGEO;Code géographique;Code géographique;244400644;CA de la Région Nazairienne et de l'Estuaire (CARENE);CHAR;9
+CODGEO;Code géographique;Code géographique;244500203;CA Montargoise et Rives du Loing (A.M.E.);CHAR;9
+CODGEO;Code géographique;Code géographique;244500211;CC Giennoises;CHAR;9
+CODGEO;Code géographique;Code géographique;244500419;CC des Quatre Vallées;CHAR;9
+CODGEO;Code géographique;Code géographique;244500427;CC des Loges;CHAR;9
+CODGEO;Code géographique;Code géographique;244500468;Orléans Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;244500484;CC de la Forêt;CHAR;9
+CODGEO;Code géographique;Code géographique;244500542;CC de la Plaine du Nord Loiret;CHAR;9
+CODGEO;Code géographique;Code géographique;244600433;CC de la Vallée du Lot et du Vignoble;CHAR;9
+CODGEO;Code géographique;Code géographique;244600482;CC Quercy - Bouriane;CHAR;9
+CODGEO;Code géographique;Code géographique;244600532;CC du Pays de Lalbenque-Limogne;CHAR;9
+CODGEO;Code géographique;Code géographique;244600573;CC du Causse de Labastide-Murat;CHAR;9
+CODGEO;Code géographique;Code géographique;244700449;CC du Pays de Duras;CHAR;9
+CODGEO;Code géographique;Code géographique;244700464;CC du Pays de Lauzun;CHAR;9
+CODGEO;Code géographique;Code géographique;244701355;CC des Coteaux et Landes de Gascogne;CHAR;9
+CODGEO;Code géographique;Code géographique;244701405;CC Lot et Tolzac;CHAR;9
+CODGEO;Code géographique;Code géographique;244800405;CC Cœur de Lozère;CHAR;9
+CODGEO;Code géographique;Code géographique;244800470;CC du Gévaudan;CHAR;9
+CODGEO;Code géographique;Code géographique;244900015;CU Angers Loire Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;244900809;CC Anjou Bleu Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;244900882;CC Baugeois Vallée;CHAR;9
+CODGEO;Code géographique;Code géographique;245100615;CC de la Grande Vallée de la Marne;CHAR;9
+CODGEO;Code géographique;Code géographique;245100888;CC de la Brie Champenoise;CHAR;9
+CODGEO;Code géographique;Code géographique;245100979;CC du Sud Marnais;CHAR;9
+CODGEO;Code géographique;Code géographique;245200597;CC des Trois Forêts;CHAR;9
+CODGEO;Code géographique;Code géographique;245300223;CC du Pays de Meslay-Grez;CHAR;9
+CODGEO;Code géographique;Code géographique;245300355;CC de l'Ernée;CHAR;9
+CODGEO;Code géographique;Code géographique;245300389;CC du Bocage Mayennais;CHAR;9
+CODGEO;Code géographique;Code géographique;245300447;CC du Pays de Château-Gontier;CHAR;9
+CODGEO;Code géographique;Code géographique;245400171;CC Moselle et Madon;CHAR;9
+CODGEO;Code géographique;Code géographique;245400189;CC des Pays du Sel et du Vermois;CHAR;9
+CODGEO;Code géographique;Code géographique;245400262;CA de Longwy;CHAR;9
+CODGEO;Code géographique;Code géographique;245400510;CC du Pays de Colombey et du Sud Toulois;CHAR;9
+CODGEO;Code géographique;Code géographique;245400601;CC du Bassin de Pompey;CHAR;9
+CODGEO;Code géographique;Code géographique;245400676;Métropole du Grand Nancy;CHAR;9
+CODGEO;Code géographique;Code géographique;245400759;CC du Pays du Sanon;CHAR;9
+CODGEO;Code géographique;Code géographique;245500327;CC du Sammiellois;CHAR;9
+CODGEO;Code géographique;Code géographique;245501176;CC du Territoire de Fresnes-en-Woëvre;CHAR;9
+CODGEO;Code géographique;Code géographique;245501184;CC du Pays de Revigny-sur-Ornain;CHAR;9
+CODGEO;Code géographique;Code géographique;245501242;CC du Pays d'Étain;CHAR;9
+CODGEO;Code géographique;Code géographique;245501259;CC du Pays de Montmédy;CHAR;9
+CODGEO;Code géographique;Code géographique;245600440;CC de Blavet Bellevue Océan;CHAR;9
+CODGEO;Code géographique;Code géographique;245600465;CC de Belle-Île-en-Mer;CHAR;9
+CODGEO;Code géographique;Code géographique;245614383;CC Questembert Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;245614417;CC Roi Morvan Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;245614433;CC Pontivy Communauté;CHAR;9
+CODGEO;Code géographique;Code géographique;245700133;CC du District Urbain de Faulquemont (DUF);CHAR;9
+CODGEO;Code géographique;Code géographique;245700372;CA de Forbach Porte de France;CHAR;9
+CODGEO;Code géographique;Code géographique;245700398;CC de Freyming-Merlebach;CHAR;9
+CODGEO;Code géographique;Code géographique;245700695;CC de Cattenom et Environs;CHAR;9
+CODGEO;Code géographique;Code géographique;245700950;CC du Pays de Phalsbourg;CHAR;9
+CODGEO;Code géographique;Code géographique;245701164;CC du Warndt;CHAR;9
+CODGEO;Code géographique;Code géographique;245701206;CC du Saulnois;CHAR;9
+CODGEO;Code géographique;Code géographique;245701222;CA du Val de Fensch;CHAR;9
+CODGEO;Code géographique;Code géographique;245701271;CC du Pays Orne Moselle;CHAR;9
+CODGEO;Code géographique;Code géographique;245701354;CC de l'Arc Mosellan;CHAR;9
+CODGEO;Code géographique;Code géographique;245701362;CA Portes de France-Thionville;CHAR;9
+CODGEO;Code géographique;Code géographique;245701404;CC du Pays Haut Val d'Alzette;CHAR;9
+CODGEO;Code géographique;Code géographique;245801063;CC Loire et Allier;CHAR;9
+CODGEO;Code géographique;Code géographique;245804406;CA de Nevers;CHAR;9
+CODGEO;Code géographique;Code géographique;245804497;CC du Nivernais Bourbonnais;CHAR;9
+CODGEO;Code géographique;Code géographique;245900428;CU de Dunkerque;CHAR;9
+CODGEO;Code géographique;Code géographique;245900758;CC Flandre Lys;CHAR;9
+CODGEO;Code géographique;Code géographique;245901038;CC du Pays Solesmois;CHAR;9
+CODGEO;Code géographique;Code géographique;245901152;CC Cœur d'Ostrevent;CHAR;9
+CODGEO;Code géographique;Code géographique;245901160;CA Valenciennes Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;246000129;CC du Liancourtois;CHAR;9
+CODGEO;Code géographique;Code géographique;246000376;CC du Clermontois;CHAR;9
+CODGEO;Code géographique;Code géographique;246000566;CC du Plateau Picard;CHAR;9
+CODGEO;Code géographique;Code géographique;246000582;CC des Sablons;CHAR;9
+CODGEO;Code géographique;Code géographique;246000707;CC du Vexin-Thelle;CHAR;9
+CODGEO;Code géographique;Code géographique;246000749;CC des Lisières de l'Oise;CHAR;9
+CODGEO;Code géographique;Code géographique;246000756;CC du Pays Noyonnais;CHAR;9
+CODGEO;Code géographique;Code géographique;246000764;CC de l'Aire Cantilienne;CHAR;9
+CODGEO;Code géographique;Code géographique;246000772;CC des Deux Vallées;CHAR;9
+CODGEO;Code géographique;Code géographique;246000848;CC de la Picardie Verte;CHAR;9
+CODGEO;Code géographique;Code géographique;246000855;CC du Pays des Sources;CHAR;9
+CODGEO;Code géographique;Code géographique;246000871;CC du Pays de Valois;CHAR;9
+CODGEO;Code géographique;Code géographique;246000897;CC de la Plaine d'Estrées;CHAR;9
+CODGEO;Code géographique;Code géographique;246000913;CC du Pays de Bray;CHAR;9
+CODGEO;Code géographique;Code géographique;246000921;CC des Pays d'Oise et d'Halatte;CHAR;9
+CODGEO;Code géographique;Code géographique;246100390;CC du Val d'Orne;CHAR;9
+CODGEO;Code géographique;Code géographique;246100663;CU d'Alençon;CHAR;9
+CODGEO;Code géographique;Code géographique;246200299;CA d'Hénin-Carvin;CHAR;9
+CODGEO;Code géographique;Code géographique;246200364;CA de Lens - Liévin;CHAR;9
+CODGEO;Code géographique;Code géographique;246200380;CC de la Terre des Deux Caps;CHAR;9
+CODGEO;Code géographique;Code géographique;246200729;CA du Boulonnais;CHAR;9
+CODGEO;Code géographique;Code géographique;246200844;CC de la Région d'Audruicq;CHAR;9
+CODGEO;Code géographique;Code géographique;246201016;CC du Pays de Lumbres;CHAR;9
+CODGEO;Code géographique;Code géographique;246300701;Clermont Auvergne Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;246300966;CC du Massif du Sancy;CHAR;9
+CODGEO;Code géographique;Code géographique;246301097;CC Entre Dore et Allier;CHAR;9
+CODGEO;Code géographique;Code géographique;246400337;CC de la Vallée d'Ossau;CHAR;9
+CODGEO;Code géographique;Code géographique;246401756;CC Pays de Nay;CHAR;9
+CODGEO;Code géographique;Code géographique;246500482;CC de la Haute-Bigorre;CHAR;9
+CODGEO;Code géographique;Code géographique;246500573;CC Aure-Louron;CHAR;9
+CODGEO;Code géographique;Code géographique;246600282;CC Sud-Roussillon;CHAR;9
+CODGEO;Code géographique;Code géographique;246600373;CC du Vallespir;CHAR;9
+CODGEO;Code géographique;Code géographique;246600399;CC Pyrénées Cerdagne;CHAR;9
+CODGEO;Code géographique;Code géographique;246600415;CC Roussillon-Conflent;CHAR;9
+CODGEO;Code géographique;Code géographique;246600423;CC Agly Fenouillèdes;CHAR;9
+CODGEO;Code géographique;Code géographique;246600449;CC des Aspres;CHAR;9
+CODGEO;Code géographique;Code géographique;246600464;CC Pyrénées catalanes;CHAR;9
+CODGEO;Code géographique;Code géographique;246600548;CC du Haut Vallespir;CHAR;9
+CODGEO;Code géographique;Code géographique;246700306;CC de la Vallée de la Bruche;CHAR;9
+CODGEO;Code géographique;Code géographique;246700488;Eurométropole de Strasbourg;CHAR;9
+CODGEO;Code géographique;Code géographique;246700744;CC des Portes de Rosheim;CHAR;9
+CODGEO;Code géographique;Code géographique;246700777;CC de la Vallée de Villé;CHAR;9
+CODGEO;Code géographique;Code géographique;246700843;CC de la Basse-Zorn;CHAR;9
+CODGEO;Code géographique;Code géographique;246700926;CC du Pays de Wissembourg;CHAR;9
+CODGEO;Code géographique;Code géographique;246700959;CC du Pays de la Zorn;CHAR;9
+CODGEO;Code géographique;Code géographique;246700967;CC de Sélestat;CHAR;9
+CODGEO;Code géographique;Code géographique;246701064;CC de la Région de Molsheim-Mutzig;CHAR;9
+CODGEO;Code géographique;Code géographique;246701080;CC du Pays de Sainte-Odile;CHAR;9
+CODGEO;Code géographique;Code géographique;246701098;CC du Pays de Niederbronn-les-Bains;CHAR;9
+CODGEO;Code géographique;Code géographique;246800205;CC de la Vallée de Saint-Amarin;CHAR;9
+CODGEO;Code géographique;Code géographique;246800395;CC du Val d'Argent;CHAR;9
+CODGEO;Code géographique;Code géographique;246800445;CC du Centre du Haut-Rhin;CHAR;9
+CODGEO;Code géographique;Code géographique;246800494;CC du Pays de Rouffach, Vignobles et Châteaux;CHAR;9
+CODGEO;Code géographique;Code géographique;246800551;CC de la Vallée de Kaysersberg;CHAR;9
+CODGEO;Code géographique;Code géographique;246800569;CC de la Région de Guebwiller;CHAR;9
+CODGEO;Code géographique;Code géographique;246800577;CC du Pays de Ribeauvillé;CHAR;9
+CODGEO;Code géographique;Code géographique;246800585;CC de la Vallée de Munster;CHAR;9
+CODGEO;Code géographique;Code géographique;246800676;CC de la Vallée de la Doller et du Soultzbach;CHAR;9
+CODGEO;Code géographique;Code géographique;246800726;CA Colmar Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;246900575;CC de l'Est Lyonnais (CCEL);CHAR;9
+CODGEO;Code géographique;Code géographique;246900625;CC du Pays de l'Arbresle (CCPA);CHAR;9
+CODGEO;Code géographique;Code géographique;246900724;CC des Vallons du Lyonnais (CCVL);CHAR;9
+CODGEO;Code géographique;Code géographique;246900740;CC du Pays Mornantais (COPAMO);CHAR;9
+CODGEO;Code géographique;Code géographique;246900757;CC de la Vallée du Garon (CCVG);CHAR;9
+CODGEO;Code géographique;Code géographique;246900765;CC du Pays de l'Ozon;CHAR;9
+CODGEO;Code géographique;Code géographique;247000011;CA de Vesoul;CHAR;9
+CODGEO;Code géographique;Code géographique;247000367;CC des Combes;CHAR;9
+CODGEO;Code géographique;Code géographique;247000623;CC des Quatre Rivières;CHAR;9
+CODGEO;Code géographique;Code géographique;247000664;CC du Pays de Lure;CHAR;9
+CODGEO;Code géographique;Code géographique;247000698;CC des Monts de Gy;CHAR;9
+CODGEO;Code géographique;Code géographique;247000706;CC du Pays Riolais;CHAR;9
+CODGEO;Code géographique;Code géographique;247000714;CC du Pays de Villersexel;CHAR;9
+CODGEO;Code géographique;Code géographique;247000722;CC du Pays d'Héricourt;CHAR;9
+CODGEO;Code géographique;Code géographique;247000755;CC du Pays de Luxeuil;CHAR;9
+CODGEO;Code géographique;Code géographique;247000821;CC Rahin et Chérimont;CHAR;9
+CODGEO;Code géographique;Code géographique;247000854;CC des 1000 étangs;CHAR;9
+CODGEO;Code géographique;Code géographique;247100290;CU Le Creusot Montceau-les-Mines;CHAR;9
+CODGEO;Code géographique;Code géographique;247100589;CA Le Grand Chalon;CHAR;9
+CODGEO;Code géographique;Code géographique;247100639;CC de Marcigny;CHAR;9
+CODGEO;Code géographique;Code géographique;247100647;CC Bresse Nord Intercom;CHAR;9
+CODGEO;Code géographique;Code géographique;247103765;CC Entre Saône et Grosne;CHAR;9
+CODGEO;Code géographique;Code géographique;247103864;CC du Canton de Semur-en-Brionnais;CHAR;9
+CODGEO;Code géographique;Code géographique;247104094;CC Sud Côte Chalonnaise;CHAR;9
+CODGEO;Code géographique;Code géographique;247200090;CC de Sablé-sur-Sarthe;CHAR;9
+CODGEO;Code géographique;Code géographique;247200132;CU Le Mans Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;247200348;CC du Pays Fléchois;CHAR;9
+CODGEO;Code géographique;Code géographique;247200421;CC du Sud Est du Pays Manceau;CHAR;9
+CODGEO;Code géographique;Code géographique;247200447;CC Orée de Bercé - Belinois;CHAR;9
+CODGEO;Code géographique;Code géographique;247200629;CC du Val de Sarthe;CHAR;9
+CODGEO;Code géographique;Code géographique;247200686;CC du Pays de l'Huisne Sarthoise;CHAR;9
+CODGEO;Code géographique;Code géographique;247300015;CC des Vallées d'Aigueblanche;CHAR;9
+CODGEO;Code géographique;Code géographique;247300254;CC de Haute-Tarentaise;CHAR;9
+CODGEO;Code géographique;Code géographique;247300262;CC de Yenne;CHAR;9
+CODGEO;Code géographique;Code géographique;247300361;CC du Canton de la Chambre;CHAR;9
+CODGEO;Code géographique;Code géographique;247300452;CC Maurienne Galibier;CHAR;9
+CODGEO;Code géographique;Code géographique;247300528;CC Val Guiers;CHAR;9
+CODGEO;Code géographique;Code géographique;247300668;CC du Lac d'Aiguebelette (CCLA);CHAR;9
+CODGEO;Code géographique;Code géographique;247300676;CC Porte de Maurienne;CHAR;9
+CODGEO;Code géographique;Code géographique;247300817;CC Les Versants d'Aime;CHAR;9
+CODGEO;Code géographique;Code géographique;247400047;CC de la Vallée Verte;CHAR;9
+CODGEO;Code géographique;Code géographique;247400112;CC du Pays de Cruseilles;CHAR;9
+CODGEO;Code géographique;Code géographique;247400567;CC Fier et Usses;CHAR;9
+CODGEO;Code géographique;Code géographique;247400583;CC Arve et Salève;CHAR;9
+CODGEO;Code géographique;Code géographique;247400617;CC des Vallées de Thônes;CHAR;9
+CODGEO;Code géographique;Code géographique;247400666;CC des Quatre Rivières;CHAR;9
+CODGEO;Code géographique;Code géographique;247400682;CC du Haut-Chablais;CHAR;9
+CODGEO;Code géographique;Code géographique;247400690;CC du Genevois;CHAR;9
+CODGEO;Code géographique;Code géographique;247400724;CC du Pays Rochois;CHAR;9
+CODGEO;Code géographique;Code géographique;247400740;CC Rumilly Terre de Savoie;CHAR;9
+CODGEO;Code géographique;Code géographique;247400773;CC des Sources du Lac d'Annecy;CHAR;9
+CODGEO;Code géographique;Code géographique;247600505;CC Campagne-de-Caux;CHAR;9
+CODGEO;Code géographique;Code géographique;247600588;CC des Villes Sœurs;CHAR;9
+CODGEO;Code géographique;Code géographique;247600604;CC de Londinières;CHAR;9
+CODGEO;Code géographique;Code géographique;247600620;CC Yvetot Normandie;CHAR;9
+CODGEO;Code géographique;Code géographique;247600646;CC Caux - Austreberthe;CHAR;9
+CODGEO;Code géographique;Code géographique;247600729;CC Falaises du Talou;CHAR;9
+CODGEO;Code géographique;Code géographique;247600786;CA de la Région Dieppoise;CHAR;9
+CODGEO;Code géographique;Code géographique;247700032;CC Moret Seine et Loing;CHAR;9
+CODGEO;Code géographique;Code géographique;247700057;CA Melun Val de Seine;CHAR;9
+CODGEO;Code géographique;Code géographique;247700065;CC du Pays de l'Ourcq;CHAR;9
+CODGEO;Code géographique;Code géographique;247700107;CC Pays de Montereau;CHAR;9
+CODGEO;Code géographique;Code géographique;247700339;CA Val d'Europe Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;247700594;CA Marne et Gondoire;CHAR;9
+CODGEO;Code géographique;Code géographique;247700644;CC l'Orée de la Brie;CHAR;9
+CODGEO;Code géographique;Code géographique;247700701;CC Brie Nangissienne;CHAR;9
+CODGEO;Code géographique;Code géographique;247800550;CC du Pays Houdanais (C.C.P.H.);CHAR;9
+CODGEO;Code géographique;Code géographique;247800584;CA Versailles Grand Parc (C.A.V.G.P.);CHAR;9
+CODGEO;Code géographique;Code géographique;247800618;CC Cœur d'Yvelines;CHAR;9
+CODGEO;Code géographique;Code géographique;247900798;CC du Thouarsais;CHAR;9
+CODGEO;Code géographique;Code géographique;248000499;CC du Val de Somme;CHAR;9
+CODGEO;Code géographique;Code géographique;248000531;CA Amiens Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;248000747;CC du Pays du Coquelicot;CHAR;9
+CODGEO;Code géographique;Code géographique;248100158;CC du Sor et de l'Agout;CHAR;9
+CODGEO;Code géographique;Code géographique;248100430;CA de Castres Mazamet;CHAR;9
+CODGEO;Code géographique;Code géographique;248100497;CC Val 81;CHAR;9
+CODGEO;Code géographique;Code géographique;248100737;CA de l'Albigeois (C2A);CHAR;9
+CODGEO;Code géographique;Code géographique;248100745;CC Thoré Montagne Noire;CHAR;9
+CODGEO;Code géographique;Code géographique;248200016;CC des Deux Rives;CHAR;9
+CODGEO;Code géographique;Code géographique;248200057;CC du Quercy Caussadais;CHAR;9
+CODGEO;Code géographique;Code géographique;248200065;CC de la Lomagne Tarn-et-Garonnaise;CHAR;9
+CODGEO;Code géographique;Code géographique;248200099;CA Grand Montauban;CHAR;9
+CODGEO;Code géographique;Code géographique;248200107;CC du Quercy Rouergue et des Gorges de l'Aveyron;CHAR;9
+CODGEO;Code géographique;Code géographique;248300394;CA Sud Sainte-Baume;CHAR;9
+CODGEO;Code géographique;Code géographique;248300410;CC de la Vallée du Gapeau;CHAR;9
+CODGEO;Code géographique;Code géographique;248300493;CA Dracénie Provence Verdon Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;248300543;Métropole Toulon-Provence-Méditerranée;CHAR;9
+CODGEO;Code géographique;Code géographique;248300550;CC Cœur du Var;CHAR;9
+CODGEO;Code géographique;Code géographique;248400053;CA Ventoux-Comtat-Venaissin (COVE);CHAR;9
+CODGEO;Code géographique;Code géographique;248400160;CC Aygues-Ouvèze en Provence (CCAOP);CHAR;9
+CODGEO;Code géographique;Code géographique;248400236;CC du Pays Réuni d'Orange;CHAR;9
+CODGEO;Code géographique;Code géographique;248400251;CA du Grand Avignon (COGA);CHAR;9
+CODGEO;Code géographique;Code géographique;248400285;CC Territoriale Sud-Luberon;CHAR;9
+CODGEO;Code géographique;Code géographique;248400293;CC des Sorgues du Comtat;CHAR;9
+CODGEO;Code géographique;Code géographique;248400319;CC du Pays des Sorgues et des Monts de Vaucluse;CHAR;9
+CODGEO;Code géographique;Code géographique;248400335;CC Vaison Ventoux;CHAR;9
+CODGEO;Code géographique;Code géographique;248500191;CC de l'Île de Noirmoutier;CHAR;9
+CODGEO;Code géographique;Code géographique;248500258;CC Océan Marais de Monts;CHAR;9
+CODGEO;Code géographique;Code géographique;248500340;CC Pays de Chantonnay;CHAR;9
+CODGEO;Code géographique;Code géographique;248500415;CC du Pays de la Châtaigneraie;CHAR;9
+CODGEO;Code géographique;Code géographique;248500464;CC du Pays de Pouzauges;CHAR;9
+CODGEO;Code géographique;Code géographique;248500530;CC du Pays des Achards;CHAR;9
+CODGEO;Code géographique;Code géographique;248500563;CC Vendée, Sèvre, Autise;CHAR;9
+CODGEO;Code géographique;Code géographique;248500589;CA La Roche-sur-Yon Agglomération;CHAR;9
+CODGEO;Code géographique;Code géographique;248500621;CC du Pays des Herbiers;CHAR;9
+CODGEO;Code géographique;Code géographique;248500662;CC du Pays de Mortagne;CHAR;9
+CODGEO;Code géographique;Code géographique;248600413;CA Grand Châtellerault;CHAR;9
+CODGEO;Code géographique;Code géographique;248600447;CC du Pays Loudunais;CHAR;9
+CODGEO;Code géographique;Code géographique;248700189;CC du Pays de Saint-Yrieix;CHAR;9
+CODGEO;Code géographique;Code géographique;248719262;CC Gartempe - Saint-Pardoux;CHAR;9
+CODGEO;Code géographique;Code géographique;248719288;CC du Val de Vienne;CHAR;9
+CODGEO;Code géographique;Code géographique;248719312;CU Limoges Métropole;CHAR;9
+CODGEO;Code géographique;Code géographique;248719338;CC Briance-Combade;CHAR;9
+CODGEO;Code géographique;Code géographique;248719353;CC des Portes de Vassivière;CHAR;9
+CODGEO;Code géographique;Code géographique;248719361;CC de Noblat;CHAR;9
+CODGEO;Code géographique;Code géographique;248900334;CA du Grand Sénonais;CHAR;9
+CODGEO;Code géographique;Code géographique;248900383;CC de l'Agglomération Migennoise;CHAR;9
+CODGEO;Code géographique;Code géographique;248900524;CC de l'Aillantais;CHAR;9
+CODGEO;Code géographique;Code géographique;248900664;CC de la Vanne et du Pays d'Othe;CHAR;9
+CODGEO;Code géographique;Code géographique;248900748;CC du Gâtinais en Bourgogne;CHAR;9
+CODGEO;Code géographique;Code géographique;248900896;CC Yonne Nord;CHAR;9
+CODGEO;Code géographique;Code géographique;248900938;CC du Jovinien;CHAR;9
+CODGEO;Code géographique;Code géographique;249000241;CC du Sud Territoire;CHAR;9
+CODGEO;Code géographique;Code géographique;249100074;CC du Pays de Limours (CCPL);CHAR;9
+CODGEO;Code géographique;Code géographique;249100157;CC des Deux Vallées;CHAR;9
+CODGEO;Code géographique;Code géographique;249100546;CC du Val d'Essonne (CCVE);CHAR;9
+CODGEO;Code géographique;Code géographique;249100553;CC Entre Juine et Renarde (CCEJR);CHAR;9
+CODGEO;Code géographique;Code géographique;249100595;CC Le Dourdannais en Hurepoix (CCDH);CHAR;9
+CODGEO;Code géographique;Code géographique;249500109;CA de Cergy-Pontoise;CHAR;9
+CODGEO;Code géographique;Code géographique;249500430;CC Sausseron Impressionnistes;CHAR;9
+CODGEO;Code géographique;Code géographique;249500455;CC de la Vallée de l'Oise et des Trois Forêts;CHAR;9
+CODGEO;Code géographique;Code géographique;249500489;CC du Haut Val d'Oise;CHAR;9
+CODGEO;Code géographique;Code géographique;249500513;CC du Vexin-Val de Seine;CHAR;9
+CODGEO;Code géographique;Code géographique;249720053;CA de l'Espace Sud de la Martinique;CHAR;9
+CODGEO;Code géographique;Code géographique;249720061;CA du Centre de la Martinique;CHAR;9
+CODGEO;Code géographique;Code géographique;249740077;CA CIVIS (Communauté Intercommunale des VIlles Solidaires);CHAR;9
+CODGEO;Code géographique;Code géographique;249740085;CA du Sud;CHAR;9
+CODGEO;Code géographique;Code géographique;249740093;CA Intercommunale de la Réunion Est (CIREST);CHAR;9
+CODGEO;Code géographique;Code géographique;249740101;CA Territoire de la Côte Ouest (TCO);CHAR;9
+CODGEO;Code géographique;Code géographique;249740119;CA Intercommunale du Nord de la Réunion (CINOR);CHAR;9
