@@ -2,6 +2,10 @@
 # remove pics folder because too big
 pics/*
 pics/
+
+# html supp files
+*_files/
+
 # History files
 .Rhistory
 .Rapp.history
