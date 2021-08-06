@@ -1,0 +1,452 @@
+---
+title: "Effet des annonces Macron"
+author: "FD"
+output: 
+  html_document: 
+      code_folding: hide
+      toc: TRUE
+      toc_float: TRUE
+      self_contained: no
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list = ls())
+```
+
+```{r, include = FALSE}
+# File names
+dataFileCom <- paste0("data/donnees-de-vaccination-par-commune_2021-08-06.csv") 
+dataFileEPCI <- paste0("data/donnees-de-vaccination-par-epci_2021-08-06.csv")
+```
+
+```{r, results = 'hide', warning=FALSE}
+library(plotly)
+library(RColorBrewer)
+```
+
+# Initializations
+
+## Load data
+
+### Niveau de vie par EPCI (2018)
+
+Source <https://www.insee.fr/fr/statistiques/5009236?sommaire=5009255&q=revenu+epci#dictionnaire>
+
+<!-- 
+Code géographique ;
+Libellé géographique ;
+Nombre de ménages fiscaux ;
+Nombre de personnes dans les ménages fiscaux ;
+Médiane du niveau de vie (€) ;
+Part des ménages fiscaux imposés (%) ;
+Taux de pauvreté-Ensemble (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a moins de 30 ans (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a de 30 à 39 ans (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a de 40 à 49 ans (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a de 50 à 59 ans (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a de 60 à 74 ans (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a 75 ans ou plus (%) ;
+Taux de pauvreté des ménages propriétaires de leur logement (%) ;
+Taux de pauvreté des ménages locataires de leur logement (%) ;
+Part des revenus d'activité (%) ;
+dont part des salaires, traitements (%) ;
+dont part des indemnités de chômage (%) ;
+dont part des revenus des activités non salariées (%) ;
+Part des pensions, retraites et rentes (%) ;
+Part des revenus du patrimoine et des autres revenus (%) ;
+Part de l'ensemble des prestations sociales (%) ;
+dont part des prestations familiales (%) ;
+dont part des minima sociaux (%) ;
+dont part des prestations logement (%) ;
+Part des impôts (%) ;
+Rapport interdécile 9e décile/1er decile ;
+1er décile du niveau de vie (€) ;
+9e décile du niveau de vie (€).
+-->
+
+```{r loadDataRevenu, results = 'hide'}
+dat.revenuEPCI <- read.csv("data/insee/cc_filosofi_2018_EPCI-geo2021.CSV", sep = ";")
+head(dat.revenuEPCI)
+
+dat.revenuCom <- read.csv("data/cc_filosofi_2018_COM-geo2021.csv", sep = ";")
+head(dat.revenuCom)
+```
+
+
+### Vaccination par EPCI et par commune
+
+Source <https://datavaccin-covid.ameli.fr/explore/dataset/donnees-de-vaccination-par-epci/download/?format=csv&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B>
+
+```{r, results = 'hide'} 
+dat.vaccinationEPCI <- read.csv(dataFileEPCI, sep = ";", stringsAsFactors = FALSE, dec = ",")
+head(dat.vaccinationEPCI)
+
+dat.vaccinationCom <- read.csv(dataFileCom, sep = ";", stringsAsFactors = FALSE, dec = ",")
+head(dat.vaccinationCom)
+```
+
+### Composition communales 
+
+Pour les infos sur les départements
+
+Source <https://www.insee.fr/fr/information/2510634>
+```{r}
+composition <- read.csv("data/EPCI_composition-communale.csv", encoding = "UFT-8")
+```
+
+Source region codes <https://www.data.gouv.fr/en/datasets/regions-de-france/>
+
+```{r}
+# Departements
+departements <- read.csv("data/departement2020.csv")
+
+dic.depname <- departements$libelle
+names(dic.depname) <- departements$dep
+
+# Load region codes 
+reg <- read.csv("data/regions-france.csv")
+```
+
+## Clean data
+
+```{r}
+# Final week in the data
+maxWeek1 <- max(unique(dat.vaccinationEPCI$semaine_injection))
+maxWeek2 <- max(unique(dat.vaccinationCom$semaine_injection))
+stopifnot(maxWeek1 == maxWeek2)
+maxWeek <- maxWeek1
+```
+
+```{r, results='hide'}
+# Weeks in the datasets
+wks1 <- sort(unique(dat.vaccinationEPCI$semaine_injection))
+wks2 <- sort(unique(dat.vaccinationCom$semaine_injection))
+stopifnot(all(wks1 == wks2))
+# Check that consecutive weeks
+stopifnot(all(is.element(diff(as.numeric(substr(wks1, 6, 7))), c(1, -52))))
+wks <- wks1
+
+wks[1] # Show first week; week 52 of 2020 started on 2020-12-21
+# Dates of Mondays of the corresponding weeks
+beginWeek <- seq(as.Date("2020-12-21"), as.Date("2021-12-31"), by = 7)
+names(beginWeek) <- wks
+# Dates of Sundays of the corresponding weeks
+endWeek <- as.Date(beginWeek) + 6
+names(endWeek) <- wks
+
+# Add the day infos to the datasets
+dat.vaccinationEPCI$beginWeek <- beginWeek[dat.vaccinationEPCI$semaine_injection]
+dat.vaccinationEPCI$endWeek <- endWeek[dat.vaccinationEPCI$semaine_injection]
+dat.vaccinationEPCI$week.DD <- paste(dat.vaccinationEPCI$beginWeek, dat.vaccinationEPCI$endWeek, sep = "_")
+
+dat.vaccinationCom$beginWeek <- beginWeek[dat.vaccinationCom$semaine_injection]
+dat.vaccinationCom$endWeek <- endWeek[dat.vaccinationCom$semaine_injection]
+dat.vaccinationCom$week.DD <- paste(dat.vaccinationCom$beginWeek, dat.vaccinationCom$endWeek, sep = "_")
+```
+
+Merge the vaccination and revenu datasets (all times)
+
+```{r, results = 'hide'}
+# First, compare contents
+## EPCI
+# Number of different EPCI in the two datasets
+c(vaccin = length(unique(dat.vaccinationEPCI$epci)), revenu = length(unique(dat.revenuEPCI$CODGEO)))
+
+# Compare EPCIs
+# Some vaccin are not included in revenu
+any(!is.element(unique(dat.vaccinationEPCI$epci), unique(dat.revenuEPCI$CODGEO)))
+
+# All revenu are included in vaccin
+any(!is.element(unique(dat.revenuEPCI$CODGEO), unique(dat.vaccinationEPCI$epci)))
+
+## Communes
+# Check if vaccination communes included in revenu dataset
+any(!is.element(unique(dat.vaccinationCom$commune_residence), unique(dat.revenuCom$CODGEO)))
+# Show them -- codes when location is unknown
+unique(dat.vaccinationCom$commune_residence)[!is.element(unique(dat.vaccinationCom$commune_residence), unique(dat.revenuCom$CODGEO))]
+
+
+# Merge the datasets 
+## EPCI
+dat.EPCI <- merge(dat.vaccinationEPCI, dat.revenuEPCI, by.x = "epci", by.y = "CODGEO", all.x = TRUE)
+stopifnot(nrow(dat.vaccinationEPCI) == nrow(dat.EPCI)) # Check all included
+
+## Communes
+dat.Com <- merge(dat.vaccinationCom, dat.revenuCom, by.x = "commune_residence", by.y = "CODGEO", all.x = TRUE)
+stopifnot(nrow(dat.vaccinationCom) == nrow(dat.Com)) # Check all included
+```
+
+
+Departement information
+
+```{r, results='hide'}
+# Information about departement in which the different EPCI are
+# Some are across multiple departements: keep the information by collating them with "_"
+agg_nbdep <- aggregate(composition$DEP, by = list(composition$EPCI), FUN = function(i) paste(sort(unique(i)), collapse = "_"))
+table(agg_nbdep$x)
+
+# Dictionnary of departement(s) associated to EPCI
+dic.dep <- agg_nbdep$x
+names(dic.dep) <- agg_nbdep$Group.1
+
+# Add the dep information to our EPCI data
+dat.EPCI$dep <- dic.dep[as.character(dat.EPCI$epci)]
+
+# Add the libelle information
+dat.EPCI$dep_libelle <- dic.depname[as.character(dat.EPCI$dep)]
+
+# Get departement information in Communes dataset
+dat.Com$dep <- substr(dat.Com$commune_residence, 1, 2)
+```
+
+Add region information 
+
+```{r, results = 'hide'}
+# As dictionnary
+reg.dic <- c(reg$nom_region)
+names(reg.dic) <- reg$code_region # !! Name has to be in quotes
+
+# Initialize region data
+unique(dat.EPCI$reg_code)
+
+# Some EPCIs are on two regions
+dat.EPCI$twoRegions <- (nchar(dat.EPCI$reg_code) > 2)
+
+# Extract regional code, including for EPCI on two regions
+dat.EPCI$reg_code1 <- substr(dat.EPCI$reg_code, 1, 2)
+dat.EPCI$reg_code2 <- substr(dat.EPCI$reg_code, 4, 5)
+dat.EPCI[which(dat.EPCI$reg_code2 == ""), "reg_code2"] <- NA
+
+dat.EPCI$libelle_region <- reg.dic[dat.EPCI$reg_code1]
+dat.EPCI$libelle_region2 <- reg.dic[dat.EPCI$reg_code2]
+
+# Add short names
+# Add shorter name
+dat.EPCI$reg_shortname <- NA
+dat.EPCI[which(dat.EPCI$libelle_region == "Île-de-France"), "reg_shortname"] <- "IDF"
+dat.EPCI[which(dat.EPCI$libelle_region == "Provence-Alpes-Côte d'Azur"), "reg_shortname"] <- "PACA"
+dat.EPCI[which(dat.EPCI$libelle_region == "Bretagne"), "reg_shortname"] <- "BRE"
+dat.EPCI[which(dat.EPCI$libelle_region == "Auvergne-Rhône-Alpes"), "reg_shortname"] <- "ARA"
+dat.EPCI[which(dat.EPCI$libelle_region == "Hauts-de-France"), "reg_shortname"] <- "HDF"
+dat.EPCI[which(dat.EPCI$libelle_region == "Grand Est"), "reg_shortname"] <- "GE"
+dat.EPCI[which(dat.EPCI$libelle_region == "Occitanie"), "reg_shortname"] <- "OCC"
+dat.EPCI[which(dat.EPCI$libelle_region == "Normandie"), "reg_shortname"] <- "NOR"
+dat.EPCI[which(dat.EPCI$libelle_region == "Bourgogne-Franche-Comté"), "reg_shortname"] <- "BFC"
+dat.EPCI[which(dat.EPCI$libelle_region == "Pays de la Loire"), "reg_shortname"] <- "PDL"
+dat.EPCI[which(dat.EPCI$libelle_region == "Nouvelle-Aquitaine"), "reg_shortname"] <- "NAQ"
+dat.EPCI[which(dat.EPCI$libelle_region == "Centre-Val de Loire"), "reg_shortname"] <- "CVL"
+dat.EPCI[which(dat.EPCI$libelle_region == "Corse"), "reg_shortname"] <- "COR"
+
+table(dat.EPCI$reg_shortname, useNA = "ifany")
+table(dat.EPCI$libelle_region, useNA = "ifany")
+
+# Missing DOMs
+
+## Coms
+unique(dat.Com$dep)
+# Initialize region data
+dat.Com$reg_shortname <- NA
+dat.Com$region <- NA
+# Get region from departement information
+dat.Com[base::is.element(dat.Com$dep, c("13", "83", "84")), c("reg_shortname", "region")] <- c("PACA", "Provence-Alpes-Côte d'Azur")
+dat.Com[base::is.element(dat.Com$dep, c("75", "91", "92", "93", "94", "95")), c("reg_shortname", "region")] <- c("IDF", "Île-de-France")
+dat.Com[base::is.element(dat.Com$dep, c("69")), c("reg_shortname", "region")] <- c("ARA", "Auvergne-Rhône-Alpes")
+```
+
+Make sure that values are numeric 
+
+```{r, results = 'hide'}
+for(col in c("taux_1_inj", "taux_termine", 
+             "taux_cumu_1_inj", "taux_cumu_termine")){
+  dat.Com[, col] <- as.numeric(dat.Com[, col])
+  dat.EPCI[, col] <- as.numeric(dat.EPCI[, col])
+}
+```
+
+Dictionary of age classes
+
+```{r, results = 'hide'}
+# Check that age classes match
+all(sort(unique(dat.Com$classe_age)) == sort(unique(dat.EPCI$classe_age)))
+dic.ages <- as.character(unique(dat.Com$classe_age))
+names(dic.ages) <- unique(dat.Com$libelle_classe_age)
+dic.ages
+```
+
+
+## Plot settings
+
+Region colors and pch
+
+```{r}
+# Define colors, joining palettes
+manycols <- c(brewer.pal(name = "Set2", 8), brewer.pal(name = "Set1", 8))
+# Region colors
+colRegion <- manycols[1:length(unique(dat.EPCI$reg_shortname))]
+names(colRegion) <- unique(dat.EPCI$reg_shortname)
+
+# Region pch
+pchRegion <- 14 + 1:length(unique(dat.EPCI$reg_shortname))
+names(pchRegion) <- names(colRegion)
+```
+
+Age colors 
+
+```{r}
+ages <- unique(dat.EPCI$classe_age)
+colAge <- brewer.pal(name = "Dark2", n = length(ages))
+names(colAge) <- sort(ages)
+```
+
+# Some checks
+
+Compare MED18 and PIMP18
+
+```{r}
+tmp <- dat.EPCI[which(dat.EPCI$classe_age == "TOUT_AGE" & dat.EPCI$semaine_injection == maxWeek), ]
+plot(tmp$PIMP18, tmp$MED18, xlab = "PIMP18, Part de ménages fiscaux imposés", ylab = "MED18, revenu médian")
+
+tmp <- dat.Com[which(dat.Com$classe_age == "TOUT_AGE" & dat.Com$semaine_injection == maxWeek), ]
+plot(tmp$PIMP18, tmp$MED18, xlab = "PIMP18, Part de ménages fiscaux imposés", ylab = "MED18, revenu médian")
+```
+
+
+# Model and plot
+
+## Final week only
+
+### All regions together, PIMP18
+
+```{r}
+mdlFinal.1D.PIMP.0 <- glm(cbind(effectif_1_inj, population_carto - effectif_1_inj) ~ PIMP18 + as.factor(classe_age) + PIMP18 * as.factor(classe_age) + PIMP18 * as.factor(reg_shortname) + as.factor(reg_shortname), family = binomial(link = "logit"), data = dat.EPCI[which(dat.EPCI$classe_age != "TOUT_AGE" & dat.EPCI$semaine_injection == maxWeek), ])
+
+
+mdlFinal.1D.PIMP.noregion <- glm(cbind(effectif_1_inj, population_carto - effectif_1_inj) ~ PIMP18 + as.factor(classe_age) + PIMP18 * as.factor(classe_age), family = binomial(link = "logit"), data = dat.EPCI[which(dat.EPCI$classe_age != "TOUT_AGE" & dat.EPCI$semaine_injection == maxWeek), ])
+
+mdlComFinal.1D.PIMP.noregion <- glm(cbind(effectif_1_inj, population_carto - effectif_1_inj) ~ PIMP18 + as.factor(classe_age) + PIMP18 * as.factor(classe_age), family = binomial(link = "logit"), data = dat.Com[which(dat.Com$classe_age != "TOUT_AGE" & dat.Com$semaine_injection == maxWeek), ])
+
+mdlFinal.termine.PIMP.noregion <- glm(cbind(effectif_termine, population_carto - effectif_termine) ~ PIMP18 + as.factor(classe_age) + PIMP18 * as.factor(classe_age), family = binomial(link = "logit"), data = dat.EPCI[which(dat.EPCI$classe_age != "TOUT_AGE" & dat.EPCI$semaine_injection == maxWeek), ])
+
+summary(mdlFinal.1D.PIMP.0)
+car::Anova(mdlFinal.1D.PIMP.0)
+
+summary(mdlFinal.1D.PIMP.noregion)
+car::Anova(mdlFinal.1D.PIMP.noregion)
+
+summary(mdlComFinal.1D.PIMP.noregion)
+car::Anova(mdlComFinal.1D.PIMP.noregion)
+
+summary(mdlFinal.termine.PIMP.noregion)
+car::Anova(mdlFinal.termine.PIMP.noregion)
+
+```
+
+### France entiere
+
+#### Une dose au moins, EPCI
+
+```{r plotFranceEntiereEPCI, fig.height=6.5}
+par(xpd = TRUE, las = 1)
+par(mar = c(4, 4, 4, 4))
+par(mgp = c(2, 0.5, 0), tck = -0.01)
+
+tmpAll <- dat.EPCI[which(dat.EPCI$classe_age != "TOUT_AGE" & dat.EPCI$semaine_injection == maxWeek), ]
+themaxpop <- max(tmpAll$population_carto)
+tmpAll$relsize <- tmpAll$population_carto / themaxpop
+tmpAll$relsize.transfo <- 5*(tmpAll$relsize*3)^(1/3)
+
+plot(tmpAll$PIMP18, 100*tmpAll$taux_1_inj, 
+     col = adjustcolor(colAge[tmpAll$classe_age], 0.5), 
+     pch = 16, cex = tmpAll$relsize.transfo,
+     ylim = c(0, 10), xlim = c(15, 85), 
+     frame.plot = FALSE, yaxs = "i", #xaxs = "i", 
+     xlab = "Part des ménages fiscaux imposés dans l'EPCI en 2018 (%)", ylab = "Taux de vaccination 1 dose au moins (%)",
+     type = "n"
+     )
+par(xpd = FALSE)
+for(i in seq(0, 10, by = 1)){
+  abline(h = i, col = gray(0.8), lty = 1)
+}
+
+legend("topleft", col = colAge[-length(colAge)], legend = names(colAge[-length(colAge)]), pch = 16, bty = "n")
+axis(4)
+
+
+points(tmpAll$PIMP18, 100*tmpAll$taux_1_inj, 
+     col = adjustcolor(colAge[tmpAll$classe_age], 0.5), 
+     pch = 16, cex = tmpAll$relsize.transfo,
+)
+newdata.noregion <- expand.grid(PIMP18 = seq(min(dat.EPCI$PIMP18, na.rm = TRUE), max(dat.EPCI$PIMP18, na.rm = TRUE), length.out = 100), classe_age = names(colAge[-length(colAge)]))
+
+ndt.noregion <- newdata.noregion
+ndt.noregion$prd1D <- predict(mdlFinal.1D.PIMP.noregion, newdata = newdata.noregion, type = "response")
+
+lwd.pred <- 2
+for(age in ages[ages!="TOUT_AGE"]){
+  # Get predicted data for this age class (no region)
+  subd <- ndt.noregion[ndt.noregion$classe_age == age,]
+  lines(subd$PIMP18, 100*subd$prd1D, col = colAge[age], lwd = lwd.pred)
+}
+
+convertDate <- function(x) format.Date(as.Date(x), "%d/%m")
+mtext(side = 3, paste0("France entière\nPendant la semaine du ", convertDate(unique(tmpAll$beginWeek)), " au ", convertDate(unique(tmpAll$endWeek))), line = 1.)
+
+```
+
+
+#### Une dose au moins, Communes
+
+```{r plotFranceEntiereCommunes, fig.height=6.5}
+par(xpd = TRUE, las = 1)
+par(mar = c(4, 4, 4, 4))
+par(mgp = c(2, 0.5, 0), tck = -0.01)
+
+tmpAll <- dat.Com[which(dat.Com$classe_age != "TOUT_AGE" & dat.Com$semaine_injection == maxWeek), ]
+themaxpop <- max(tmpAll$population_carto)
+tmpAll$relsize <- tmpAll$population_carto / themaxpop
+tmpAll$relsize.transfo <- 2*(tmpAll$relsize*3)^(1/3)
+
+plot(tmpAll$PIMP18, 100*tmpAll$taux_1_inj, 
+     col = adjustcolor(colAge[tmpAll$classe_age], 0.5), 
+     pch = 16, cex = tmpAll$relsize.transfo,
+     ylim = c(0, 10), xlim = c(15, 85), 
+     frame.plot = FALSE, yaxs = "i", #xaxs = "i", 
+     xlab = "Part des ménages fiscaux imposés dans la commune en 2018 (%)", ylab = "Taux de vaccination 1 dose au moins (%)",
+     type = "n"
+     )
+par(xpd = FALSE)
+for(i in seq(0, 10, by = 1)){
+  abline(h = i, col = gray(0.8), lty = 1)
+}
+
+legend("topleft", col = colAge[-length(colAge)], legend = names(colAge[-length(colAge)]), pch = 16, bty = "n")
+axis(4)
+
+
+points(tmpAll$PIMP18, 100*tmpAll$taux_1_inj, 
+     col = adjustcolor(colAge[tmpAll$classe_age], 0.5), 
+     pch = 16, cex = tmpAll$relsize.transfo,
+)
+newdata.noregion <- expand.grid(PIMP18 = seq(min(dat.Com$PIMP18, na.rm = TRUE), max(dat.Com$PIMP18, na.rm = TRUE), length.out = 100), classe_age = names(colAge[-length(colAge)]))
+
+ndt.noregion <- newdata.noregion
+ndt.noregion$prd1D <- predict(mdlComFinal.1D.PIMP.noregion, newdata = newdata.noregion, type = "response")
+
+lwd.pred <- 2
+for(age in ages[ages!="TOUT_AGE"]){
+  # Get predicted data for this age class (no region)
+  subd <- ndt.noregion[ndt.noregion$classe_age == age,]
+  lines(subd$PIMP18, 100*subd$prd1D, col = colAge[age], lwd = lwd.pred)
+}
+
+convertDate <- function(x) format.Date(as.Date(x), "%d/%m")
+mtext(side = 3, paste0("Communes autour de Paris, Marseille, Lyon\nPendant la semaine du ", convertDate(unique(tmpAll$beginWeek)), " au ", convertDate(unique(tmpAll$endWeek))), line = 1.)
+
+
+```
+
+
+
