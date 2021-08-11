@@ -36,6 +36,10 @@ ages <- c("All", "0_4", "5_9", "10_11", "12_17", "18_24", "25_29", "30_39", "40_
 names(ages) <- agcl
 ages
 
+# Dico for age classes in England
+agesNHS <- c("18_24", "25_29", "30_34", "35_39", "40_44", "45_49", "50_54", "55_59", "60_64", "65_69", "70_74", "75_79", "80_120", "0_17")
+names(agesNHS) <- dat.NHS$age
+
 # Get populations 
 # England data: present in "VaccineRegisterPopulationByVaccinationDate"
 dat.England.all$pop <- dat.England.all$VaccineRegisterPopulationByVaccinationDate
@@ -78,40 +82,35 @@ points(dat.NHS$agemin, dat.NHS$dose2, col = 2)
 points(dat.NHS$agemin, dat.NHS$pop, col = 2, pch = 15)
 
 legend("topright", col = c(1, 2, 1, 2), pch = c(15, 15, 1, 1), legend = c("gov.uk, total pop", "nhs, total pop", "gov.uk", "cum vaxx", "nhs, cum vaxx"))
+
+# After discussion with Meaghan Kall and Colin Angus, 
+# I will rather use NHS data
 #-----------------------------------------
 
 # Select values at this date
-dat.England <- dat.England.all[dat.England.all$date == thedate, ]
+dat.England <- dat.NHS
 dat.France <- dat.France.all[dat.France.all$jour == thedate & dat.France.all$clage_vacsi != 0, ] # remove "all" age class
 
 # Select the columns that we need and rename them
-dat.England <- dat.England[, c("age", "VaccineRegisterPopulationByVaccinationDate", "cumPeopleVaccinatedCompleteByVaccinationDate", "cumPeopleVaccinatedFirstDoseByVaccinationDate")]
-names(dat.England) <- c("ageClass", "pop", "cumComplet", "cumDose1")
+dat.England <- dat.England[, c("age", "pop", "dose2", "dose1", "agemin", "agemax")]
+names(dat.England) <- c("ageClass", "pop", "cumComplet", "cumDose1", "agemin", "agemax")
 
-# Rename last age class
-dat.England[dat.England$ageClass == "90+", "ageClass"] <- "90_120"
+# Reformulate age classes
+dat.England$ageClass <- agesNHS[dat.England$ageClass]
 
-# Add data for 0_17 from the other dataset (NHS)
-tmp <- dat.NHS[dat.NHS$age == "Under 18", ]
-dat.England <- rbind(dat.England, c("0_17", tmp$pop, tmp$dose2, tmp$dose1))
-
-# Compare NHS and gov.uk data (5 Aug and 9 Aug, resp.)
-plot(dat.NHS$dose2, type = "h", ylab = "dose2")
-points(dat.England$cumComplet, col = 2)
+# Get min and max ages of the age classes
+ag <- matrix(unlist(strsplit(as.character(dat.England$ageClass), split = "_")), byrow = TRUE, ncol = 2)
+dat.England$agemin <- as.numeric(ag[, 1])
+dat.England$agemax <- as.numeric(ag[, 2])
 
 # Add country information
 dat.England$country <- "Angleterre"
-
-# Get min and max ages of age classes
-ag <- matrix(unlist(strsplit(dat.England$age, split = "_")), byrow = TRUE, ncol = 2)
-dat.England$agemin <- as.numeric(ag[, 1])
-dat.England$agemax <- as.numeric(ag[, 2])
 
 # France: rewrite age class
 dat.France$ageClass <- ages[as.character(dat.France$clage_vacsi)]
 names(dat.France)
 
-# Get population
+# France: Get population
 dat.France$pop <- round((dat.France$pop1 + dat.France$pop2)/2)
 dat.France[dat.France$pop == Inf, "pop"] <- NA
 
@@ -125,7 +124,7 @@ dat.France$ageClass <- ages[as.character(dat.France$ageClass)]
 # Add country information
 dat.France$country <- "France"
 
-# Get min and max ages of the age classes
+# France: Get min and max ages of the age classes
 ag <- matrix(unlist(strsplit(as.character(dat.France$ageClass), split = "_")), byrow = TRUE, ncol = 2)
 dat.France$agemin <- as.numeric(ag[, 1])
 dat.France$agemax <- as.numeric(ag[, 2])
@@ -198,6 +197,7 @@ for(col in c("pop", "cumComplet", "cumDose1", "agemin", "agemax")){
 
 # Re-define last age class (very few people so old!)
 dat[dat$agemax == 120, c("agemax")] <- 105
+dat[dat$agemax == 100, c("agemax")] <- 105
 
 # Compute width of the age classes
 dat$width <- dat$agemax - dat$agemin + 1
@@ -241,9 +241,8 @@ for(version in 1:2){
   
   # Write Credits
   par(family = "mono")
-  mtext(side = 1, line = 4.5, text = paste0("@flodebarre, d'après @VictimOfMaths, données du ", thedate, " (-05 pour UK <18),  
-Données UK : https://coronavirus.data.gov.uk/details/download (>18) et
-             https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/ (<18)
+  mtext(side = 1, line = 4.5, text = paste0("@flodebarre, d'après @VictimOfMaths, données du ", thedate, " (France) et 2021-08-05 (England),  
+Données UK : https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/
 France : https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/
 Code : https://github.com/flodebarre/covid_vaccination/blob/main/pyramid.R"), adj = 0, cex = 0.55, col = gray(0.5))
   par(family = "sans")
