@@ -17,6 +17,14 @@
 dat.England.all <- read.csv("data/nation_E92000001_2021-08-10.csv")
 head(dat.England.all)
 
+# Quality check of population values
+plot(dat.England.all$cumPeopleVaccinatedCompleteByVaccinationDate/dat.England.all$VaccineRegisterPopulationByVaccinationDate - dat.England.all$cumVaccinationCompleteCoverageByVaccinationDatePercentage/100, col = "red", ylim = c(-0.1, 0.1))
+
+
+
+
+
+
 # France data from https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/
 # vacsi-a-fra-2021-08-10-19h05.csv
 dat.France.all <- read.csv("data/vacsi-a-fra-2021-08-10-19h05.csv", sep = ";")
