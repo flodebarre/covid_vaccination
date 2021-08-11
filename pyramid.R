@@ -1,5 +1,14 @@
+##
+## Age pyramid and vaccination
+## Comparison France and UK
+##
 ## Plot inspired by 
 ## https://twitter.com/VictimOfMaths/status/1424788101382160388?s=20
+## The code behind it is in pyramid_victimOfMaths.R (modified)
+## and was downloaded from https://github.com/VictimOfMaths/COVID-19/blob/master/Heatmaps/COVIDVaxxAgeUKUSA.R
+##
+## FD 2021-08-11
+##
 
 # Load data
 
@@ -147,9 +156,12 @@ for(col in c("pop", "cumComplet", "cumDose1", "agemin", "agemax")){
   dat[, col] <- as.numeric(dat[, col])
 }
 
+# Re-define last age class (very few people so old!)
+dat[dat$ageClass == "80_120", c("agemax")] <- 105
+
 # Compute width of the age classes
 dat$width <- dat$agemax - dat$agemin + 1
-dat[dat$ageClass == "80_120", "width"] <- 21
+
 
 # Values by year of age
 dat$pop.byY <- dat$pop / dat$width
@@ -178,23 +190,23 @@ for(version in 1:2){
   # file name of the output figure  
   fname <- paste0("pics/pyramid_UK-FR_", version, ".pdf")
   
-
   pdf(fname, width = 7.5, height = 7)
   
-  par(xpd = FALSE, family = "sans", mgp = c(2, 0.5, 0), tck = -0.02)
+  par(xpd = FALSE, family = "sans", mgp = c(2, 0.15, 0), tck = -0.02)
   par(mar = c(6, 2.5, 4, 2.5))
   
   # Initialize plot
-  plot(c(-10^6, 10^6), c(0, 101), type = "n", 
+  plot(c(-10^6, 10^6), c(0, max(dat$agemax)), type = "n", 
        axes = FALSE, xlab = "", ylab = "", 
        xaxs = "i")
   
   # Write Credits
   par(family = "mono")
-  mtext(side = 1, line = 4.25, text = "@flodebarre, d'après @VictimOfMaths, données du ", thedate, " (-05 pour UK <18),  
-  Données UK : https://coronavirus.data.gov.uk/details/download (>18) et
-               https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/ (<18)
-  France : https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/", adj = 0, cex = 0.55, col = gray(0.5))
+  mtext(side = 1, line = 4.5, text = paste0("@flodebarre, d'après @VictimOfMaths, données du ", thedate, " (-05 pour UK <18),  
+Données UK : https://coronavirus.data.gov.uk/details/download (>18) et
+             https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/ (<18)
+France : https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/
+Code : https://github.com/flodebarre/covid_vaccination/blob/main/pyramid.R"), adj = 0, cex = 0.55, col = gray(0.5))
   par(family = "sans")
   
   for(ctr in c("Angleterre", "France")){
@@ -256,11 +268,12 @@ for(version in 1:2){
   #axis(1, at = c(-xx, xx), labels = format(abs(c(-xx, xx)), trim = TRUE), cex.axis = 0.8)
   
   # Horizontal axis
-  axis(1, at = seq(-10^6, 10^6, by = 100000), labels = c("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""), cex.axis = 0.8)
+  axis(1, at = seq(-10^6, 10^6, by = 100000), labels = c("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""), cex.axis = 0.8, pos = -1)
   axis(1, at = c(-500000, 500000, 0, 10^6, -10^6), labels = c("500 000", "500 000", "0", "1Mio", "1Mio"), lwd.ticks = -1, lwd = -1)
   cexl <- 0.9 # Text size of legend of axes
-  mtext("Population par année d'âge", side = 1, line = 2, cex = cexl)
+  mtext("Population par année d'âge", side = 1, line = 1.25, cex = cexl)
   
+  par(xpd = FALSE)
   # Graduations
   wfine <- 0.3
   # Horizontal by year
@@ -277,7 +290,8 @@ for(version in 1:2){
     abline(v = -i, col = "white", lwd = wfine)
   }
   # Vertical separation of the two countries
-  abline(v = 0, col = gray(0), lwd = 1.5)
+  #abline(v = 0, col = gray(0), lwd = 1.5)
+  lines(x = c(0, 0), y = c(0, max(dat$agemax) + 1), col = 1, lwd = 1.5, lend = "butt")
   
   # Legend ages
   par(xpd = TRUE)
@@ -291,8 +305,10 @@ for(version in 1:2){
   
   # Plot legend (manually centered)
   par(family = "mono")
-  legend(x = 0, y = 105, pch = 15, col = c(colCompletFR, col1DFR, colPop, colCompletEN, col1DEN, colPop), ncol = 2, legend = c("Vaccination complète", " Vaccination 1 dose", "   Non vacciné·e", "", "", ""), xjust = 0.29, yjust = 0, box.lwd = -1, text.font = 1, pt.cex = 2)
+  legend(x = 0, y = 105, pch = 15, col = c(colCompletFR, col1DFR, colPop, colCompletEN, col1DEN, colPop), ncol = 2, legend = c("Vaccination complète", " Vaccination 1 dose", "   Non vacciné·e", "", "", ""), xjust = 0.29, yjust = 0, box.lwd = -1, text.font = 1, pt.cex = 2, cex = 0.8)
   
+  par(family = "sans")
+  mtext("La France a moins vacciné les plus âgé·e·s que l'Angleterre", side = 3, line = 2.75, cex = 1.2, font = 2)
   dev.off()
   
   system(paste0("open ", fname))
