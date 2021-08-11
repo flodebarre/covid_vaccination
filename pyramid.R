@@ -20,11 +20,6 @@ head(dat.England.all)
 # Quality check of population values
 plot(dat.England.all$cumPeopleVaccinatedCompleteByVaccinationDate/dat.England.all$VaccineRegisterPopulationByVaccinationDate - dat.England.all$cumVaccinationCompleteCoverageByVaccinationDatePercentage/100, col = "red", ylim = c(-0.1, 0.1))
 
-
-
-
-
-
 # France data from https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/
 # vacsi-a-fra-2021-08-10-19h05.csv
 dat.France.all <- read.csv("data/vacsi-a-fra-2021-08-10-19h05.csv", sep = ";")
@@ -67,6 +62,24 @@ maxDateFrance
 # Choose latest date
 thedate <- "2021-08-09"
 
+#-- Compare NHS and gov.uk --
+dat.gov <- dat.England.all[dat.England.all$date == "2021-08-05", ]
+unique(dat.gov$age)
+dat.gov$agemin <- substr(dat.gov$age, 1, 2)
+unique(dat.NHS$age)
+par(las = 1)
+plot(dat.gov$agemin, dat.gov$VaccineRegisterPopulationByVaccinationDate, ylim = c(0, max(dat.gov$VaccineRegisterPopulationByVaccinationDate)), 
+     xlab  = "age min of the age class", 
+     ylab = "number of people", pch = 15)
+
+points(dat.gov$agemin, dat.gov$cumPeopleVaccinatedCompleteByVaccinationDate)
+
+points(dat.NHS$agemin, dat.NHS$dose2, col = 2)
+points(dat.NHS$agemin, dat.NHS$pop, col = 2, pch = 15)
+
+legend("topright", col = c(1, 2, 1, 2), pch = c(15, 15, 1, 1), legend = c("gov.uk, total pop", "nhs, total pop", "gov.uk", "cum vaxx", "nhs, cum vaxx"))
+#-----------------------------------------
+
 # Select values at this date
 dat.England <- dat.England.all[dat.England.all$date == thedate, ]
 dat.France <- dat.France.all[dat.France.all$jour == thedate & dat.France.all$clage_vacsi != 0, ] # remove "all" age class
@@ -94,7 +107,6 @@ ag <- matrix(unlist(strsplit(dat.England$age, split = "_")), byrow = TRUE, ncol 
 dat.England$agemin <- as.numeric(ag[, 1])
 dat.England$agemax <- as.numeric(ag[, 2])
 
-
 # France: rewrite age class
 dat.France$ageClass <- ages[as.character(dat.France$clage_vacsi)]
 names(dat.France)
@@ -118,46 +130,66 @@ ag <- matrix(unlist(strsplit(as.character(dat.France$ageClass), split = "_")), b
 dat.France$agemin <- as.numeric(ag[, 1])
 dat.France$agemax <- as.numeric(ag[, 2])
 
-# Harmonize age classes
-sort(unique(dat.France$ageClass))
-sort(unique(dat.England$ageClass))
+harmonize <- FALSE # Whether to harmonize age classes or not
 
-# For France, we need: 
-# 0_17
-#
-# For England, we need:
-# 30_39, 40_49, 50_59, 80_120
-
-# Get the corresponding lines
-i3039 <- which(is.element(dat.England$ageClass, c("30_34", "35_39")))
-i4049 <- which(is.element(dat.England$ageClass, c("40_44", "45_49")))
-i5059 <- which(is.element(dat.England$ageClass, c("50_54", "55_59")))
-i80120 <- which(is.element(dat.England$ageClass, c("80_84", "85_89", "90_120")))
-
-
-# Compute numbers for the combined age classes
-dat.England <- rbind(dat.England, 
-                     c("30_39", sum(as.numeric(dat.England[i3039, "pop"])), sum(as.numeric(dat.England[i3039, "cumComplet"])), sum(as.numeric(dat.England[i3039, "cumDose1"])), "Angleterre", 30, 39), 
-                     c("40_49", sum(as.numeric(dat.England[i4049, "pop"])), sum(as.numeric(dat.England[i4049, "cumComplet"])), sum(as.numeric(dat.England[i4049, "cumDose1"])), "Angleterre", 40, 49), 
-                     c("50_59", sum(as.numeric(dat.England[i5059, "pop"])), sum(as.numeric(dat.England[i5059, "cumComplet"])), sum(as.numeric(dat.England[i5059, "cumDose1"])), "Angleterre", 50, 59), 
-                     c("80_120", sum(as.numeric(dat.England[i80120, "pop"])), sum(as.numeric(dat.England[i80120, "cumComplet"])), sum(as.numeric(dat.England[i80120, "cumDose1"])), "Angleterre", 80, 120)) 
-
-# Get the corresponding lines, France
-i018 <- which(is.element(dat.France$ageClass, c("0_4", "5_9", "10_11", "12_17")))
-
-dat.France <- rbind(dat.France, 
-                    c("0_17", sum(as.numeric(dat.France[i018, "pop"]), na.rm = TRUE), sum(as.numeric(dat.France[i018, "cumComplet"])), sum(as.numeric(dat.France[i018, "cumDose1"])), "France", 0, 17))
-
-# Hard code population below 18, as could not be retrieved from the data
-dat.France[dat.France$ageClass == "0_17", "pop"] <- 14540168            
-
-# Intersection of the age classes between the datasets
-agcls <- intersect(dat.England$ageClass, dat.France$ageClass)
-sort(agcls)
-
-# Combine the datasets
-dat <- rbind(dat.England[is.element(dat.England$ageClass, agcls), ], 
-             dat.France[is.element(dat.France$ageClass, agcls), ])
+if(harmonize){
+  # Harmonize age classes
+  sort(unique(dat.France$ageClass))
+  sort(unique(dat.England$ageClass))
+  
+  # For France, we need: 
+  # 0_17
+  #
+  # For England, we need:
+  # 30_39, 40_49, 50_59, 80_120
+  
+  # Get the corresponding lines
+  i3039 <- which(is.element(dat.England$ageClass, c("30_34", "35_39")))
+  i4049 <- which(is.element(dat.England$ageClass, c("40_44", "45_49")))
+  i5059 <- which(is.element(dat.England$ageClass, c("50_54", "55_59")))
+  i80120 <- which(is.element(dat.England$ageClass, c("80_84", "85_89", "90_120")))
+  
+  
+  # Compute numbers for the combined age classes
+  dat.England <- rbind(dat.England, 
+                       c("30_39", sum(as.numeric(dat.England[i3039, "pop"])), sum(as.numeric(dat.England[i3039, "cumComplet"])), sum(as.numeric(dat.England[i3039, "cumDose1"])), "Angleterre", 30, 39), 
+                       c("40_49", sum(as.numeric(dat.England[i4049, "pop"])), sum(as.numeric(dat.England[i4049, "cumComplet"])), sum(as.numeric(dat.England[i4049, "cumDose1"])), "Angleterre", 40, 49), 
+                       c("50_59", sum(as.numeric(dat.England[i5059, "pop"])), sum(as.numeric(dat.England[i5059, "cumComplet"])), sum(as.numeric(dat.England[i5059, "cumDose1"])), "Angleterre", 50, 59), 
+                       c("80_120", sum(as.numeric(dat.England[i80120, "pop"])), sum(as.numeric(dat.England[i80120, "cumComplet"])), sum(as.numeric(dat.England[i80120, "cumDose1"])), "Angleterre", 80, 120)) 
+  
+  # Get the corresponding lines, France
+  i018 <- which(is.element(dat.France$ageClass, c("0_4", "5_9", "10_11", "12_17")))
+  
+  dat.France <- rbind(dat.France, 
+                      c("0_17", sum(as.numeric(dat.France[i018, "pop"]), na.rm = TRUE), sum(as.numeric(dat.France[i018, "cumComplet"])), sum(as.numeric(dat.France[i018, "cumDose1"])), "France", 0, 17))
+  
+  # Hard code population below 18, as could not be retrieved from the data
+  dat.France[dat.France$ageClass == "0_17", "pop"] <- 14540168            
+  
+  # Intersection of the age classes between the datasets
+  agcls <- intersect(dat.England$ageClass, dat.France$ageClass)
+  sort(agcls)
+  
+  # Combine the datasets
+  dat <- rbind(dat.England[is.element(dat.England$ageClass, agcls), ], 
+               dat.France[is.element(dat.France$ageClass, agcls), ])
+}else{
+  # France: group 0-11
+  # Get the corresponding lines
+  i011 <- which(is.element(dat.France$ageClass, c("0_4", "5_9", "10_11")))
+  
+  # Hard coded population
+  pop017 <- 14540168
+  pop011 <- pop017 - sum(as.numeric(dat.France[is.element(dat.France$ageClass, c("10_11", "12_17")), "pop"]))
+  dat.France <- rbind(dat.France, 
+                      c("0_11", pop011, sum(as.numeric(dat.France[i011, "cumComplet"])), sum(as.numeric(dat.France[i011, "cumDose1"])), "France", 0, 11))
+  
+  # Remove the lines
+  dat.France <- dat.France[-i011, ]
+  
+  # Join the datasets
+  dat <- rbind(dat.England, dat.France)
+}
 
 # Make numerical values numerical again
 for(col in c("pop", "cumComplet", "cumDose1", "agemin", "agemax")){
@@ -165,11 +197,10 @@ for(col in c("pop", "cumComplet", "cumDose1", "agemin", "agemax")){
 }
 
 # Re-define last age class (very few people so old!)
-dat[dat$ageClass == "80_120", c("agemax")] <- 105
+dat[dat$agemax == 120, c("agemax")] <- 105
 
 # Compute width of the age classes
 dat$width <- dat$agemax - dat$agemin + 1
-
 
 # Values by year of age
 dat$pop.byY <- dat$pop / dat$width
@@ -196,7 +227,7 @@ for(version in 1:2){
   # 2 focus on unvaccinated
   
   # file name of the output figure  
-  fname <- paste0("pics/pyramid_UK-FR_", version, ".pdf")
+  fname <- paste0("pics/pyramid_UK-FR_", version, "_", 1*harmonize, ".pdf")
   
   pdf(fname, width = 7.5, height = 7)
   
@@ -230,7 +261,9 @@ Code : https://github.com/flodebarre/covid_vaccination/blob/main/pyramid.R"), ad
       col1D <- col1DFR
     }
     
-    for(ag in unique(dat$ageClass)){
+    tmp <- dat[dat$country == ctr, ]
+    
+    for(ag in unique(tmp$ageClass)){
       # For each age class, 
       # Subset of the data
       tmp <- dat[dat$country == ctr & dat$ageClass == ag, ]
@@ -263,12 +296,21 @@ Code : https://github.com/flodebarre/covid_vaccination/blob/main/pyramid.R"), ad
              col = colComplet, border = gray(0, 0))
         
       }
+      
+      # Graduations for age class
+      lines(c(factor*10^6, 0), rep(tmp$agemin, 2), col = "white", lwd = 1.5)
+      # Age values
+      par(xpd = TRUE)
+      text(x = factor*10^6, y = tmp$agemin, labels = tmp$agemin, col = gray(0), adj = c(0.5, 0.25), cex = 0.9)
+      par(xpd = FALSE)
+      
     }
     # Add country legend
     par(xpd = TRUE)
     if(factor == -1){adjj <- 0}else{adjj <- 1}
     text(x = factor * 10^6, y = 110, labels = ctr, adj = c(adjj, 0), cex = 1.3, font = 2)
     par(xpd = FALSE)
+    
   }
   
   # Old version of the axis
@@ -288,10 +330,6 @@ Code : https://github.com/flodebarre/covid_vaccination/blob/main/pyramid.R"), ad
   for(i in 0:110){
     abline(h = i, col = "white", lwd = wfine)
   }
-  # Horizontal by age class
-  for(i in unique(dat$agemin)){
-    abline(h = i, col = "white", lwd = 1.5)
-  }
   # Vertical by 100000
   for(i in seq(0, 10^6, by = 100000)){
     abline(v = i, col = "white", lwd = wfine)
@@ -308,8 +346,6 @@ Code : https://github.com/flodebarre/covid_vaccination/blob/main/pyramid.R"), ad
   text("Age", x = 10^6, y = yl, cex = cexl, adj = c(0.5, 1))
   text("Age", x = -10^6, y = yl, cex = cexl, adj = c(0.5, 1))
   
-  # Age values
-  text(x = c(-10^6, 10^6), y = rep(unique(dat$agemin), each = 2), labels = rep(unique(dat$agemin), each = 2), col = gray(0), adj = c(0.5, 0.25), cex = 0.9)
   
   # Plot legend (manually centered)
   par(family = "mono")
