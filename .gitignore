@@ -2,6 +2,7 @@
 # remove pics folder because too big
 pics/*
 pics/
+pics/vacc*
 
 # html supp files
 *_files/
