@@ -7,7 +7,7 @@
 ## The code behind it is in pyramid_victimOfMaths.R (modified)
 ## and was downloaded from https://github.com/VictimOfMaths/COVID-19/blob/master/Heatmaps/COVIDVaxxAgeUKUSA.R
 ##
-## FD 2021-08-11
+## FD August 2021
 ##
 
 # Load data
