@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="FD" />
+
+
+<title>Effet des annonces Macron</title>
+
+<script src="annoncesMacron_files/header-attrs-2.7/header-attrs.js"></script>
+<script src="annoncesMacron_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="annoncesMacron_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="annoncesMacron_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="annoncesMacron_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="annoncesMacron_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="annoncesMacron_files/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="annoncesMacron_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="annoncesMacron_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="annoncesMacron_files/navigation-1.1/tabsets.js"></script>
+<script src="annoncesMacron_files/navigation-1.1/codefolding.js"></script>
+<link href="annoncesMacron_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="annoncesMacron_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-sm-12 col-md-4 col-lg-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-sm-12 col-md-8 col-lg-9">
+
+
+
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Effet des annonces Macron</h1>
+<h4 class="author">FD</h4>
+
+</div>
+
+
+<pre class="r"><code>library(plotly)</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## 
+## Attaching package: &#39;plotly&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     last_plot</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter</code></pre>
+<pre><code>## The following object is masked from &#39;package:graphics&#39;:
+## 
+##     layout</code></pre>
+<pre class="r"><code>library(RColorBrewer)</code></pre>
+<div id="initializations" class="section level1">
+<h1>Initializations</h1>
+<div id="load-data" class="section level2">
+<h2>Load data</h2>
+<div id="niveau-de-vie-par-epci-2018" class="section level3">
+<h3>Niveau de vie par EPCI (2018)</h3>
+<p>Source <a href="https://www.insee.fr/fr/statistiques/5009236?sommaire=5009255&amp;q=revenu+epci#dictionnaire" class="uri">https://www.insee.fr/fr/statistiques/5009236?sommaire=5009255&amp;q=revenu+epci#dictionnaire</a></p>
+<!-- 
+Code géographique ;
+Libellé géographique ;
+Nombre de ménages fiscaux ;
+Nombre de personnes dans les ménages fiscaux ;
+Médiane du niveau de vie (€) ;
+Part des ménages fiscaux imposés (%) ;
+Taux de pauvreté-Ensemble (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a moins de 30 ans (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a de 30 à 39 ans (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a de 40 à 49 ans (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a de 50 à 59 ans (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a de 60 à 74 ans (%) ;
+Taux de pauvreté des ménages dont le référent fiscal a 75 ans ou plus (%) ;
+Taux de pauvreté des ménages propriétaires de leur logement (%) ;
+Taux de pauvreté des ménages locataires de leur logement (%) ;
+Part des revenus d'activité (%) ;
+dont part des salaires, traitements (%) ;
+dont part des indemnités de chômage (%) ;
+dont part des revenus des activités non salariées (%) ;
+Part des pensions, retraites et rentes (%) ;
+Part des revenus du patrimoine et des autres revenus (%) ;
+Part de l'ensemble des prestations sociales (%) ;
+dont part des prestations familiales (%) ;
+dont part des minima sociaux (%) ;
+dont part des prestations logement (%) ;
+Part des impôts (%) ;
+Rapport interdécile 9e décile/1er decile ;
+1er décile du niveau de vie (€) ;
+9e décile du niveau de vie (€).
+-->
+<pre class="r"><code>dat.revenuEPCI &lt;- read.csv(&quot;data/insee/cc_filosofi_2018_EPCI-geo2021.CSV&quot;, sep = &quot;;&quot;)
+head(dat.revenuEPCI)
+
+dat.revenuCom &lt;- read.csv(&quot;data/cc_filosofi_2018_COM-geo2021.csv&quot;, sep = &quot;;&quot;)
+head(dat.revenuCom)</code></pre>
+</div>
+<div id="vaccination-par-epci-et-par-commune" class="section level3">
+<h3>Vaccination par EPCI et par commune</h3>
+<p>Source <a href="https://datavaccin-covid.ameli.fr/explore/dataset/donnees-de-vaccination-par-epci/download/?format=csv&amp;timezone=Europe/Berlin&amp;lang=fr&amp;use_labels_for_header=true&amp;csv_separator=%3B" class="uri">https://datavaccin-covid.ameli.fr/explore/dataset/donnees-de-vaccination-par-epci/download/?format=csv&amp;timezone=Europe/Berlin&amp;lang=fr&amp;use_labels_for_header=true&amp;csv_separator=%3B</a></p>
+<pre class="r"><code>dat.vaccinationEPCI &lt;- read.csv(dataFileEPCI, sep = &quot;;&quot;, stringsAsFactors = FALSE, dec = &quot;,&quot;)
+head(dat.vaccinationEPCI)
+
+dat.vaccinationCom &lt;- read.csv(dataFileCom, sep = &quot;;&quot;, stringsAsFactors = FALSE, dec = &quot;,&quot;)
+head(dat.vaccinationCom)</code></pre>
+</div>
+<div id="composition-communales" class="section level3">
+<h3>Composition communales</h3>
+<p>Pour les infos sur les départements</p>
+<p>Source <a href="https://www.insee.fr/fr/information/2510634" class="uri">https://www.insee.fr/fr/information/2510634</a></p>
+<pre class="r"><code>composition &lt;- read.csv(&quot;data/EPCI_composition-communale.csv&quot;, encoding = &quot;UFT-8&quot;)</code></pre>
+<p>Source region codes <a href="https://www.data.gouv.fr/en/datasets/regions-de-france/" class="uri">https://www.data.gouv.fr/en/datasets/regions-de-france/</a></p>
+<pre class="r"><code># Departements
+departements &lt;- read.csv(&quot;data/departement2020.csv&quot;)
+
+dic.depname &lt;- departements$libelle
+names(dic.depname) &lt;- departements$dep
+
+# Load region codes 
+reg &lt;- read.csv(&quot;data/regions-france.csv&quot;)</code></pre>
+</div>
+</div>
+<div id="clean-data" class="section level2">
+<h2>Clean data</h2>
+<pre class="r"><code># Final week in the data
+maxWeek1 &lt;- max(unique(dat.vaccinationEPCI$semaine_injection))
+maxWeek2 &lt;- max(unique(dat.vaccinationCom$semaine_injection))
+stopifnot(maxWeek1 == maxWeek2)
+maxWeek &lt;- maxWeek1</code></pre>
+<pre class="r"><code># Weeks in the datasets
+wks1 &lt;- sort(unique(dat.vaccinationEPCI$semaine_injection))
+wks2 &lt;- sort(unique(dat.vaccinationCom$semaine_injection))
+stopifnot(all(wks1 == wks2))
+# Check that consecutive weeks
+stopifnot(all(is.element(diff(as.numeric(substr(wks1, 6, 7))), c(1, -52))))
+wks &lt;- wks1
+
+wks[1] # Show first week; week 52 of 2020 started on 2020-12-21
+# Dates of Mondays of the corresponding weeks
+beginWeek &lt;- seq(as.Date(&quot;2020-12-21&quot;), as.Date(&quot;2021-12-31&quot;), by = 7)
+names(beginWeek) &lt;- wks
+# Dates of Sundays of the corresponding weeks
+endWeek &lt;- as.Date(beginWeek) + 6
+names(endWeek) &lt;- wks
+
+# Add the day infos to the datasets
+dat.vaccinationEPCI$beginWeek &lt;- beginWeek[dat.vaccinationEPCI$semaine_injection]
+dat.vaccinationEPCI$endWeek &lt;- endWeek[dat.vaccinationEPCI$semaine_injection]
+dat.vaccinationEPCI$week.DD &lt;- paste(dat.vaccinationEPCI$beginWeek, dat.vaccinationEPCI$endWeek, sep = &quot;_&quot;)
+
+dat.vaccinationCom$beginWeek &lt;- beginWeek[dat.vaccinationCom$semaine_injection]
+dat.vaccinationCom$endWeek &lt;- endWeek[dat.vaccinationCom$semaine_injection]
+dat.vaccinationCom$week.DD &lt;- paste(dat.vaccinationCom$beginWeek, dat.vaccinationCom$endWeek, sep = &quot;_&quot;)</code></pre>
+<p>Merge the vaccination and revenu datasets (all times)</p>
+<pre class="r"><code># First, compare contents
+## EPCI
+# Number of different EPCI in the two datasets
+c(vaccin = length(unique(dat.vaccinationEPCI$epci)), revenu = length(unique(dat.revenuEPCI$CODGEO)))
+
+# Compare EPCIs
+# Some vaccin are not included in revenu
+any(!is.element(unique(dat.vaccinationEPCI$epci), unique(dat.revenuEPCI$CODGEO)))
+
+# All revenu are included in vaccin
+any(!is.element(unique(dat.revenuEPCI$CODGEO), unique(dat.vaccinationEPCI$epci)))
+
+## Communes
+# Check if vaccination communes included in revenu dataset
+any(!is.element(unique(dat.vaccinationCom$commune_residence), unique(dat.revenuCom$CODGEO)))
+# Show them -- codes when location is unknown
+unique(dat.vaccinationCom$commune_residence)[!is.element(unique(dat.vaccinationCom$commune_residence), unique(dat.revenuCom$CODGEO))]
+
+
+# Merge the datasets 
+## EPCI
+dat.EPCI &lt;- merge(dat.vaccinationEPCI, dat.revenuEPCI, by.x = &quot;epci&quot;, by.y = &quot;CODGEO&quot;, all.x = TRUE)
+stopifnot(nrow(dat.vaccinationEPCI) == nrow(dat.EPCI)) # Check all included
+
+## Communes
+dat.Com &lt;- merge(dat.vaccinationCom, dat.revenuCom, by.x = &quot;commune_residence&quot;, by.y = &quot;CODGEO&quot;, all.x = TRUE)
+stopifnot(nrow(dat.vaccinationCom) == nrow(dat.Com)) # Check all included</code></pre>
+<p>Departement information</p>
+<pre class="r"><code># Information about departement in which the different EPCI are
+# Some are across multiple departements: keep the information by collating them with &quot;_&quot;
+agg_nbdep &lt;- aggregate(composition$DEP, by = list(composition$EPCI), FUN = function(i) paste(sort(unique(i)), collapse = &quot;_&quot;))
+table(agg_nbdep$x)
+
+# Dictionnary of departement(s) associated to EPCI
+dic.dep &lt;- agg_nbdep$x
+names(dic.dep) &lt;- agg_nbdep$Group.1
+
+# Add the dep information to our EPCI data
+dat.EPCI$dep &lt;- dic.dep[as.character(dat.EPCI$epci)]
+
+# Add the libelle information
+dat.EPCI$dep_libelle &lt;- dic.depname[as.character(dat.EPCI$dep)]
+
+# Get departement information in Communes dataset
+dat.Com$dep &lt;- substr(dat.Com$commune_residence, 1, 2)</code></pre>
+<p>Add region information</p>
+<pre class="r"><code># As dictionnary
+reg.dic &lt;- c(reg$nom_region)
+names(reg.dic) &lt;- reg$code_region # !! Name has to be in quotes
+
+# Initialize region data
+unique(dat.EPCI$reg_code)
+
+# Some EPCIs are on two regions
+dat.EPCI$twoRegions &lt;- (nchar(dat.EPCI$reg_code) &gt; 2)
+
+# Extract regional code, including for EPCI on two regions
+dat.EPCI$reg_code1 &lt;- substr(dat.EPCI$reg_code, 1, 2)
+dat.EPCI$reg_code2 &lt;- substr(dat.EPCI$reg_code, 4, 5)
+dat.EPCI[which(dat.EPCI$reg_code2 == &quot;&quot;), &quot;reg_code2&quot;] &lt;- NA
+
+dat.EPCI$libelle_region &lt;- reg.dic[dat.EPCI$reg_code1]
+dat.EPCI$libelle_region2 &lt;- reg.dic[dat.EPCI$reg_code2]
+
+# Add short names
+# Add shorter name
+dat.EPCI$reg_shortname &lt;- NA
+dat.EPCI[which(dat.EPCI$libelle_region == &quot;Île-de-France&quot;), &quot;reg_shortname&quot;] &lt;- &quot;IDF&quot;
+dat.EPCI[which(dat.EPCI$libelle_region == &quot;Provence-Alpes-Côte d&#39;Azur&quot;), &quot;reg_shortname&quot;] &lt;- &quot;PACA&quot;
+dat.EPCI[which(dat.EPCI$libelle_region == &quot;Bretagne&quot;), &quot;reg_shortname&quot;] &lt;- &quot;BRE&quot;
+dat.EPCI[which(dat.EPCI$libelle_region == &quot;Auvergne-Rhône-Alpes&quot;), &quot;reg_shortname&quot;] &lt;- &quot;ARA&quot;
+dat.EPCI[which(dat.EPCI$libelle_region == &quot;Hauts-de-France&quot;), &quot;reg_shortname&quot;] &lt;- &quot;HDF&quot;
+dat.EPCI[which(dat.EPCI$libelle_region == &quot;Grand Est&quot;), &quot;reg_shortname&quot;] &lt;- &quot;GE&quot;
+dat.EPCI[which(dat.EPCI$libelle_region == &quot;Occitanie&quot;), &quot;reg_shortname&quot;] &lt;- &quot;OCC&quot;
+dat.EPCI[which(dat.EPCI$libelle_region == &quot;Normandie&quot;), &quot;reg_shortname&quot;] &lt;- &quot;NOR&quot;
+dat.EPCI[which(dat.EPCI$libelle_region == &quot;Bourgogne-Franche-Comté&quot;), &quot;reg_shortname&quot;] &lt;- &quot;BFC&quot;
+dat.EPCI[which(dat.EPCI$libelle_region == &quot;Pays de la Loire&quot;), &quot;reg_shortname&quot;] &lt;- &quot;PDL&quot;
+dat.EPCI[which(dat.EPCI$libelle_region == &quot;Nouvelle-Aquitaine&quot;), &quot;reg_shortname&quot;] &lt;- &quot;NAQ&quot;
+dat.EPCI[which(dat.EPCI$libelle_region == &quot;Centre-Val de Loire&quot;), &quot;reg_shortname&quot;] &lt;- &quot;CVL&quot;
+dat.EPCI[which(dat.EPCI$libelle_region == &quot;Corse&quot;), &quot;reg_shortname&quot;] &lt;- &quot;COR&quot;
+
+table(dat.EPCI$reg_shortname, useNA = &quot;ifany&quot;)
+table(dat.EPCI$libelle_region, useNA = &quot;ifany&quot;)
+
+# Missing DOMs
+
+## Coms
+unique(dat.Com$dep)
+# Initialize region data
+dat.Com$reg_shortname &lt;- NA
+dat.Com$region &lt;- NA
+# Get region from departement information
+dat.Com[base::is.element(dat.Com$dep, c(&quot;13&quot;, &quot;83&quot;, &quot;84&quot;)), c(&quot;reg_shortname&quot;, &quot;region&quot;)] &lt;- c(&quot;PACA&quot;, &quot;Provence-Alpes-Côte d&#39;Azur&quot;)
+dat.Com[base::is.element(dat.Com$dep, c(&quot;75&quot;, &quot;91&quot;, &quot;92&quot;, &quot;93&quot;, &quot;94&quot;, &quot;95&quot;)), c(&quot;reg_shortname&quot;, &quot;region&quot;)] &lt;- c(&quot;IDF&quot;, &quot;Île-de-France&quot;)
+dat.Com[base::is.element(dat.Com$dep, c(&quot;69&quot;)), c(&quot;reg_shortname&quot;, &quot;region&quot;)] &lt;- c(&quot;ARA&quot;, &quot;Auvergne-Rhône-Alpes&quot;)</code></pre>
+<p>Make sure that values are numeric</p>
+<pre class="r"><code>for(col in c(&quot;taux_1_inj&quot;, &quot;taux_termine&quot;, 
+             &quot;taux_cumu_1_inj&quot;, &quot;taux_cumu_termine&quot;)){
+  dat.Com[, col] &lt;- as.numeric(dat.Com[, col])
+  dat.EPCI[, col] &lt;- as.numeric(dat.EPCI[, col])
+}</code></pre>
+<p>Dictionary of age classes</p>
+<pre class="r"><code># Check that age classes match
+all(sort(unique(dat.Com$classe_age)) == sort(unique(dat.EPCI$classe_age)))
+dic.ages &lt;- as.character(unique(dat.Com$classe_age))
+names(dic.ages) &lt;- unique(dat.Com$libelle_classe_age)
+dic.ages</code></pre>
+</div>
+<div id="plot-settings" class="section level2">
+<h2>Plot settings</h2>
+<p>Region colors and pch</p>
+<pre class="r"><code># Define colors, joining palettes
+manycols &lt;- c(brewer.pal(name = &quot;Set2&quot;, 8), brewer.pal(name = &quot;Set1&quot;, 8))
+# Region colors
+colRegion &lt;- manycols[1:length(unique(dat.EPCI$reg_shortname))]
+names(colRegion) &lt;- unique(dat.EPCI$reg_shortname)
+
+# Region pch
+pchRegion &lt;- 14 + 1:length(unique(dat.EPCI$reg_shortname))
+names(pchRegion) &lt;- names(colRegion)</code></pre>
+<p>Age colors</p>
+<pre class="r"><code>ages &lt;- unique(dat.EPCI$classe_age)
+colAge &lt;- brewer.pal(name = &quot;Dark2&quot;, n = length(ages))
+names(colAge) &lt;- sort(ages)</code></pre>
+</div>
+</div>
+<div id="some-checks" class="section level1">
+<h1>Some checks</h1>
+<p>Compare MED18 and PIMP18</p>
+<pre class="r"><code>tmp &lt;- dat.EPCI[which(dat.EPCI$classe_age == &quot;TOUT_AGE&quot; &amp; dat.EPCI$semaine_injection == maxWeek), ]
+plot(tmp$PIMP18, tmp$MED18, xlab = &quot;PIMP18, Part de ménages fiscaux imposés&quot;, ylab = &quot;MED18, revenu médian&quot;)</code></pre>
+<p><img src="annoncesMacron_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<pre class="r"><code>tmp &lt;- dat.Com[which(dat.Com$classe_age == &quot;TOUT_AGE&quot; &amp; dat.Com$semaine_injection == maxWeek), ]
+plot(tmp$PIMP18, tmp$MED18, xlab = &quot;PIMP18, Part de ménages fiscaux imposés&quot;, ylab = &quot;MED18, revenu médian&quot;)</code></pre>
+<p><img src="annoncesMacron_files/figure-html/unnamed-chunk-15-2.png" width="672" /></p>
+</div>
+<div id="model-and-plot" class="section level1">
+<h1>Model and plot</h1>
+<div id="final-week-only" class="section level2">
+<h2>Final week only</h2>
+<div id="all-regions-together-pimp18" class="section level3">
+<h3>All regions together, PIMP18</h3>
+<pre class="r"><code>mdlFinal.1D.PIMP.0 &lt;- glm(cbind(effectif_1_inj, population_carto - effectif_1_inj) ~ PIMP18 + as.factor(classe_age) + PIMP18 * as.factor(classe_age) + PIMP18 * as.factor(reg_shortname) + as.factor(reg_shortname), family = binomial(link = &quot;logit&quot;), data = dat.EPCI[which(dat.EPCI$classe_age != &quot;TOUT_AGE&quot; &amp; dat.EPCI$semaine_injection == maxWeek), ])
+
+
+mdlFinal.1D.PIMP.noregion &lt;- glm(cbind(effectif_1_inj, population_carto - effectif_1_inj) ~ PIMP18 + as.factor(classe_age) + PIMP18 * as.factor(classe_age), family = binomial(link = &quot;logit&quot;), data = dat.EPCI[which(dat.EPCI$classe_age != &quot;TOUT_AGE&quot; &amp; dat.EPCI$semaine_injection == maxWeek), ])
+
+mdlComFinal.1D.PIMP.noregion &lt;- glm(cbind(effectif_1_inj, population_carto - effectif_1_inj) ~ PIMP18 + as.factor(classe_age) + PIMP18 * as.factor(classe_age), family = binomial(link = &quot;logit&quot;), data = dat.Com[which(dat.Com$classe_age != &quot;TOUT_AGE&quot; &amp; dat.Com$semaine_injection == maxWeek), ])
+
+mdlFinal.termine.PIMP.noregion &lt;- glm(cbind(effectif_termine, population_carto - effectif_termine) ~ PIMP18 + as.factor(classe_age) + PIMP18 * as.factor(classe_age), family = binomial(link = &quot;logit&quot;), data = dat.EPCI[which(dat.EPCI$classe_age != &quot;TOUT_AGE&quot; &amp; dat.EPCI$semaine_injection == maxWeek), ])
+
+summary(mdlFinal.1D.PIMP.0)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = cbind(effectif_1_inj, population_carto - effectif_1_inj) ~ 
+##     PIMP18 + as.factor(classe_age) + PIMP18 * as.factor(classe_age) + 
+##         PIMP18 * as.factor(reg_shortname) + as.factor(reg_shortname), 
+##     family = binomial(link = &quot;logit&quot;), data = dat.EPCI[which(dat.EPCI$classe_age != 
+##         &quot;TOUT_AGE&quot; &amp; dat.EPCI$semaine_injection == maxWeek), 
+##         ])
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -36.668   -1.365    0.210    1.819   15.218  
+## 
+## Coefficients:
+##                                       Estimate Std. Error  z value Pr(&gt;|z|)    
+## (Intercept)                         -2.9322108  0.0171742 -170.734  &lt; 2e-16 ***
+## PIMP18                              -0.0090897  0.0003254  -27.930  &lt; 2e-16 ***
+## as.factor(classe_age)20-39           0.7196701  0.0117794   61.096  &lt; 2e-16 ***
+## as.factor(classe_age)40-54           0.1970131  0.0129269   15.241  &lt; 2e-16 ***
+## as.factor(classe_age)55-64          -0.4767107  0.0167778  -28.413  &lt; 2e-16 ***
+## as.factor(classe_age)65-74          -1.2112017  0.0228083  -53.104  &lt; 2e-16 ***
+## as.factor(classe_age)75 et +        -1.5658759  0.0304622  -51.404  &lt; 2e-16 ***
+## as.factor(reg_shortname)BFC         -0.0249336  0.0307122   -0.812  0.41688    
+## as.factor(reg_shortname)BRE          0.1916029  0.0366694    5.225 1.74e-07 ***
+## as.factor(reg_shortname)COR          0.5444506  0.1005426    5.415 6.12e-08 ***
+## as.factor(reg_shortname)CVL          0.4208589  0.0344427   12.219  &lt; 2e-16 ***
+## as.factor(reg_shortname)GE          -0.3436633  0.0208999  -16.443  &lt; 2e-16 ***
+## as.factor(reg_shortname)HDF         -0.2296068  0.0206959  -11.094  &lt; 2e-16 ***
+## as.factor(reg_shortname)IDF         -0.1202731  0.0260077   -4.625 3.75e-06 ***
+## as.factor(reg_shortname)NAQ         -0.0126314  0.0227424   -0.555  0.57861    
+## as.factor(reg_shortname)NOR          0.2155322  0.0345042    6.247 4.20e-10 ***
+## as.factor(reg_shortname)OCC          0.1722141  0.0212032    8.122 4.58e-16 ***
+## as.factor(reg_shortname)PACA        -0.2656015  0.0397303   -6.685 2.31e-11 ***
+## as.factor(reg_shortname)PDL         -0.1615993  0.0280231   -5.767 8.09e-09 ***
+## PIMP18:as.factor(classe_age)20-39   -0.0009883  0.0002249   -4.394 1.11e-05 ***
+## PIMP18:as.factor(classe_age)40-54    0.0023599  0.0002471    9.549  &lt; 2e-16 ***
+## PIMP18:as.factor(classe_age)55-64    0.0045135  0.0003226   13.991  &lt; 2e-16 ***
+## PIMP18:as.factor(classe_age)65-74    0.0054768  0.0004433   12.354  &lt; 2e-16 ***
+## PIMP18:as.factor(classe_age)75 et +  0.0017985  0.0005948    3.024  0.00250 ** 
+## PIMP18:as.factor(reg_shortname)BFC   0.0018065  0.0006012    3.005  0.00266 ** 
+## PIMP18:as.factor(reg_shortname)BRE  -0.0082465  0.0007330  -11.250  &lt; 2e-16 ***
+## PIMP18:as.factor(reg_shortname)COR  -0.0153077  0.0020738   -7.381 1.57e-13 ***
+## PIMP18:as.factor(reg_shortname)CVL  -0.0075276  0.0006735  -11.177  &lt; 2e-16 ***
+## PIMP18:as.factor(reg_shortname)GE    0.0078302  0.0004067   19.253  &lt; 2e-16 ***
+## PIMP18:as.factor(reg_shortname)HDF   0.0048840  0.0004203   11.619  &lt; 2e-16 ***
+## PIMP18:as.factor(reg_shortname)IDF   0.0007386  0.0004380    1.686  0.09175 .  
+## PIMP18:as.factor(reg_shortname)NAQ  -0.0011185  0.0004504   -2.483  0.01302 *  
+## PIMP18:as.factor(reg_shortname)NOR  -0.0037011  0.0006949   -5.326 1.01e-07 ***
+## PIMP18:as.factor(reg_shortname)OCC  -0.0047290  0.0004280  -11.050  &lt; 2e-16 ***
+## PIMP18:as.factor(reg_shortname)PACA  0.0022302  0.0007662    2.911  0.00361 ** 
+## PIMP18:as.factor(reg_shortname)PDL   0.0028417  0.0005576    5.096 3.46e-07 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 698215  on 6959  degrees of freedom
+## Residual deviance:  59637  on 6924  degrees of freedom
+##   (570 observations deleted due to missingness)
+## AIC: 105188
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code>car::Anova(mdlFinal.1D.PIMP.0)</code></pre>
+<pre><code>## Analysis of Deviance Table (Type II tests)
+## 
+## Response: cbind(effectif_1_inj, population_carto - effectif_1_inj)
+##                                 LR Chisq Df Pr(&gt;Chisq)    
+## PIMP18                              4188  1  &lt; 2.2e-16 ***
+## as.factor(classe_age)             621411  5  &lt; 2.2e-16 ***
+## as.factor(reg_shortname)            9390 12  &lt; 2.2e-16 ***
+## PIMP18:as.factor(classe_age)         624  5  &lt; 2.2e-16 ***
+## PIMP18:as.factor(reg_shortname)     1578 12  &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>summary(mdlFinal.1D.PIMP.noregion)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = cbind(effectif_1_inj, population_carto - effectif_1_inj) ~ 
+##     PIMP18 + as.factor(classe_age) + PIMP18 * as.factor(classe_age), 
+##     family = binomial(link = &quot;logit&quot;), data = dat.EPCI[which(dat.EPCI$classe_age != 
+##         &quot;TOUT_AGE&quot; &amp; dat.EPCI$semaine_injection == maxWeek), 
+##         ])
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -51.921   -1.210    0.462    2.171   17.007  
+## 
+## Coefficients:
+##                                       Estimate Std. Error  z value Pr(&gt;|z|)    
+## (Intercept)                         -3.1536093  0.0087170 -361.775  &lt; 2e-16 ***
+## PIMP18                              -0.0057963  0.0001675  -34.611  &lt; 2e-16 ***
+## as.factor(classe_age)20-39           0.7720711  0.0107700   71.687  &lt; 2e-16 ***
+## as.factor(classe_age)40-54           0.3402482  0.0118503   28.712  &lt; 2e-16 ***
+## as.factor(classe_age)55-64          -0.2385210  0.0154022  -15.486  &lt; 2e-16 ***
+## as.factor(classe_age)65-74          -0.8008051  0.0211923  -37.788  &lt; 2e-16 ***
+## as.factor(classe_age)75 et +        -1.1781096  0.0285075  -41.326  &lt; 2e-16 ***
+## PIMP18:as.factor(classe_age)20-39   -0.0019813  0.0002064   -9.600  &lt; 2e-16 ***
+## PIMP18:as.factor(classe_age)40-54   -0.0002757  0.0002275   -1.211    0.226    
+## PIMP18:as.factor(classe_age)55-64    0.0001632  0.0002981    0.547    0.584    
+## PIMP18:as.factor(classe_age)65-74   -0.0020701  0.0004158   -4.979  6.4e-07 ***
+## PIMP18:as.factor(classe_age)75 et + -0.0053727  0.0005615   -9.569  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 709834  on 7007  degrees of freedom
+## Residual deviance:  87634  on 6996  degrees of freedom
+##   (522 observations deleted due to missingness)
+## AIC: 133519
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code>car::Anova(mdlFinal.1D.PIMP.noregion)</code></pre>
+<pre><code>## Analysis of Deviance Table (Type II tests)
+## 
+## Response: cbind(effectif_1_inj, population_carto - effectif_1_inj)
+##                              LR Chisq Df Pr(&gt;Chisq)    
+## PIMP18                           8063  1  &lt; 2.2e-16 ***
+## as.factor(classe_age)          619946  5  &lt; 2.2e-16 ***
+## PIMP18:as.factor(classe_age)      221  5  &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>summary(mdlComFinal.1D.PIMP.noregion)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = cbind(effectif_1_inj, population_carto - effectif_1_inj) ~ 
+##     PIMP18 + as.factor(classe_age) + PIMP18 * as.factor(classe_age), 
+##     family = binomial(link = &quot;logit&quot;), data = dat.Com[which(dat.Com$classe_age != 
+##         &quot;TOUT_AGE&quot; &amp; dat.Com$semaine_injection == maxWeek), ])
+## 
+## Deviance Residuals: 
+##      Min        1Q    Median        3Q       Max  
+## -13.8472   -1.0524    0.1998    1.3760    8.0121  
+## 
+## Coefficients:
+##                                       Estimate Std. Error  z value Pr(&gt;|z|)    
+## (Intercept)                         -4.4929483  0.0209139 -214.831  &lt; 2e-16 ***
+## PIMP18                               0.0133969  0.0003418   39.195  &lt; 2e-16 ***
+## as.factor(classe_age)20-39           2.0033769  0.0244957   81.785  &lt; 2e-16 ***
+## as.factor(classe_age)40-54           2.1790225  0.0262354   83.056  &lt; 2e-16 ***
+## as.factor(classe_age)55-64           1.6594954  0.0334634   49.591  &lt; 2e-16 ***
+## as.factor(classe_age)65-74           0.9033561  0.0469004   19.261  &lt; 2e-16 ***
+## as.factor(classe_age)75 et +         0.3951559  0.0640041    6.174 6.66e-10 ***
+## PIMP18:as.factor(classe_age)20-39   -0.0219977  0.0004033  -54.548  &lt; 2e-16 ***
+## PIMP18:as.factor(classe_age)40-54   -0.0284901  0.0004356  -65.404  &lt; 2e-16 ***
+## PIMP18:as.factor(classe_age)55-64   -0.0277195  0.0005610  -49.407  &lt; 2e-16 ***
+## PIMP18:as.factor(classe_age)65-74   -0.0250702  0.0007875  -31.834  &lt; 2e-16 ***
+## PIMP18:as.factor(classe_age)75 et + -0.0268261  0.0010699  -25.073  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 78958.6  on 1598  degrees of freedom
+## Residual deviance:  7746.8  on 1587  degrees of freedom
+##   (363 observations deleted due to missingness)
+## AIC: 17894
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code>car::Anova(mdlComFinal.1D.PIMP.noregion)</code></pre>
+<pre><code>## Analysis of Deviance Table (Type II tests)
+## 
+## Response: cbind(effectif_1_inj, population_carto - effectif_1_inj)
+##                              LR Chisq Df Pr(&gt;Chisq)    
+## PIMP18                           2642  1  &lt; 2.2e-16 ***
+## as.factor(classe_age)           63738  5  &lt; 2.2e-16 ***
+## PIMP18:as.factor(classe_age)     5017  5  &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>summary(mdlFinal.termine.PIMP.noregion)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = cbind(effectif_termine, population_carto - effectif_termine) ~ 
+##     PIMP18 + as.factor(classe_age) + PIMP18 * as.factor(classe_age), 
+##     family = binomial(link = &quot;logit&quot;), data = dat.EPCI[which(dat.EPCI$classe_age != 
+##         &quot;TOUT_AGE&quot; &amp; dat.EPCI$semaine_injection == maxWeek), 
+##         ])
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -58.586   -1.740    0.257    2.591   41.103  
+## 
+## Coefficients:
+##                                       Estimate Std. Error  z value Pr(&gt;|z|)    
+## (Intercept)                         -3.7595446  0.0100023 -375.870  &lt; 2e-16 ***
+## PIMP18                               0.0008686  0.0001902    4.566 4.98e-06 ***
+## as.factor(classe_age)20-39           0.4742046  0.0124256   38.164  &lt; 2e-16 ***
+## as.factor(classe_age)40-54           0.5525441  0.0131508   42.016  &lt; 2e-16 ***
+## as.factor(classe_age)55-64           0.4235988  0.0157683   26.864  &lt; 2e-16 ***
+## as.factor(classe_age)65-74           0.0662977  0.0201197    3.295 0.000984 ***
+## as.factor(classe_age)75 et +        -0.5349665  0.0277065  -19.308  &lt; 2e-16 ***
+## PIMP18:as.factor(classe_age)20-39    0.0030981  0.0002352   13.170  &lt; 2e-16 ***
+## PIMP18:as.factor(classe_age)40-54   -0.0015413  0.0002503   -6.159 7.33e-10 ***
+## PIMP18:as.factor(classe_age)55-64   -0.0058286  0.0003035  -19.204  &lt; 2e-16 ***
+## PIMP18:as.factor(classe_age)65-74   -0.0099504  0.0003937  -25.274  &lt; 2e-16 ***
+## PIMP18:as.factor(classe_age)75 et + -0.0110103  0.0005438  -20.248  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 512981  on 7033  degrees of freedom
+## Residual deviance: 158351  on 7022  degrees of freedom
+##   (496 observations deleted due to missingness)
+## AIC: 203816
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code>car::Anova(mdlFinal.termine.PIMP.noregion)</code></pre>
+<pre><code>## Analysis of Deviance Table (Type II tests)
+## 
+## Response: cbind(effectif_termine, population_carto - effectif_termine)
+##                              LR Chisq Df Pr(&gt;Chisq)    
+## PIMP18                              0  1     0.9166    
+## as.factor(classe_age)          351225  5     &lt;2e-16 ***
+## PIMP18:as.factor(classe_age)     2396  5     &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+</div>
+<div id="france-entiere" class="section level3">
+<h3>France entiere</h3>
+<div id="une-dose-au-moins-epci" class="section level4">
+<h4>Une dose au moins, EPCI</h4>
+<pre class="r"><code>par(xpd = TRUE, las = 1)
+par(mar = c(4, 4, 4, 4))
+par(mgp = c(2, 0.5, 0), tck = -0.01)
+
+tmpAll &lt;- dat.EPCI[which(dat.EPCI$classe_age != &quot;TOUT_AGE&quot; &amp; dat.EPCI$semaine_injection == maxWeek), ]
+themaxpop &lt;- max(tmpAll$population_carto)
+tmpAll$relsize &lt;- tmpAll$population_carto / themaxpop
+tmpAll$relsize.transfo &lt;- 5*(tmpAll$relsize*3)^(1/3)
+
+plot(tmpAll$PIMP18, 100*tmpAll$taux_1_inj, 
+     col = adjustcolor(colAge[tmpAll$classe_age], 0.5), 
+     pch = 16, cex = tmpAll$relsize.transfo,
+     ylim = c(0, 10), xlim = c(15, 85), 
+     frame.plot = FALSE, yaxs = &quot;i&quot;, #xaxs = &quot;i&quot;, 
+     xlab = &quot;Part des ménages fiscaux imposés dans l&#39;EPCI en 2018 (%)&quot;, ylab = &quot;Taux de vaccination 1 dose au moins (%)&quot;,
+     type = &quot;n&quot;
+     )
+par(xpd = FALSE)
+for(i in seq(0, 10, by = 1)){
+  abline(h = i, col = gray(0.8), lty = 1)
+}
+
+legend(&quot;topleft&quot;, col = colAge[-length(colAge)], legend = names(colAge[-length(colAge)]), pch = 16, bty = &quot;n&quot;)
+axis(4)
+
+
+points(tmpAll$PIMP18, 100*tmpAll$taux_1_inj, 
+     col = adjustcolor(colAge[tmpAll$classe_age], 0.5), 
+     pch = 16, cex = tmpAll$relsize.transfo,
+)
+newdata.noregion &lt;- expand.grid(PIMP18 = seq(min(dat.EPCI$PIMP18, na.rm = TRUE), max(dat.EPCI$PIMP18, na.rm = TRUE), length.out = 100), classe_age = names(colAge[-length(colAge)]))
+
+ndt.noregion &lt;- newdata.noregion
+ndt.noregion$prd1D &lt;- predict(mdlFinal.1D.PIMP.noregion, newdata = newdata.noregion, type = &quot;response&quot;)
+
+lwd.pred &lt;- 2
+for(age in ages[ages!=&quot;TOUT_AGE&quot;]){
+  # Get predicted data for this age class (no region)
+  subd &lt;- ndt.noregion[ndt.noregion$classe_age == age,]
+  lines(subd$PIMP18, 100*subd$prd1D, col = colAge[age], lwd = lwd.pred)
+}
+
+convertDate &lt;- function(x) format.Date(as.Date(x), &quot;%d/%m&quot;)
+mtext(side = 3, paste0(&quot;France entière\nPendant la semaine du &quot;, convertDate(unique(tmpAll$beginWeek)), &quot; au &quot;, convertDate(unique(tmpAll$endWeek))), line = 1.)</code></pre>
+<p><img src="annoncesMacron_files/figure-html/plotFranceEntiereEPCI-1.png" width="672" /></p>
+</div>
+<div id="une-dose-au-moins-communes" class="section level4">
+<h4>Une dose au moins, Communes</h4>
+<pre class="r"><code>par(xpd = TRUE, las = 1)
+par(mar = c(4, 4, 4, 4))
+par(mgp = c(2, 0.5, 0), tck = -0.01)
+
+tmpAll &lt;- dat.Com[which(dat.Com$classe_age != &quot;TOUT_AGE&quot; &amp; dat.Com$semaine_injection == maxWeek), ]
+themaxpop &lt;- max(tmpAll$population_carto)
+tmpAll$relsize &lt;- tmpAll$population_carto / themaxpop
+tmpAll$relsize.transfo &lt;- 2*(tmpAll$relsize*3)^(1/3)
+
+plot(tmpAll$PIMP18, 100*tmpAll$taux_1_inj, 
+     col = adjustcolor(colAge[tmpAll$classe_age], 0.5), 
+     pch = 16, cex = tmpAll$relsize.transfo,
+     ylim = c(0, 10), xlim = c(15, 85), 
+     frame.plot = FALSE, yaxs = &quot;i&quot;, #xaxs = &quot;i&quot;, 
+     xlab = &quot;Part des ménages fiscaux imposés dans la commune en 2018 (%)&quot;, ylab = &quot;Taux de vaccination 1 dose au moins (%)&quot;,
+     type = &quot;n&quot;
+     )
+par(xpd = FALSE)
+for(i in seq(0, 10, by = 1)){
+  abline(h = i, col = gray(0.8), lty = 1)
+}
+
+legend(&quot;topleft&quot;, col = colAge[-length(colAge)], legend = names(colAge[-length(colAge)]), pch = 16, bty = &quot;n&quot;)
+axis(4)
+
+
+points(tmpAll$PIMP18, 100*tmpAll$taux_1_inj, 
+     col = adjustcolor(colAge[tmpAll$classe_age], 0.5), 
+     pch = 16, cex = tmpAll$relsize.transfo,
+)
+newdata.noregion &lt;- expand.grid(PIMP18 = seq(min(dat.Com$PIMP18, na.rm = TRUE), max(dat.Com$PIMP18, na.rm = TRUE), length.out = 100), classe_age = names(colAge[-length(colAge)]))
+
+ndt.noregion &lt;- newdata.noregion
+ndt.noregion$prd1D &lt;- predict(mdlComFinal.1D.PIMP.noregion, newdata = newdata.noregion, type = &quot;response&quot;)
+
+lwd.pred &lt;- 2
+for(age in ages[ages!=&quot;TOUT_AGE&quot;]){
+  # Get predicted data for this age class (no region)
+  subd &lt;- ndt.noregion[ndt.noregion$classe_age == age,]
+  lines(subd$PIMP18, 100*subd$prd1D, col = colAge[age], lwd = lwd.pred)
+}
+
+convertDate &lt;- function(x) format.Date(as.Date(x), &quot;%d/%m&quot;)
+mtext(side = 3, paste0(&quot;Communes autour de Paris, Marseille, Lyon\nPendant la semaine du &quot;, convertDate(unique(tmpAll$beginWeek)), &quot; au &quot;, convertDate(unique(tmpAll$endWeek))), line = 1.)</code></pre>
+<p><img src="annoncesMacron_files/figure-html/plotFranceEntiereCommunes-1.png" width="672" /></p>
+</div>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

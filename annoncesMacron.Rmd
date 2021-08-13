@@ -18,8 +18,8 @@ rm(list = ls())
 
 ```{r, include = FALSE}
 # File names
-dataFileCom <- paste0("data/donnees-de-vaccination-par-commune_2021-08-06.csv") 
-dataFileEPCI <- paste0("data/donnees-de-vaccination-par-epci_2021-08-06.csv")
+dataFileCom <- paste0("data/donnees-de-vaccination-par-commune_2021-08-13.csv") 
+dataFileEPCI <- paste0("data/donnees-de-vaccination-par-epci_2021-08-13.csv")
 ```
 
 ```{r, results = 'hide', warning=FALSE}
