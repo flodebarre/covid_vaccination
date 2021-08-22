@@ -30,16 +30,17 @@ today <- Sys.Date()
 ```{r}
 # Colors
 colPop <- gray(0.8) # Unvaccinated
-colCompletR <- "#9B2500"
-col1DR <- "#FF6939"
-colCompletL <- "#044063"
-col1DL <- "#4F92BA"
+colComplet1 <- "#9B2500"
+col1D1 <- "#FF6939"
+colComplet2 <- "#044063"
+col1D2 <- "#4F92BA"
 ```
 
 ## Load data and clean data
 
 ```{r}
 # Load data 
+# Soure : https://www.ecdc.europa.eu/en/publications-data/data-covid-19-vaccination-eu-eea
 URL <- "https://opendata.ecdc.europa.eu/covid19/vaccine_tracker/csv/data.csv"
 
 
@@ -80,9 +81,13 @@ ac2 <- data.frame(ageClass = c("Age<18", "Age18_24", "Age25_49", "Age50_59", "Ag
 
 ac1$minAge <- c(0, 5, 10, 15, 18, 25, 50, 60, 70, 80)
 ac1$maxAge <- c(4, 9, 14, 17, 24, 49, 59, 69, 79, 100)
+ac1$ageWidth <- ac1$maxAge - ac1$minAge + 1
 
 ac2$minAge <- c(0, 18, 25, 50, 60, 70, 80)
 ac2$maxAge <- c(17, 24, 49, 59, 69, 79, 100)
+ac2$ageWidth <- ac2$maxAge - ac2$minAge + 1
+
+
 
 # Initialize the new dataset
 newdat <- data.frame("TargetGroup" = character(0), 
@@ -94,6 +99,7 @@ newdat <- data.frame("TargetGroup" = character(0),
                      "ReportingCountry" = character(0), 
                      "minAge" = numeric(0), 
                      "maxAge" = numeric(0),
+                     "ageWidth" = numeric(0), 
                      "YearWeekISO" = character(0))
 
 #thedate <- max(dat.ECDC$YearWeekISO)
@@ -183,6 +189,7 @@ c2 <- "FR"
 
 sameScale <- TRUE # Whether to plot the two countries on the same scale or not
 
+version <- 2
 
 tmp <- newdat.final[is.element(newdat.final$ReportingCountry, c(c1, c2)), ]
 
@@ -191,31 +198,38 @@ tmp
 # Get max size of age class
 tmp1 <- tmp[tmp$ReportingCountry == c1, ]
 tmp2 <- tmp[tmp$ReportingCountry == c2, ]
-xmax1 <- max(tmp1$Denominator)
-xmax2 <- max(tmp2$Denominator)
+xmax1 <- max(tmp1$Denominator / tmp1$ageWidth)
+xmax2 <- max(tmp2$Denominator / tmp2$ageWidth)
 
 xmax <- max(c(xmax1, xmax2))
 xmax1
 xmax2
 
 if(sameScale){
-  tmp1$RDenom <- tmp1$Denominator / xmax
-  tmp1$R1D <- tmp1$FirstDose / xmax
-  tmp1$R2D <- tmp1$SecondDose / xmax
+  tmp1$RDenom <- tmp1$Denominator / xmax / tmp1$ageWidth
+  tmp1$R1D <- tmp1$FirstDose / xmax / tmp1$ageWidth
+  tmp1$R2D <- tmp1$SecondDose / xmax / tmp1$ageWidth
   
-  tmp2$RDenom <- tmp2$Denominator / xmax
-  tmp2$R1D <- tmp2$FirstDose / xmax
-  tmp2$R2D <- tmp2$SecondDose / xmax
+  tmp2$RDenom <- tmp2$Denominator / xmax / tmp2$ageWidth
+  tmp2$R1D <- tmp2$FirstDose / xmax / tmp2$ageWidth
+  tmp2$R2D <- tmp2$SecondDose / xmax / tmp2$ageWidth
 }else{
-  tmp1$RDenom <- tmp1$Denominator / xmax1
-  tmp1$R1D <- tmp1$FirstDose / xmax1
-  tmp1$R2D <- tmp1$SecondDose / xmax1
+  tmp1$RDenom <- tmp1$Denominator / xmax1 / tmp1$ageWidth
+  tmp1$R1D <- tmp1$FirstDose / xmax1 / tmp1$ageWidth
+  tmp1$R2D <- tmp1$SecondDose / xmax1 / tmp1$ageWidth
   
-  tmp2$RDenom <- tmp2$Denominator / xmax2
-  tmp2$R1D <- tmp2$FirstDose / xmax2
-  tmp2$R2D <- tmp2$SecondDose / xmax2
+  tmp2$RDenom <- tmp2$Denominator / xmax2 / tmp2$ageWidth
+  tmp2$R1D <- tmp2$FirstDose / xmax2 / tmp2$ageWidth
+  tmp2$R2D <- tmp2$SecondDose / xmax2 / tmp2$ageWidth
 }
 
+
+fname <- paste0("pics/pyramid_", c1, "-", c2, "_", thedate, "_v", version, "_sameScale-", 1*sameScale, ".pdf")
+    
+pdf(fname, width = 7.5, height = 7)
+    
+par(xpd = FALSE, family = "sans", mgp = c(2, 0.15, 0), tck = -0.02)
+par(mar = c(6, 2.5, 4.5, 2.5))
 
 # Initialize plot
 plot(c(-1, 1), c(0, 100), type = "n", 
@@ -225,76 +239,117 @@ plot(c(-1, 1), c(0, 100), type = "n",
     # Write Credits
     par(family = "mono")
     mtext(side = 1, line = 4.5, text = paste0("@flodebarre, adapted from @VictimOfMaths, ", today, " 
-  Data ECDC: https://opendata.ecdc.europa.eu/covid19/vaccine_tracker/csv/data.csv
-  Code : https://github.com/flodebarre/covid_vaccination/blob/main/pyramid_UKFR_overtime.R"), adj = 0, cex = 0.55, col = gray(0.5))
+Data ECDC: https://opendata.ecdc.europa.eu/covid19/vaccine_tracker/csv/data.csv
+Code : https://github.com/flodebarre/covid_vaccination/blob/main/ECDC.Rmd"), adj = 0, cex = 0.55, col = gray(0.5))
     par(family = "sans")
     
-    for(ctr in c("Angleterre", "France")){
+    for(ictr in c(1, 2)){
+      
+      ctr <- c(c1, c2)[ictr]
+
       # For each country / side of the plot
-    
-      if(ctr == "Angleterre"){
-        factor <- factorEN
-        colComplet <- colCompletEN
-        col1D <- col1DEN
-      }else{
-        factor <- -1 * factorEN
-        colComplet <- colCompletFR
-        col1D <- col1DFR
-      }
+      factor <- (-1)^ictr
+      colComplet <- get(paste0("colComplet", ictr))
+      col1D <- get(paste0("col1D", ictr))
       
-      tmp <- dat[dat$country == ctr, ]
+      tmpp <- get(paste0("tmp", ictr))
+      fullCtr <- unique(tmpp$Country) # Full name
       
-      for(ag in unique(tmp$ageClass)){
+      for(ag in unique(tmpp$TargetGroup)){
         # For each age class, 
         # Subset of the data
-        tmp <- dat[dat$country == ctr & dat$ageClass == ag, ]
-        
+        tmp <- tmpp[tmpp$TargetGroup == ag, ]
+
         # Plot Total population
-        rect(xleft = factor * tmp$pop.byY, ybottom = tmp$agemin, 
-             xright = 0, ytop = tmp$agemax + 1, 
+        rect(xleft = factor * tmp$RDenom, ybottom = tmp$minAge, 
+             xright = 0, ytop = tmp$maxAge + 1, 
              col = colPop, border = gray(0, 0))
         
         if(version == 1){
           # Vaccinated, 1 dose
-          rect(xleft = factor * (tmp$cumDose1.byY), ybottom = tmp$agemin, 
-               xright = 0, ytop = tmp$agemax + 1, 
+          rect(xleft = factor * (tmp$R1D), ybottom = tmp$minAge, 
+               xright = 0, ytop = tmp$maxAge + 1, 
                col = col1D, border = gray(0, 0))
           
           # Vaccinated, complete
-          rect(xleft = factor * tmp$cumComplet.byY, ybottom = tmp$agemin, 
-               xright = 0, ytop = tmp$agemax + 1, 
+          rect(xleft = factor * tmp$R2D, ybottom = tmp$minAge, 
+               xright = 0, ytop = tmp$maxAge + 1, 
                col = colComplet, border = gray(0, 0))
         }else{
           ## Full vaccination in the end
           # Vaccinated, 1 dose
-          rect(xleft = factor * (tmp$pop.byY - tmp$cumDose1.byY), ybottom = tmp$agemin, 
-               xright = factor * tmp$pop.byY, ytop = tmp$agemax + 1, 
+          rect(xleft = factor * (tmp$RDenom - tmp$R1D), ybottom = tmp$minAge, 
+               xright = factor * tmp$RDenom, ytop = tmp$maxAge + 1, 
                col = col1D, border = gray(0, 0))
           
           # Vaccinated, complete
-          rect(xleft = factor * (tmp$pop.byY - tmp$cumComplet.byY), ybottom = tmp$agemin, 
-               xright = factor * tmp$pop.byY, ytop = tmp$agemax + 1, 
+          rect(xleft = factor * (tmp$RDenom - tmp$R2D), ybottom = tmp$minAge, 
+               xright = factor * tmp$RDenom, ytop = tmp$maxAge + 1, 
                col = colComplet, border = gray(0, 0))
           
         }
         
         # Graduations for age class
-        lines(c(factor*10^6, 0), rep(tmp$agemin, 2), col = "white", lwd = 1.5)
+        lines(c(factor, 0), rep(tmp$minAge, 2), col = "white", lwd = 1.5)
         # Age values
         par(xpd = TRUE)
-        text(x = factor*10^6, y = tmp$agemin, labels = tmp$agemin, col = gray(0), adj = c(0.5, 0.25), cex = 0.9)
+        if(factor == -1){adjj <- 1}else{adjj <- 0}
+        text(x = factor, y = tmp$minAge, labels = tmp$minAge, col = gray(0), adj = c(adjj, 0.25), cex = 0.9)
         par(xpd = FALSE)
         
       }
       # Add country legend
       par(xpd = TRUE)
       if(factor == -1){adjj <- 0}else{adjj <- 1}
-      text(x = factor * 10^6, y = 110, labels = ctr, adj = c(adjj, 0), cex = 1.3, font = 2)
+      text(x = factor, y = 110, labels = fullCtr, adj = c(adjj, 0), cex = 1.3, font = 2)
       par(xpd = FALSE)
       
     }
     
+    cexl <- 0.9 # Text size of legend of axes
+    mtext("Population by year of age
+(One rectangle: 100'000 individuals)", side = 1, line = 1.25, cex = cexl)
+    
+    par(xpd = FALSE)
+    # Graduations
+    wfine <- 0.3
+    # Horizontal by year
+    for(i in 0:110){
+      lines(c(-1, 1), rep(i, 2), col = "white", lwd = wfine)
+    }
+    # Vertical by 100000
+    for(i in seq(0, 2*10^6, by = 100000)){
+      if(sameScale){
+        abline(v = i/xmax, col = "white", lwd = wfine)
+        abline(v = -i/xmax, col = "white", lwd = wfine)
+      }else{
+        abline(v = i/xmax2, col = "white", lwd = wfine)
+        abline(v = -i/xmax1, col = "white", lwd = wfine)
+      }
+    }
+    # Vertical separation of the two countries
+    #abline(v = 0, col = gray(0), lwd = 1.5)
+    lines(x = c(0, 0), y = c(0, max(tmpp$maxAge) + 1), col = 1, lwd = 1.5, lend = "butt")
+    
+    # Legend ages
+    par(xpd = TRUE)
+    
+    yl <- 100   # y position of "Age" 
+    text("Age", x = 1, y = yl, cex = cexl, adj = c(0.5, 1))
+    text("Age", x = -1, y = yl, cex = cexl, adj = c(0.5, 1))
+    
+    
+    # Plot legend (manually centered)
+    par(family = "mono")
+    legend(x = 0, y = 105, pch = 15, col = c(colComplet1, col1D1, colPop, colComplet2, col1D2, colPop), ncol = 2, legend = c("     2 doses", "     1 dose", " non vaccinated", "", "", ""), xjust = 0.29, yjust = 0, box.lwd = -1, text.font = 1, pt.cex = 2, cex = 0.8)
+    
+    # Add title 
+    par(family = "sans")
+    mtext(thedate, side = 3, line = 3, cex = 1.2, font = 2)
 
+    dev.off()
+    
+    system(paste0("open ", fname))
 
 ```
 
