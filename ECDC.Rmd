@@ -184,16 +184,21 @@ newdat.final
 # Plot age pyramid
 
 ```{r}
-c1 <- "ES"
-c2 <- "FR"
+# 2-letter country codes of the two countries to plot
+c1 <- "FI"
+c2 <- "IE"
+
+byRec <- 10000 # Population size for the graduations
 
 sameScale <- TRUE # Whether to plot the two countries on the same scale or not
 
+# Which version of the plot:
+# 1: unvaxxed outside
+# 2: unvaxxed inside
 version <- 2
 
+# Subset of the data with these countries
 tmp <- newdat.final[is.element(newdat.final$ReportingCountry, c(c1, c2)), ]
-
-tmp
 
 # Get max size of age class
 tmp1 <- tmp[tmp$ReportingCountry == c1, ]
@@ -202,9 +207,8 @@ xmax1 <- max(tmp1$Denominator / tmp1$ageWidth)
 xmax2 <- max(tmp2$Denominator / tmp2$ageWidth)
 
 xmax <- max(c(xmax1, xmax2))
-xmax1
-xmax2
 
+# Rescale population sizes
 if(sameScale){
   tmp1$RDenom <- tmp1$Denominator / xmax / tmp1$ageWidth
   tmp1$R1D <- tmp1$FirstDose / xmax / tmp1$ageWidth
@@ -223,9 +227,10 @@ if(sameScale){
   tmp2$R2D <- tmp2$SecondDose / xmax2 / tmp2$ageWidth
 }
 
-
+# Name of the output file
 fname <- paste0("pics/pyramid_", c1, "-", c2, "_", thedate, "_v", version, "_sameScale-", 1*sameScale, ".pdf")
     
+# Open pdf
 pdf(fname, width = 7.5, height = 7)
     
 par(xpd = FALSE, family = "sans", mgp = c(2, 0.15, 0), tck = -0.02)
@@ -240,7 +245,7 @@ plot(c(-1, 1), c(0, 100), type = "n",
     par(family = "mono")
     mtext(side = 1, line = 4.5, text = paste0("@flodebarre, adapted from @VictimOfMaths, ", today, " 
 Data ECDC: https://opendata.ecdc.europa.eu/covid19/vaccine_tracker/csv/data.csv
-Code : https://github.com/flodebarre/covid_vaccination/blob/main/ECDC.Rmd"), adj = 0, cex = 0.55, col = gray(0.5))
+Code: https://github.com/flodebarre/covid_vaccination/blob/main/ECDC.Rmd"), adj = 0, cex = 0.55, col = gray(0.5))
     par(family = "sans")
     
     for(ictr in c(1, 2)){
@@ -267,23 +272,23 @@ Code : https://github.com/flodebarre/covid_vaccination/blob/main/ECDC.Rmd"), adj
         
         if(version == 1){
           # Vaccinated, 1 dose
-          rect(xleft = factor * (tmp$R1D), ybottom = tmp$minAge, 
+          rect(xleft = factor * min(tmp$R1D, tmp$RDenom), ybottom = tmp$minAge, 
                xright = 0, ytop = tmp$maxAge + 1, 
                col = col1D, border = gray(0, 0))
           
           # Vaccinated, complete
-          rect(xleft = factor * tmp$R2D, ybottom = tmp$minAge, 
+          rect(xleft = factor * min(tmp$R2D, tmp$RDenom), ybottom = tmp$minAge, 
                xright = 0, ytop = tmp$maxAge + 1, 
                col = colComplet, border = gray(0, 0))
         }else{
           ## Full vaccination in the end
           # Vaccinated, 1 dose
-          rect(xleft = factor * (tmp$RDenom - tmp$R1D), ybottom = tmp$minAge, 
+          rect(xleft = factor * max(0, tmp$RDenom - tmp$R1D), ybottom = tmp$minAge, 
                xright = factor * tmp$RDenom, ytop = tmp$maxAge + 1, 
                col = col1D, border = gray(0, 0))
           
           # Vaccinated, complete
-          rect(xleft = factor * (tmp$RDenom - tmp$R2D), ybottom = tmp$minAge, 
+          rect(xleft = factor * max(0, tmp$RDenom - tmp$R2D), ybottom = tmp$minAge, 
                xright = factor * tmp$RDenom, ytop = tmp$maxAge + 1, 
                col = colComplet, border = gray(0, 0))
           
@@ -307,8 +312,8 @@ Code : https://github.com/flodebarre/covid_vaccination/blob/main/ECDC.Rmd"), adj
     }
     
     cexl <- 0.9 # Text size of legend of axes
-    mtext("Population by year of age
-(One rectangle: 100'000 individuals)", side = 1, line = 1.25, cex = cexl)
+    mtext(paste0("Population by year of age
+(One rectangle: ", format(byRec, scientific = FALSE)," individuals)"), side = 1, line = 1.25, cex = cexl)
     
     par(xpd = FALSE)
     # Graduations
@@ -317,8 +322,8 @@ Code : https://github.com/flodebarre/covid_vaccination/blob/main/ECDC.Rmd"), adj
     for(i in 0:110){
       lines(c(-1, 1), rep(i, 2), col = "white", lwd = wfine)
     }
-    # Vertical by 100000
-    for(i in seq(0, 2*10^6, by = 100000)){
+    # Vertical by byRec (10000 for instance)
+    for(i in seq(0, 2*10^6, by = byRec)){
       if(sameScale){
         abline(v = i/xmax, col = "white", lwd = wfine)
         abline(v = -i/xmax, col = "white", lwd = wfine)
