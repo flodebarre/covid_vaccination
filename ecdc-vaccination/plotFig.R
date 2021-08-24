@@ -56,7 +56,7 @@ plotFig <- function(c1, c2, week, sameScale, byRec, thedate, newdat){
   }
   
   par(xpd = FALSE, family = "sans", mgp = c(2, 0.15, 0), tck = -0.02)
-  par(mar = c(6, 2.5, 4.5, 2.5))
+  par(mar = c(5, 2.5, 4.5, 2.5))
   
   # Initialize plot
   plot(c(-1, 1), c(0, 100), type = "n", 
@@ -65,7 +65,7 @@ plotFig <- function(c1, c2, week, sameScale, byRec, thedate, newdat){
   
   # Write Credits
   par(family = "mono")
-  mtext(side = 1, line = 4.5, text = paste0("@flodebarre, adapted from @VictimOfMaths, ", thedate, " 
+  mtext(side = 1, line = 3.5, text = paste0("@flodebarre, adapted from @VictimOfMaths, ", thedate, " 
 Data ECDC: https://opendata.ecdc.europa.eu/covid19/vaccine_tracker/csv/data.csv
 Code: https://github.com/flodebarre/covid_vaccination/blob/main/ECDC.Rmd"), adj = 0, cex = 0.55, col = gray(0.5))
   par(family = "sans")
