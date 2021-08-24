@@ -129,19 +129,3 @@ for(col in c("FirstDose", "SecondDose", "Population", "Denominator", "minAge", "
 
 # Save the output
 write.csv(newdat, file = paste0("data/ecdc-vaccination_cumulated_", today, ".csv"), row.names = FALSE)
-stop()
-
-# Select a late date 
-# (not necessarily the final one, because may be incomplete)
-newdat.final <- newdat[newdat$YearWeekISO == "2021-W32", ]
-
-# Count lines per country
-tb <- table(newdat.final$Country)
-# Countries without age data
-missingAge <- names(tb[tb == 1])
-missingAge
-
-# Remove them from the final dataset
-newdat.final <- newdat.final[!is.element(newdat.final$Country, missingAge), ]
-
-newdat.final
