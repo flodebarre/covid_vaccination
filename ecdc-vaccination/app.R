@@ -17,6 +17,7 @@ source("plotFig.R")
 
 # Get list of countries in the data (will be used in drop-down lists)
 ctrs <- aggregate(newdat$Country, by = list(ReportingCountry = newdat$ReportingCountry), FUN = unique)
+ctrs <- ctrs[order(ctrs[, 2]), ]
 countries <- as.list(ctrs[, 1])
 names(countries) <- ctrs[, 2]
 rm(ctrs) # Clean memory
