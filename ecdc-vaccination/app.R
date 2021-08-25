@@ -7,7 +7,7 @@ thedate <- "2021-08-24" # TimeStamp of the data
 
 library(shiny)
 
-# Global stuff
+# Global stuff ####
 
 # Load data
 newdat <- read.csv(paste0("data/ecdc-vaccination_cumulated_", thedate, ".csv"))
