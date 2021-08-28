@@ -139,10 +139,10 @@ for(thedate in dates){
     
     # Write Credits
     par(family = "mono")
-    mtext(side = 1, line = 4.5, text = paste0("@flodebarre, d'après @VictimOfMaths, données du ", thedate, " (France) et 2021-08-05 (England),  
+    mtext(side = 1, line = 4.5, text = paste0("@flodebarre, d'après @VictimOfMaths ; ", thedate, ",  
   Données UK : https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/
   France : https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/
-  Code : https://github.com/flodebarre/covid_vaccination/blob/main/pyramid_UKFR_overtime.R"), adj = 0, cex = 0.55, col = gray(0.5))
+  Code : https://github.com/flodebarre/covid_vaccination/blob/main/pyramid_UKFR_overtime.R"), adj = 0, cex = 0.55, col = gray(0.4))
     par(family = "sans")
     
     for(ctr in c("Angleterre", "France")){
