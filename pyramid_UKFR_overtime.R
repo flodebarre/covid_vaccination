@@ -22,7 +22,10 @@ head(dat.England.all)
 
 # France data from https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/
 # vacsi-a-fra-2021-08-10-19h05.csv
-dat.France.all <- read.csv("data/vacsi-a-fra-2021-08-10-19h05.csv", sep = ";")
+URL <- "https://www.data.gouv.fr/fr/datasets/r/54dd5f8d-1e2e-4ccb-8fb8-eac68245befd"
+download.file(URL, "data/vacsi-a-fra.csv")
+dat.France.all <- read.csv("data/vacsi-a-fra.csv", sep = ";")
+#dat.France.all <- read.csv("data/vacsi-a-fra-2021-08-10-19h05.csv", sep = ";")
 head(dat.France.all)
 
 # Dico for age classes in France
@@ -254,10 +257,10 @@ for(thedate in dates){
   } # end version
 } # end thedate
 
-fname
-## Evaluate this in console
+## Evaluate this in console to convert pdfs to png
 # for p in pics/pyramid_UK-FR_*.pdf; do; pdftoppm "$p" "${p%.*}" -png; done
 
-
+# Build gif
 system("convert -delay 150 pics/pyramid_UK-FR_*_2*.png pics/pyramid_UK-FR_2.gif")
 system("convert -delay 150 pics/pyramid_UK-FR_*_1*.png pics/pyramid_UK-FR_1.gif")
+
