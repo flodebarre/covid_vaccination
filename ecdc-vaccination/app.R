@@ -3,7 +3,7 @@
 # source("getData.R")
 
 # Need to update this each time the data are downloaded again
-thedate <- "2021-08-24" # TimeStamp of the data
+thedate <- "2021-08-31" # TimeStamp of the data
 
 library(shiny)
 
