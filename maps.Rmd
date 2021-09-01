@@ -1,0 +1,1246 @@
+---
+title: "maps"
+author: "FD"
+output: html_document
+---
+
+Note: I am using `.Rmd` documents as notebooks because I like the way I can structure my code. This document is not meant to be Knitted. 
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list = ls())
+```
+
+```{r loadPackages}
+# install.packages("mapsf")
+library(mapsf)
+library(RColorBrewer)
+library(colorspace)
+```
+
+```{r}
+dateVaccData <- "2021-08-31"
+# Timestamp of the vaccination data
+```
+
+# Load data
+
+NB: The geographic datasets are too heavy to be uploaded on GitHub. You need to download them yourself from the source. 
+
+
+## France and DOM
+
+Source <https://www.banatic.interieur.gouv.fr/V5/cartographie/cartographie.php>
+
+
+```{r}
+france <- st_read("../Sandbox/maps/data/contours_epci/2021/Metropole/EPCI_2021_region.shp")
+
+guadeloupe <- st_read("../Sandbox/maps/data/contours_epci/2021/Guadeloupe/contours_epci_971_region.shp")
+guyane <- st_read("../Sandbox/maps/data/contours_epci/2021/Guyane/contours_epci_973_region.shp")
+reunion <- st_read("../Sandbox/maps/data/contours_epci/2021/LaReunion/contours_epci_974_region.shp")
+martinique <- st_read("../Sandbox/maps/data/contours_epci/2021/Martinique/contours_epci_972_region.shp")
+mayotte <- st_read("../Sandbox/maps/data/contours_epci/2021/Mayotte/Contour_epci_976_region.shp")
+```
+
+
+## Other data 
+
+Pour les infos sur les départements
+
+Source <https://www.insee.fr/fr/information/2510634>
+```{r}
+composition <- read.csv("../Sandbox/maps/data/EPCI_composition-communale.csv", encoding = "UFT-8")
+```
+
+Departement information
+
+```{r}
+departements <- read.csv("data/departement2020.csv")
+
+dic.depname <- departements$libelle
+names(dic.depname) <- departements$dep
+```
+
+
+## Communes
+
+### All communes and arrondissements
+
+Source tout <https://www.data.gouv.fr/en/datasets/decoupage-administratif-communal-francais-issu-d-openstreetmap/>
+
+Licence © les contributeurs d'OpenStreetMap sous licence ODbL
+```{r}
+# Toutes les communes
+toutescommunes <- st_read("../Sandbox/maps/data/communes-20210101-shp/communes-20210101.shp")
+
+names(toutescommunes)
+toutescommunes[1,]
+
+# Arrondissements Paris Lyon Marseille
+
+arrondissements <- st_read("../Sandbox/maps/data/arrondissements_municipaux-20180711-shp/arrondissements_municipaux-20180711.shp")
+
+dim(toutescommunes)
+dim(arrondissements)
+
+names(toutescommunes) <- names(arrondissements)
+
+# Merge communes and arrondissement data
+tca.all <- rbind(toutescommunes, arrondissements)
+# Free some memory
+rm(toutescommunes, arrondissements)
+```
+
+
+# Vaccination data
+
+## Par EPCI 
+
+Source: <https://datavaccin-covid.ameli.fr/explore/dataset/donnees-de-vaccination-par-epci/download/?format=csv&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B>
+
+```{r}
+vaccEPCI <- read.csv(paste0("data/donnees-de-vaccination-par-epci_", dateVaccData, ".csv"), sep = ";")
+
+maxDate <- max(vaccEPCI$date)
+maxDate
+
+vaccEPCI.final <- vaccEPCI[vaccEPCI$date == maxDate, ]
+
+# Check quality of the data, number of lines per date
+table(vaccEPCI[vaccEPCI$classe_age == "TOUT_AGE", "date"])
+```
+
+```{r}
+# All EPCI codes
+allINSEE <- sort(unique(vaccEPCI$epci))
+```
+
+## Par commune
+
+Vaccination par commune
+
+```{r}
+vaccCom <- read.csv(paste0("data/donnees-de-vaccination-par-commune_", dateVaccData, ".csv"), sep = ";")
+
+vaccCom.final <- vaccCom[vaccCom$date == maxDate, ]
+
+vaccCom.final.toutage <- vaccCom[vaccCom$date == max(vaccCom$date) & vaccCom$classe_age == "TOUT_AGE", ]
+```
+
+```{r}
+# All code postal of communes in the dataset
+allCP <- sort(unique(vaccCom$commune_residence))
+```
+
+```{r}
+# Subset geography to communes and arrondissements of the dataset
+tca <- tca.all[which(is.element(tca.all$insee, allCP)), ]
+nrow(tca)
+```
+
+```{r PourEmmanuel, eval = FALSE}
+# Load E's codes
+codes <- read.csv("data/codgeo.csv", sep = ";")
+
+# Extract data from these codes
+tmp1 <- tca.all[is.element(tca.all$insee, codes$codgeo), ]
+tmp2 <- france[is.element(france$SIREN, codes$codgeo), ]
+tmp3 <- guadeloupe[is.element(guadeloupe$SIREN, codes$codgeo), ]
+tmp4 <- guyane[is.element(guyane$SIREN, codes$codgeo), ]
+tmp5 <- reunion[is.element(reunion$SIREN, codes$codgeo), ]
+tmp6 <- martinique[is.element(martinique$SIREN, codes$codgeo), ]
+tmp7 <- mayotte[is.element(mayotte$SIREN, codes$codgeo), ]
+
+# Communes and Arrondissements
+df1 <- cbind(insee = tmp1$insee, nom = tmp1$nom, surf_km2 = tmp1$surf_km2)
+df1
+write.csv(df1, "data/exportGeo_ComArr.csv")
+
+# Pas propre mais bon... ça fait le job
+tmpp <- tmp2
+df2 <- cbind("X_CENTROID" = tmpp$X_CENTROID, "Y_CENTROID" = tmpp$Y_CENTROID, "SUPERFICIE" = tmpp$SUPERFICIE, "SIREN"= tmpp$SIREN)
+
+tmpp <- tmp3
+df2 <- rbind(df2, cbind("X_CENTROID" = tmpp$X_CENTROID, "Y_CENTROID" = tmpp$Y_CENTROID, "SUPERFICIE" = tmpp$SUPERFICIE, "SIREN"= tmpp$SIREN_EPCI))
+
+tmpp <- tmp4
+df2 <- rbind(df2, cbind("X_CENTROID" = tmpp$X_CENTROID, "Y_CENTROID" = tmpp$Y_CENTROID, "SUPERFICIE" = tmpp$SUPERFICIE, "SIREN"= tmpp$SIREN_EPCI))
+
+tmpp <- tmp5
+df2 <- rbind(df2, cbind("X_CENTROID" = tmpp$X_CENTROID, "Y_CENTROID" = tmpp$Y_CENTROID, "SUPERFICIE" = tmpp$SUPERFICIE, "SIREN"= tmpp$SIREN_EPCI))
+
+tmpp <- tmp6
+df2 <- rbind(df2, cbind("X_CENTROID" = tmpp$X_CENTROID, "Y_CENTROID" = tmpp$Y_CENTROID, "SUPERFICIE" = tmpp$SUPERFICIE, "SIREN"= tmpp$SIREN_EPCI))
+
+tmpp <- tmp7
+df2 <- rbind(df2, cbind("X_CENTROID" = tmpp$X_CENTROID, "Y_CENTROID" = tmpp$Y_CENTROID, "SUPERFICIE" = tmpp$SUPERFICIE, "SIREN"= tmpp$SIREN))
+
+write.csv(df2, "data/exportGeo_EPCI.csv")
+```
+
+
+# Vaccination maps
+
+## Raw proportions
+
+```{r}
+#for(i in dev.list())dev.off()
+
+# Choose an age class
+#ag <- "TOUT_AGE"
+
+ages <- list("Tous_ages" = c("TOUT_AGE"), 
+             "65_et-plus" = c("65-74", "75 et +"), 
+             "40-65" = c("40-54", "55-64"), 
+             "20-39" = c("20-39"), 
+             "00-19" = c("00-19"))
+
+prefix <- "pics/"
+
+
+thevar <- "pourcent_cumu_1_inj"
+namevar <- "au moins 1 injection"
+#  thevar <- "pourcent_cumu_termine"
+#  namevar <- "terminée"
+
+#for(thedate in sort(unique(vaccCom$date))){
+
+# Select a date
+thedate <- maxDate
+
+# Loop on age class
+for(i in 2:5){  # Loop on age class
+
+  ncl <- names(ages)[i]
+  ag <- ages[[i]]
+  
+  
+  # Subselect the data for this age class and date
+  subEPCI <- vaccEPCI[which(is.element(vaccEPCI$classe_age, ag) & vaccEPCI$date == thedate), ]
+  subCom <- vaccCom[which(is.element(vaccCom$classe_age, ag) & vaccCom$date == thedate), ]
+  
+  # Aggregate data if more than one age class
+  if(length(ag) > 1){
+    aggEPCI <- aggregate(subEPCI[, c("population_carto", "effectif_1_inj", "effectif_termine", "effectif_cumu_1_inj", "effectif_cumu_termine")], by = list(date = subEPCI$date, epci = subEPCI$epci), FUN = sum)
+    aggCom <- aggregate(subCom[, c("population_carto", "effectif_1_inj", "effectif_termine", "effectif_cumu_1_inj", "effectif_cumu_termine")], by = list(date = subCom$date, commune_residence = subCom$commune_residence), FUN = sum)
+    
+    subEPCI <- aggEPCI
+    subCom <- aggCom
+    
+    # Recompute taux
+    subEPCI$taux_1_inj <- subEPCI$effectif_1_inj / subEPCI$population_carto
+    subEPCI$taux_cumu_1_inj <- subEPCI$effectif_cumu_1_inj / subEPCI$population_carto
+    subEPCI$taux_termine <- subEPCI$effectif_termine / subEPCI$population_carto
+    subEPCI$taux_cumu_termine <- subEPCI$effectif_cumu_termine / subEPCI$population_carto
+  
+    
+    subCom$taux_1_inj <- subCom$effectif_1_inj / subCom$population_carto
+    subCom$taux_cumu_1_inj <- subCom$effectif_cumu_1_inj / subCom$population_carto
+    subCom$taux_termine <- subCom$effectif_termine / subCom$population_carto
+    subCom$taux_cumu_termine <- subCom$effectif_cumu_termine / subCom$population_carto
+  }
+  
+  # Compute national means 
+  if(thevar == "pourcent_cumu_1_inj"){
+    moy_cumu_EPCI <- sum(subEPCI$effectif_cumu_1_inj, na.rm = TRUE) / sum(subEPCI$population_carto)
+    moy_EPCI <- sum(subEPCI$effectif_1_inj) / sum(subEPCI$population_carto)
+  }else{
+    moy_cumu_EPCI <- sum(subEPCI$effectif_cumu_termine, na.rm = TRUE) / sum(subEPCI$population_carto)
+    moy_EPCI <- sum(subEPCI$effectif_termine) / sum(subEPCI$population_carto)
+  }
+  
+  # Compute relative difference to the mean
+  subEPCI$diff_cumu_1_inj <- (subEPCI$taux_cumu_1_inj - moy_cumu_EPCI) / moy_cumu_EPCI
+  
+  subEPCI$diff_1_inj <- (subEPCI$taux_1_inj - moy_EPCI) / moy_EPCI
+  
+  # Percentage instead of proportion
+  subEPCI$pourcent_cumu_1_inj <- 100 * subEPCI$taux_cumu_1_inj
+  subCom$pourcent_cumu_1_inj <- 100 * subCom$taux_cumu_1_inj
+  
+  subEPCI$pourcent_1_inj <- 100 * subEPCI$taux_1_inj
+  subCom$pourcent_1_inj <- 100 * subCom$taux_1_inj
+
+  subEPCI$pourcent_cumu_termine <- 100 * subEPCI$taux_cumu_termine
+  subCom$pourcent_cumu_termine <- 100 * subCom$taux_cumu_termine
+  
+  subEPCI$pourcent_termine <- 100 * subEPCI$taux_termine
+  subCom$pourcent_termine <- 100 * subCom$taux_termine
+  
+  # Get range of values
+  range(subEPCI$taux_cumu_1_inj)
+  range(subCom$taux_cumu_1_inj)
+  
+  #pal <- rev(brewer.pal(11, "RdYlBu")[2:11])
+  #pal <- rev(brewer.pal(10, name = "PuOr"))
+  pal <- rev(divergingx_hcl(20, "PuOr"))
+  brks <- 100*seq(0, 1, length.out = 21)
+  
+  brd.col <- gray(0.6, 1)
+  brd.lwd <- 0.1
+  
+  colNA <- gray(0.8)
+  
+  
+  # File name  
+  fname <- paste0(prefix, thevar, "_", thedate, "_", ncl, ".png")
+  
+  # Export figure
+  mf_export(x = france, export = "png", 
+            filename = fname, width = 700, res = 90
+            )
+  
+  mf_theme(mar = c(0., 0.2, 1.5, 0.5), 
+           bg = gray(1, 1))
+  
+  ## France metropolitaine ## 
+  tmp <- merge(france, subEPCI, by.x = "SIREN", by.y = "epci")
+  # Initiate a base map
+  mf_init(x = tmp, expandBB = c(0., 0.1, 0.05, 0.175))
+  # Plot a shadow
+  # mf_shadow(france, add = TRUE)
+  # plot municipalities 
+  mf_map(tmp, 
+         var = thevar,
+         type = "choro", add = TRUE, 
+         leg_pos = "topleft", leg_title = "", 
+         breaks = brks, pal = pal, 
+         border = brd.col, lwd = brd.lwd, leg_val_rnd = 0, 
+         col_na = colNA
+         )
+  
+  mf_title(txt = paste0("Pourcentage de vaccination ", namevar, ", au ", format(as.Date(thedate), "%d/%m/%Y"), ", par lieu de résidence
+Classe d'age ", ncl, ", Moyenne nationale ", round(100*moy_cumu_EPCI, 1), "%"), bg = gray(1, 1), fg = gray(0, 1), 
+           font = 1, tab = FALSE, line = 0, inner = FALSE)
+  
+  mf_credits(paste0("@flodebarre\n",
+                    "Données vaccination : Ameli https://datavaccin-covid.ameli.fr/\n", 
+                    "Contours EPCI : Banatic, ", 
+                    "Contours communes : © les contributeurs d'OpenStreetMap sous licence ODbL. ", 
+                             "mapsf ", 
+                             packageVersion("mapsf")), cex = 0.5)
+  
+  ### INSETS ###
+  
+  # Size of the insets for DOM
+  insetSize <- 0.075 # Size of the inset, fraction of plot
+  dxy <- 0.025 # Space between them
+  y0 <- 0.065  # Minimum y position
+  
+  # Other inset parameters
+  box.lwd <- 0.5 # Line width of the box arount inset
+  box.col <- gray(1) # Color of the box
+  BB.inset <- c(0, 0, 0.5, 0) # Bounding box (does not seem to work)
+  mar.inset <-c(0, 0, 0.6, 0) # Margins of the inset
+  line.title <- 0.5 # Line position of the inset title
+  line.title.2 <- 0.2 # Line position of the inset titles, communes
+  cex.title.inset <- 0.6 # cex of the inset title
+  cex.title.inset.2 <- 0.7 # cex of the inset title, communes
+  
+  
+  ## Guadeloupe ##
+  
+  mf_inset_on(fig = c(0, insetSize, y0 + 2*insetSize + 2*dxy, y0 + 3*insetSize + 2*dxy))
+  # Merge map and data
+  tmp <- merge(guadeloupe, subEPCI, by.x = "SIREN_EPCI", by.y = "epci")
+  # Plot map
+  
+  mf_theme(mar = mar.inset)
+  mf_init(tmp, expandBB = BB.inset)
+  mf_map(tmp, type = "choro", 
+         var = thevar,
+         breaks = brks, pal = pal, 
+         border = brd.col, lwd = brd.lwd, 
+         leg_pos = "n", 
+         col_na = colNA
+        )
+  mf_title("Guadeloupe", tab = TRUE, inner = FALSE, cex = cex.title.inset, fg = 1, bg = gray(0, 0), line = line.title, pos = "center")
+  
+  # add a frame
+  box(lwd = box.lwd, col = box.col)
+  mf_inset_off()
+  
+  
+  ## Martinique ##
+  
+  mf_inset_on(fig = c(0, insetSize, y0 + 1*insetSize + 1*dxy, y0 + 2*insetSize + 1*dxy))
+  # Merge map and data
+  tmp <- merge(martinique, subEPCI, by.x = "SIREN_EPCI", by.y = "epci")
+  # Plot map
+  mf_theme(mar = mar.inset)
+  mf_init(tmp, expandBB = BB.inset)
+  mf_map(tmp, type = "choro", 
+         var = thevar,
+         breaks = brks, pal = pal, 
+         border = brd.col, lwd = brd.lwd, 
+         leg_pos = "n", 
+         col_na = colNA
+        )
+  mf_title("Martinique", tab = TRUE, inner = FALSE, cex = cex.title.inset, fg = 1, bg = gray(0, 0), line = line.title, pos = "center")
+  # add a frame
+  box(lwd = box.lwd, col = box.col)
+  mf_inset_off()
+  
+  
+  ## Guyane ## 
+  
+  mf_inset_on(fig = c(0, insetSize, y0 + 0*insetSize + 0*dxy, y0 + 1*insetSize + 0*dxy))
+  # Merge map and data
+  tmp <- merge(guyane, subEPCI, by.x = "SIREN_EPCI", by.y = "epci")
+  # Plot map
+  mf_theme(mar = mar.inset)
+  mf_init(tmp, expandBB = BB.inset)
+  mf_map(tmp, type = "choro", 
+         var = thevar,
+         breaks = brks, pal = pal, 
+         border = brd.col, lwd = brd.lwd, 
+         leg_pos = "n", 
+         col_na = colNA
+        )
+  mf_title("Guyane", tab = TRUE, inner = FALSE, cex = cex.title.inset, fg = 1, bg = gray(0, 0), line = line.title, pos = "center")
+  # add a frame
+  box(lwd = box.lwd, col = box.col)
+  mf_inset_off()
+  
+  
+  ## Mayotte ##
+  
+  mf_inset_on(fig = c(insetSize + dxy, 2*insetSize + dxy, y0 + 1*insetSize + 1*dxy, y0 + 2*insetSize + 1*dxy))
+  # Merge map and data
+  tmp <- merge(mayotte, subEPCI, by.x = "SIREN", by.y = "epci")
+  # Plot map
+  mf_theme(mar = mar.inset)
+  mf_init(tmp, expandBB = BB.inset)
+  mf_map(tmp, type = "choro", 
+         var = thevar,
+         breaks = brks, pal = pal, 
+         border = brd.col, lwd = brd.lwd, 
+         leg_pos = "n", 
+         col_na = colNA
+        )
+  mf_title("Mayotte", tab = TRUE, inner = FALSE, cex = cex.title.inset, fg = 1, bg = gray(0, 0), line = line.title, pos = "center")
+  # add a frame
+  box(lwd = box.lwd, col = box.col)
+  mf_inset_off()
+  
+  
+  ## La Réunion ##
+  
+  mf_inset_on(fig = c(insetSize + dxy, 2*insetSize + dxy, y0 + 0*insetSize + 0*dxy, y0 + 1*insetSize + 0*dxy))
+  # Merge map and data
+  tmp <- merge(reunion, subEPCI, by.x = "SIREN_EPCI", by.y = "epci")
+  # Plot map
+  mf_theme(mar = mar.inset)
+  mf_init(tmp, expandBB = BB.inset)
+  mf_map(tmp, type = "choro", 
+         var = thevar,
+         breaks = brks, pal = pal, 
+         border = brd.col, lwd = brd.lwd, 
+         leg_pos = "n", 
+         col_na = colNA
+        )
+  mf_title("La Réunion", tab = TRUE, inner = FALSE, cex = cex.title.inset, fg = 1, bg = gray(0, 0), line = line.title, pos = "center")
+  # add a frame
+  box(lwd = box.lwd, col = box.col)
+  mf_inset_off()
+  
+  ### Insets communes ###
+  
+  #lines(0, 0, col = 2)
+  
+  insetSize2 <- 0.225
+  dxy2 <- 0.025
+  
+  
+  ## Paris ## 
+  
+  deps <- c("75", "91", "92", "93", "94", "95")
+  
+  mf_inset_on(fig = c(1 - insetSize2, 1, 1 - insetSize2, 1))
+  # Subset of departements for Ile-de-France
+  tmp <- merge(tca, subCom[is.element(substr(subCom$commune_residence, 1, 2), deps), ], by.x = "insee", by.y = "commune_residence")
+  dim(tmp)
+  # Plot map
+  mf_theme(mar = mar.inset)
+  mf_map(tmp, type = "choro", 
+         var = thevar,
+         breaks = brks, pal = pal, 
+         border = brd.col, lwd = brd.lwd, 
+         leg_pos = "n", 
+         col_na = colNA
+        )
+  mf_title("Paris et autour", tab = TRUE, inner = FALSE, cex = cex.title.inset.2, fg = 1, bg = gray(0, 0), line = line.title.2, pos = "center")
+  box(lwd = box.lwd, col = box.col)
+  mf_inset_off()
+  
+  
+  ## Lyon ##
+  
+  deps <- c("69")
+  
+  mf_inset_on(fig = c(1 - insetSize2, 1, 1 - 2*insetSize2 - dxy2, 1 - insetSize2 - dxy2))
+  # Subset of departements for Lyon
+  tmp <- merge(tca, subCom[is.element(substr(subCom$commune_residence, 1, 2), deps), ], by.x = "insee", by.y = "commune_residence")
+  # Plot map
+  mf_theme(mar = mar.inset)
+  mf_map(tmp, type = "choro", 
+         var = thevar,
+         breaks = brks, pal = pal, 
+         border = brd.col, lwd = brd.lwd, 
+         leg_pos = "n", 
+         col_na = colNA
+        )
+  mf_title("Lyon et autour", tab = TRUE, inner = FALSE, cex = cex.title.inset.2, fg = 1, bg = gray(0, 0), line = line.title.2, pos = "center")
+  box(lwd = box.lwd, col = box.col)
+  mf_inset_off()
+  
+  
+  ## Marseille ##
+  
+  deps <- c("13", "83", "84")
+  
+  mf_inset_on(fig = c(1 - insetSize2, 1, 1 - 3*insetSize2 - 2*dxy2, 1 - 2*insetSize2 - 2*dxy2))
+  # Subset of departements for Marseille
+  tmp <- merge(tca, subCom[is.element(substr(subCom$commune_residence, 1, 2), deps), ], by.x = "insee", by.y = "commune_residence")
+  # Plot map
+  mf_theme(mar = mar.inset)
+  mf_map(tmp, type = "choro", 
+         var = thevar,
+         breaks = brks, pal = pal, 
+         border = brd.col, lwd = brd.lwd, 
+         leg_pos = "n", 
+         col_na = colNA
+        )
+  mf_title("Marseille et autour", tab = TRUE, inner = FALSE, cex = cex.title.inset.2, fg = 1, bg = gray(0, 0), line = line.title.2, pos = "center")
+  box(lwd = box.lwd, col = box.col)
+  mf_inset_off()
+  
+  
+  dev.off()
+  
+#  system(paste0("open ", fname))
+}
+
+# Combine age classes on a single panel
+system(paste0("montage ", "$(ls -r ", prefix, thevar, "_", thedate, "_[0-9]*", " )", " -geometry +20+20 ", prefix, thevar, "_", thedate, "_all.png"))
+
+#} # end loop on date
+
+system(paste0("convert -delay 50 ", prefix, thevar, "_", "*", "_all.png ", prefix, thevar, "_all.gif"))
+```
+
+
+## Relative differences, by age class
+
+```{r}
+#for(i in dev.list())dev.off()
+
+# Choose an age class
+#ag <- "TOUT_AGE"
+
+ages <- list("Tous_ages" = c("TOUT_AGE"), 
+             "65_et-plus" = c("65-74", "75 et +"), 
+             "40-65" = c("40-54", "55-64"), 
+             "20-39" = c("20-39"), 
+             "00-19" = c("00-19")
+             )
+
+prefix <- "pics/"
+
+# Choose what to plot, by uncommenting/commenting
+#thevar <- "pourcent_diff_cumu_termine"
+#namevar <- "Écart relatif à moyenne nationale, % vaccination terminée"
+
+thevar <- "pourcent_diff_cumu_1_inj"
+namevar <- "Écart relatif à moyenne nationale, % au moins une dose"
+
+thedate <- maxDate
+
+for(i in 1:length(ages)){
+
+  ncl <- names(ages)[i]
+  ag <- ages[[i]]
+  
+  
+  # Subselect the data for this age class and date
+  subEPCI <- vaccEPCI[which(is.element(vaccEPCI$classe_age, ag) & vaccEPCI$date == thedate), ]
+  subCom <- vaccCom[which(is.element(vaccCom$classe_age, ag) & vaccCom$date == thedate), ]
+  
+  # Aggregate data if more than one age class
+  if(length(ag) > 1){
+    aggEPCI <- aggregate(subEPCI[, c("population_carto", "effectif_1_inj", "effectif_termine", "effectif_cumu_1_inj", "effectif_cumu_termine")], by = list(date = subEPCI$date, epci = subEPCI$epci), FUN = sum)
+    aggCom <- aggregate(subCom[, c("population_carto", "effectif_1_inj", "effectif_termine", "effectif_cumu_1_inj", "effectif_cumu_termine")], by = list(date = subCom$date, commune_residence = subCom$commune_residence), FUN = sum)
+    
+    subEPCI <- aggEPCI
+    subCom <- aggCom
+    
+    # Recompute taux
+    subEPCI$taux_1_inj <- subEPCI$effectif_1_inj / subEPCI$population_carto
+    subEPCI$taux_cumu_1_inj <- subEPCI$effectif_cumu_1_inj / subEPCI$population_carto
+    subEPCI$taux_termine <- subEPCI$effectif_termine / subEPCI$population_carto
+    subEPCI$taux_cumu_termine <- subEPCI$effectif_cumu_termine / subEPCI$population_carto
+  
+    subCom$taux_1_inj <- subCom$effectif_1_inj / subCom$population_carto
+    subCom$taux_cumu_1_inj <- subCom$effectif_cumu_1_inj / subCom$population_carto
+    subCom$taux_termine <- subCom$effectif_termine / subCom$population_carto
+    subCom$taux_cumu_termine <- subCom$effectif_cumu_termine / subCom$population_carto
+  }
+  
+  # Compute national means 
+    moy_cumu_1_inj_EPCI <- sum(subEPCI$effectif_cumu_1_inj, na.rm = TRUE) / sum(subEPCI$population_carto)
+
+    moy_cumu_termine_EPCI <- sum(subEPCI$effectif_cumu_termine, na.rm = TRUE) / sum(subEPCI$population_carto)
+    moy_termine_EPCI <- sum(subEPCI$effectif_termine) / sum(subEPCI$population_carto)
+
+    if(thevar == "pourcent_diff_cumu_1_inj"){
+      moy_EPCI <- moy_cumu_1_inj_EPCI
+    }
+    if(thevar == "pourcent_diff_cumu_termine"){
+      moy_EPCI <- moy_cumu_termine_EPCI
+    }
+    
+  # Compute relative difference to the mean
+    ## 1 dose
+  subEPCI$diff_cumu_1_inj <- (subEPCI$taux_cumu_1_inj - moy_cumu_1_inj_EPCI) / moy_cumu_1_inj_EPCI
+  subCom$diff_cumu_1_inj <- (subCom$taux_cumu_1_inj - moy_cumu_1_inj_EPCI) / moy_cumu_1_inj_EPCI
+  
+    ## Termine
+  subEPCI$diff_cumu_termine <- (subEPCI$taux_cumu_termine - moy_cumu_termine_EPCI) / moy_cumu_termine_EPCI
+  subEPCI$diff_termine <- (subEPCI$taux_termin - moy_termine_EPCI) / moy_termine_EPCI
+  subCom$diff_cumu_termine <- (subCom$taux_cumu_termine - moy_cumu_termine_EPCI) / moy_cumu_termine_EPCI
+  subCom$diff_termine <- (subCom$taux_termine - moy_termine_EPCI) / moy_termine_EPCI
+  
+  # Percentage instead of proportion
+  subEPCI$pourcent_cumu_1_inj <- 100 * subEPCI$taux_cumu_1_inj
+  subCom$pourcent_cumu_1_inj <- 100 * subCom$taux_cumu_1_inj
+  
+  subEPCI$pourcent_1_inj <- 100 * subEPCI$taux_1_inj
+  subCom$pourcent_1_inj <- 100 * subCom$taux_1_inj
+  
+  # Difference to the mean
+  subEPCI$pourcent_diff_cumu_1_inj <- 100 * subEPCI$diff_cumu_1_inj
+  subCom$pourcent_diff_cumu_1_inj <- 100 * subCom$diff_cumu_1_inj
+
+  subEPCI$pourcent_cumu_termine <- 100 * subEPCI$taux_cumu_termine
+  subCom$pourcent_cumu_termine <- 100 * subCom$taux_cumu_termine
+  
+  subEPCI$pourcent_termine <- 100 * subEPCI$taux_termine
+  subCom$pourcent_termine <- 100 * subCom$taux_termine
+  
+  subEPCI$pourcent_diff_cumu_termine <- 100 * subEPCI$diff_cumu_termine
+  subEPCI$pourcent_diff_termine <- 100 * subEPCI$diff_termine
+  subCom$pourcent_diff_cumu_termine <- 100 * subCom$diff_cumu_termine
+  subCom$pourcent_diff_termine <- 100 * subCom$diff_termine
+  
+  # Get range of values
+  range(subEPCI$taux_cumu_1_inj)
+  range(subCom$taux_cumu_1_inj)
+  
+  #pal <- rev(brewer.pal(11, "RdYlBu")[2:11])
+  #pal <- rev(brewer.pal(10, name = "PuOr"))
+  brks <- 100*c(-1, seq(-0.40, 0.40, by = 0.05), 1)
+  pal <- rev(colorspace::diverge_hsv(length(brks)-1)) #divergingx_hcl(length(brks)-1, "RdBu")
+  #plot(seq_along(pal), col = pal, pch = 16, cex = 3)
+  
+  brd.col <- gray(0.6, 1)
+  brd.lwd <- 0.1
+  
+  colNA <- gray(0.8)
+  
+  #thevar <- "pourcent_1_inj"
+  fname <- paste0(prefix, thevar, "_", thedate, "_", ncl, ".png")
+  
+  mf_export(x = france, export = "png", 
+            filename = fname, width = 700, res = 90
+            )
+  
+  mf_theme(mar = c(0., 0.2, 1.5, 0.5), 
+           bg = gray(1, 1))
+  
+  ## France metropolitaine ## 
+  tmp <- merge(france, subEPCI, by.x = "SIREN", by.y = "epci")
+  # Initiate a base map
+  mf_init(x = tmp, expandBB = c(0., 0.1, 0.05, 0.175))
+  # Plot a shadow
+  # mf_shadow(france, add = TRUE)
+  # plot municipalities 
+  mf_map(tmp, 
+         var = thevar,
+         type = "choro", add = TRUE, 
+         leg_pos = "topleft", leg_title = "", 
+         breaks = brks, pal = pal, 
+         border = brd.col, lwd = brd.lwd, leg_val_rnd = 0, 
+         col_na = colNA
+         )
+  
+  mf_title(txt = paste0(namevar, ", au ", format(as.Date(thedate), "%d/%m/%Y"), ", par lieu de résidence
+Classe d'age ", ncl, ", Moyenne nationale ", round(100*moy_EPCI, 1), "%"), bg = gray(1, 1), fg = gray(0, 1), 
+           font = 1, tab = FALSE, line = 0, inner = FALSE)
+  
+  mf_credits(paste0("@flodebarre\n", 
+                    "Données vaccination : Ameli https://datavaccin-covid.ameli.fr/\n", 
+                    "Contours EPCI : Banatic, ", 
+                    "Contours communes : © les contributeurs d'OpenStreetMap sous licence ODbL. ", 
+                             "mapsf ", 
+                             packageVersion("mapsf")), cex = 0.5)
+  
+  ### INSETS ###
+  
+  # Size of the insets for DOM
+  insetSize <- 0.075 # Size of the inset, fraction of plot
+  dxy <- 0.025 # Space between them
+  y0 <- 0.065  # Minimum y position
+  
+  # Other inset parameters
+  box.lwd <- 0.5 # Line width of the box arount inset
+  box.col <- gray(1) # Color of the box
+  BB.inset <- c(0, 0, 0.5, 0) # Bounding box (does not seem to work)
+  mar.inset <-c(0, 0, 0.6, 0) # Margins of the inset
+  line.title <- 0.5 # Line position of the inset title
+  line.title.2 <- 0.2 # Line position of the inset titles, communes
+  cex.title.inset <- 0.6 # cex of the inset title
+  cex.title.inset.2 <- 0.7 # cex of the inset title, communes
+  
+  
+  ## Guadeloupe ##
+  
+  mf_inset_on(fig = c(0, insetSize, y0 + 2*insetSize + 2*dxy, y0 + 3*insetSize + 2*dxy))
+  # Merge map and data
+  tmp <- merge(guadeloupe, subEPCI, by.x = "SIREN_EPCI", by.y = "epci")
+  # Plot map
+  
+  mf_theme(mar = mar.inset)
+  mf_init(tmp, expandBB = BB.inset)
+  mf_map(tmp, type = "choro", 
+         var = thevar,
+         breaks = brks, pal = pal, 
+         border = brd.col, lwd = brd.lwd, 
+         leg_pos = "n", 
+         col_na = colNA
+        )
+  mf_title("Guadeloupe", tab = TRUE, inner = FALSE, cex = cex.title.inset, fg = 1, bg = gray(0, 0), line = line.title, pos = "center")
+  
+  # add a frame
+  box(lwd = box.lwd, col = box.col)
+  mf_inset_off()
+  
+  
+  ## Martinique ##
+  
+  mf_inset_on(fig = c(0, insetSize, y0 + 1*insetSize + 1*dxy, y0 + 2*insetSize + 1*dxy))
+  # Merge map and data
+  tmp <- merge(martinique, subEPCI, by.x = "SIREN_EPCI", by.y = "epci")
+  # Plot map
+  mf_theme(mar = mar.inset)
+  mf_init(tmp, expandBB = BB.inset)
+  mf_map(tmp, type = "choro", 
+         var = thevar,
+         breaks = brks, pal = pal, 
+         border = brd.col, lwd = brd.lwd, 
+         leg_pos = "n", 
+         col_na = colNA
+        )
+  mf_title("Martinique", tab = TRUE, inner = FALSE, cex = cex.title.inset, fg = 1, bg = gray(0, 0), line = line.title, pos = "center")
+  # add a frame
+  box(lwd = box.lwd, col = box.col)
+  mf_inset_off()
+  
+  
+  ## Guyane ## 
+  
+  mf_inset_on(fig = c(0, insetSize, y0 + 0*insetSize + 0*dxy, y0 + 1*insetSize + 0*dxy))
+  # Merge map and data
+  tmp <- merge(guyane, subEPCI, by.x = "SIREN_EPCI", by.y = "epci")
+  # Plot map
+  mf_theme(mar = mar.inset)
+  mf_init(tmp, expandBB = BB.inset)
+  mf_map(tmp, type = "choro", 
+         var = thevar,
+         breaks = brks, pal = pal, 
+         border = brd.col, lwd = brd.lwd, 
+         leg_pos = "n", 
+         col_na = colNA
+        )
+  mf_title("Guyane", tab = TRUE, inner = FALSE, cex = cex.title.inset, fg = 1, bg = gray(0, 0), line = line.title, pos = "center")
+  # add a frame
+  box(lwd = box.lwd, col = box.col)
+  mf_inset_off()
+  
+  
+  ## Mayotte ##
+  
+  mf_inset_on(fig = c(insetSize + dxy, 2*insetSize + dxy, y0 + 1*insetSize + 1*dxy, y0 + 2*insetSize + 1*dxy))
+  # Merge map and data
+  tmp <- merge(mayotte, subEPCI, by.x = "SIREN", by.y = "epci")
+  # Plot map
+  mf_theme(mar = mar.inset)
+  mf_init(tmp, expandBB = BB.inset)
+  mf_map(tmp, type = "choro", 
+         var = thevar,
+         breaks = brks, pal = pal, 
+         border = brd.col, lwd = brd.lwd, 
+         leg_pos = "n", 
+         col_na = colNA
+        )
+  mf_title("Mayotte", tab = TRUE, inner = FALSE, cex = cex.title.inset, fg = 1, bg = gray(0, 0), line = line.title, pos = "center")
+  # add a frame
+  box(lwd = box.lwd, col = box.col)
+  mf_inset_off()
+  
+  
+  ## La Réunion ##
+  
+  mf_inset_on(fig = c(insetSize + dxy, 2*insetSize + dxy, y0 + 0*insetSize + 0*dxy, y0 + 1*insetSize + 0*dxy))
+  # Merge map and data
+  tmp <- merge(reunion, subEPCI, by.x = "SIREN_EPCI", by.y = "epci")
+  # Plot map
+  mf_theme(mar = mar.inset)
+  mf_init(tmp, expandBB = BB.inset)
+  mf_map(tmp, type = "choro", 
+         var = thevar,
+         breaks = brks, pal = pal, 
+         border = brd.col, lwd = brd.lwd, 
+         leg_pos = "n", 
+         col_na = colNA
+        )
+  mf_title("La Réunion", tab = TRUE, inner = FALSE, cex = cex.title.inset, fg = 1, bg = gray(0, 0), line = line.title, pos = "center")
+  # add a frame
+  box(lwd = box.lwd, col = box.col)
+  mf_inset_off()
+  
+  ### Insets communes ###
+  
+  #lines(0, 0, col = 2)
+  
+  insetSize2 <- 0.225
+  dxy2 <- 0.025
+  
+  
+  ## Paris ## 
+  
+  deps <- c("75", "91", "92", "93", "94", "95")
+  
+  mf_inset_on(fig = c(1 - insetSize2, 1, 1 - insetSize2, 1))
+  # Subset of departements for Ile-de-France
+  tmp <- merge(tca, subCom[is.element(substr(subCom$commune_residence, 1, 2), deps), ], by.x = "insee", by.y = "commune_residence")
+  dim(tmp)
+  # Plot map
+  mf_theme(mar = mar.inset)
+  mf_map(tmp, type = "choro", 
+         var = thevar,
+         breaks = brks, pal = pal, 
+         border = brd.col, lwd = brd.lwd, 
+         leg_pos = "n", 
+         col_na = colNA
+        )
+  mf_title("Paris et autour", tab = TRUE, inner = FALSE, cex = cex.title.inset.2, fg = 1, bg = gray(0, 0), line = line.title.2, pos = "center")
+  box(lwd = box.lwd, col = box.col)
+  mf_inset_off()
+  
+  
+  ## Lyon ##
+  
+  deps <- c("69")
+  
+  mf_inset_on(fig = c(1 - insetSize2, 1, 1 - 2*insetSize2 - dxy2, 1 - insetSize2 - dxy2))
+  # Subset of departements for Lyon
+  tmp <- merge(tca, subCom[is.element(substr(subCom$commune_residence, 1, 2), deps), ], by.x = "insee", by.y = "commune_residence")
+  # Plot map
+  mf_theme(mar = mar.inset)
+  mf_map(tmp, type = "choro", 
+         var = thevar,
+         breaks = brks, pal = pal, 
+         border = brd.col, lwd = brd.lwd, 
+         leg_pos = "n", 
+         col_na = colNA
+        )
+  mf_title("Lyon et autour", tab = TRUE, inner = FALSE, cex = cex.title.inset.2, fg = 1, bg = gray(0, 0), line = line.title.2, pos = "center")
+  box(lwd = box.lwd, col = box.col)
+  mf_inset_off()
+  
+  
+  ## Marseille ##
+  
+  deps <- c("13", "83", "84")
+  
+  mf_inset_on(fig = c(1 - insetSize2, 1, 1 - 3*insetSize2 - 2*dxy2, 1 - 2*insetSize2 - 2*dxy2))
+  # Subset of departements for Marseille
+  tmp <- merge(tca, subCom[is.element(substr(subCom$commune_residence, 1, 2), deps), ], by.x = "insee", by.y = "commune_residence")
+  # Plot map
+  mf_theme(mar = mar.inset)
+  mf_map(tmp, type = "choro", 
+         var = thevar,
+         breaks = brks, pal = pal, 
+         border = brd.col, lwd = brd.lwd, 
+         leg_pos = "n", 
+         col_na = colNA
+        )
+  mf_title("Marseille et autour", tab = TRUE, inner = FALSE, cex = cex.title.inset.2, fg = 1, bg = gray(0, 0), line = line.title.2, pos = "center")
+  box(lwd = box.lwd, col = box.col)
+  mf_inset_off()
+  
+  
+  dev.off()
+  
+  system(paste0("open ", fname))
+}
+
+# Combine age classes on a single panel
+system(paste0("montage ", "$(ls -r ", prefix, thevar, "_", thedate, "_[0-9]*", " )", " -geometry +20+20 ", prefix, thevar, "_", thedate, "_all.png"))
+
+```
+
+
+## Relative differences, weighted local averages
+
+```{r}
+#for(i in dev.list())dev.off()
+
+prefix <- "pics/"
+
+
+dates <- sort(unique(vaccEPCI$date))
+dates <- dates[dates > "2021-08-01"]
+
+# Loop on dates
+for(thedate in dates){
+  
+  # Loop on variable
+  for(thevar in c("pourcent_diff_cumu_1_inj", "pourcent_diff_cumu_termine")){
+    
+  
+    # Legend, depending on plotted variable
+    if(thevar == "pourcent_diff_cumu_1_inj"){
+      namevar <- "Écart relatif à moyenne nationale, après correction d'âge, % au moins une dose"
+    }
+    
+    if(thevar == "pourcent_diff_cumu_termine"){
+      namevar <- "Écart relatif à moyenne nationale, après correction d'âge, % vaccination terminée"
+    }
+    
+    
+    ncl <- "all_weighted" # Name of the age class
+    
+    #-----------------------------------
+    # Compute weighted local averages
+    
+    # Subset the data for this date, removing the "ALL" age class
+    subEPCI <- vaccEPCI[which(vaccEPCI$date == thedate & vaccEPCI$classe_age != "TOUT_AGE"), ]
+    subCom <- vaccCom[which(vaccCom$date == thedate & vaccCom$classe_age != "TOUT_AGE"), ]
+    
+    totPop <- sum(subEPCI$population_carto) # Total population size in these data
+    
+    # Create table of subtotals per age class
+    props <- c(0, 0) # Initialize the table (there's maybe a cleaner way to do it)
+    # Proportions of each age class
+    for(ag in sort(unique(subEPCI$classe_age))){
+      subsub <- subEPCI[subEPCI$classe_age == ag, ]
+      props <- rbind(props, c(ag, sum(subsub$population_carto)))
+    }
+    props <- as.data.frame(props[-1, ]) # Remove the initialization line
+    names(props) <- c("classe_age", "pop") 
+    props$pop <- as.numeric(props$pop) # Turn numerical values back to numeric
+    # Compute proportion of the age class
+    props$proportionPop <- props$pop / totPop
+    
+    # Add the proportions information to the datasets
+    subEPCI <- merge(subEPCI, props, by = "classe_age")
+    subCom <- merge(subCom, props, by = "classe_age")
+    
+    # Aggregate by EPCI
+    aggEPCI <- aggregate(subEPCI$proportionPop * subEPCI[, c("taux_cumu_1_inj", "taux_cumu_termine")], by =  list(epci = subEPCI$epci), FUN = sum)
+    
+    aggCom <- aggregate(subCom$proportionPop * subCom[, c("taux_cumu_1_inj", "taux_cumu_termine")], by =  list(commune_residence = subCom$commune_residence), FUN = sum)
+    
+    # Add names
+    # Age class name
+    nameAC <- "all_weighted"
+    aggEPCI$classe_age <- nameAC
+    aggCom$classe_age <- nameAC
+    
+    # Date
+    aggEPCI$date <- thedate
+    aggCom$date <- thedate
+    
+    # Compute national means on unweighted data
+    moy_cumu_1_inj <- sum(subEPCI$effectif_cumu_1_inj, na.rm = TRUE) / sum(subEPCI$population_carto, na.rm = TRUE)
+    moy_cumu_termine <- sum(subEPCI$effectif_cumu_termine, na.rm = TRUE) / sum(subEPCI$population_carto, na.rm = TRUE)
+    
+    # Compute relative differences
+    aggEPCI$pourcent_diff_cumu_1_inj <- 100 * (aggEPCI$taux_cumu_1_inj - moy_cumu_1_inj) / moy_cumu_1_inj
+    aggEPCI$pourcent_diff_cumu_termine <- 100 * (aggEPCI$taux_cumu_termine - moy_cumu_termine) / moy_cumu_termine
+    
+    aggCom$pourcent_diff_cumu_1_inj <- 100 * (aggCom$taux_cumu_1_inj - moy_cumu_1_inj) / moy_cumu_1_inj
+    aggCom$pourcent_diff_cumu_termine <- 100 * (aggCom$taux_cumu_termine - moy_cumu_termine) / moy_cumu_termine
+    
+    # Now use these new datasets
+    subEPCI <- aggEPCI
+    subCom <- aggCom
+    
+    #-------------------------------------------
+    
+    # Compute national means 
+    if(thevar == "pourcent_diff_cumu_1_inj"){
+      moy_EPCI <- moy_cumu_1_inj
+    }
+    if(thevar == "pourcent_diff_cumu_termine"){
+      moy_EPCI <- moy_cumu_termine
+    }
+    
+    # Color paletter
+    #pal <- rev(brewer.pal(11, "RdYlBu")[2:11])
+    #pal <- rev(brewer.pal(10, name = "PuOr"))
+    brks <- c(-100, -50, -25, -15, -5, 5, 15, 25, 50, 100)
+    pal <- colorspace::diverge_hcl(length(brks)-1, palette = "Vik") #divergingx_hcl(length(brks)-1, "RdBu")
+    pal[(length(pal)+1)/2] <- gray(0.975)
+    #plot(seq_along(pal), col = pal, pch = 16, cex = 3)
+    
+    brd.col <- gray(0.6, 1)
+    brd.lwd <- 0.1
+    
+    colNA <- gray(0.8)
+    
+    # File name
+    fname <- paste0(prefix, thevar, "_", thedate, "_", ncl, ".png")
+    
+    mf_export(x = france, export = "png", 
+              filename = fname, width = 700, res = 90
+    )
+    
+    mf_theme(mar = c(0., 0.2, 1.5, 0.5), 
+             bg = gray(1, 1))
+    
+    ## France metropolitaine ## 
+    tmp <- merge(france, subEPCI, by.x = "SIREN", by.y = "epci")
+    # Initiate a base map
+    mf_init(x = tmp, expandBB = c(0., 0.1, 0.05, 0.175))
+    # Plot a shadow
+    # mf_shadow(france, add = TRUE)
+    # plot municipalities 
+    mf_map(tmp, 
+           var = thevar,
+           type = "choro", add = TRUE, 
+           leg_pos = "topleft", leg_title = "", 
+           breaks = brks, pal = pal, 
+           border = brd.col, lwd = brd.lwd, leg_val_rnd = 0, 
+           col_na = colNA
+    )
+    
+    mf_title(txt = paste0(namevar, ", au ", format(as.Date(thedate), "%d/%m/%Y"), ", 
+par lieu de résidence", ". Moyenne nationale ", round(100*moy_EPCI, 1), "%"), bg = gray(1, 1), fg = gray(0, 1), 
+font = 1, tab = FALSE, line = 0, inner = FALSE)
+    
+    mf_credits(paste0("@flodebarre\n", 
+                      "Données vaccination : Ameli https://datavaccin-covid.ameli.fr/\n", 
+                      "Contours EPCI : Banatic, ", 
+                      "Contours communes : © les contributeurs d'OpenStreetMap sous licence ODbL. ", 
+                      "mapsf ", 
+                      packageVersion("mapsf")), cex = 0.5)
+    
+    ### INSETS ###
+    
+    # Size of the insets for DOM
+    insetSize <- 0.075 # Size of the inset, fraction of plot
+    dxy <- 0.025 # Space between them
+    y0 <- 0.065  # Minimum y position
+    
+    # Other inset parameters
+    box.lwd <- 0.5 # Line width of the box arount inset
+    box.col <- gray(1) # Color of the box
+    BB.inset <- c(0, 0, 0.5, 0) # Bounding box (does not seem to work)
+    mar.inset <-c(0, 0, 0.6, 0) # Margins of the inset
+    line.title <- 0.5 # Line position of the inset title
+    line.title.2 <- 0.2 # Line position of the inset titles, communes
+    cex.title.inset <- 0.6 # cex of the inset title
+    cex.title.inset.2 <- 0.7 # cex of the inset title, communes
+    
+    
+    ## Guadeloupe ##
+    
+    mf_inset_on(fig = c(0, insetSize, y0 + 2*insetSize + 2*dxy, y0 + 3*insetSize + 2*dxy))
+    # Merge map and data
+    tmp <- merge(guadeloupe, subEPCI, by.x = "SIREN_EPCI", by.y = "epci")
+    # Plot map
+    
+    mf_theme(mar = mar.inset)
+    mf_init(tmp, expandBB = BB.inset)
+    mf_map(tmp, type = "choro", 
+           var = thevar,
+           breaks = brks, pal = pal, 
+           border = brd.col, lwd = brd.lwd, 
+           leg_pos = "n", 
+           col_na = colNA
+    )
+    mf_title("Guadeloupe", tab = TRUE, inner = FALSE, cex = cex.title.inset, fg = 1, bg = gray(0, 0), line = line.title, pos = "center")
+    
+    # add a frame
+    box(lwd = box.lwd, col = box.col)
+    mf_inset_off()
+    
+    
+    ## Martinique ##
+    
+    mf_inset_on(fig = c(0, insetSize, y0 + 1*insetSize + 1*dxy, y0 + 2*insetSize + 1*dxy))
+    # Merge map and data
+    tmp <- merge(martinique, subEPCI, by.x = "SIREN_EPCI", by.y = "epci")
+    # Plot map
+    mf_theme(mar = mar.inset)
+    mf_init(tmp, expandBB = BB.inset)
+    mf_map(tmp, type = "choro", 
+           var = thevar,
+           breaks = brks, pal = pal, 
+           border = brd.col, lwd = brd.lwd, 
+           leg_pos = "n", 
+           col_na = colNA
+    )
+    mf_title("Martinique", tab = TRUE, inner = FALSE, cex = cex.title.inset, fg = 1, bg = gray(0, 0), line = line.title, pos = "center")
+    # add a frame
+    box(lwd = box.lwd, col = box.col)
+    mf_inset_off()
+    
+    
+    ## Guyane ## 
+    
+    mf_inset_on(fig = c(0, insetSize, y0 + 0*insetSize + 0*dxy, y0 + 1*insetSize + 0*dxy))
+    # Merge map and data
+    tmp <- merge(guyane, subEPCI, by.x = "SIREN_EPCI", by.y = "epci")
+    # Plot map
+    mf_theme(mar = mar.inset)
+    mf_init(tmp, expandBB = BB.inset)
+    mf_map(tmp, type = "choro", 
+           var = thevar,
+           breaks = brks, pal = pal, 
+           border = brd.col, lwd = brd.lwd, 
+           leg_pos = "n", 
+           col_na = colNA
+    )
+    mf_title("Guyane", tab = TRUE, inner = FALSE, cex = cex.title.inset, fg = 1, bg = gray(0, 0), line = line.title, pos = "center")
+    # add a frame
+    box(lwd = box.lwd, col = box.col)
+    mf_inset_off()
+    
+    
+    ## Mayotte ##
+    
+    mf_inset_on(fig = c(insetSize + dxy, 2*insetSize + dxy, y0 + 1*insetSize + 1*dxy, y0 + 2*insetSize + 1*dxy))
+    # Merge map and data
+    tmp <- merge(mayotte, subEPCI, by.x = "SIREN", by.y = "epci")
+    # Plot map
+    mf_theme(mar = mar.inset)
+    mf_init(tmp, expandBB = BB.inset)
+    mf_map(tmp, type = "choro", 
+           var = thevar,
+           breaks = brks, pal = pal, 
+           border = brd.col, lwd = brd.lwd, 
+           leg_pos = "n", 
+           col_na = colNA
+    )
+    mf_title("Mayotte", tab = TRUE, inner = FALSE, cex = cex.title.inset, fg = 1, bg = gray(0, 0), line = line.title, pos = "center")
+    # add a frame
+    box(lwd = box.lwd, col = box.col)
+    mf_inset_off()
+    
+    
+    ## La Réunion ##
+    
+    mf_inset_on(fig = c(insetSize + dxy, 2*insetSize + dxy, y0 + 0*insetSize + 0*dxy, y0 + 1*insetSize + 0*dxy))
+    # Merge map and data
+    tmp <- merge(reunion, subEPCI, by.x = "SIREN_EPCI", by.y = "epci")
+    # Plot map
+    mf_theme(mar = mar.inset)
+    mf_init(tmp, expandBB = BB.inset)
+    mf_map(tmp, type = "choro", 
+           var = thevar,
+           breaks = brks, pal = pal, 
+           border = brd.col, lwd = brd.lwd, 
+           leg_pos = "n", 
+           col_na = colNA
+    )
+    mf_title("La Réunion", tab = TRUE, inner = FALSE, cex = cex.title.inset, fg = 1, bg = gray(0, 0), line = line.title, pos = "center")
+    # add a frame
+    box(lwd = box.lwd, col = box.col)
+    mf_inset_off()
+    
+    ### Insets communes ###
+    
+    #lines(0, 0, col = 2)
+    
+    insetSize2 <- 0.225
+    dxy2 <- 0.025
+    
+    
+    ## Paris ## 
+    
+    deps <- c("75", "91", "92", "93", "94", "95")
+    
+    mf_inset_on(fig = c(1 - insetSize2, 1, 1 - insetSize2, 1))
+    # Subset of departements for Ile-de-France
+    tmp <- merge(tca, subCom[is.element(substr(subCom$commune_residence, 1, 2), deps), ], by.x = "insee", by.y = "commune_residence")
+    dim(tmp)
+    # Plot map
+    mf_theme(mar = mar.inset)
+    mf_map(tmp, type = "choro", 
+           var = thevar,
+           breaks = brks, pal = pal, 
+           border = brd.col, lwd = brd.lwd, 
+           leg_pos = "n", 
+           col_na = colNA
+    )
+    mf_title("Paris et autour", tab = TRUE, inner = FALSE, cex = cex.title.inset.2, fg = 1, bg = gray(0, 0), line = line.title.2, pos = "center")
+    box(lwd = box.lwd, col = box.col)
+    mf_inset_off()
+    
+    
+    ## Lyon ##
+    
+    deps <- c("69")
+    
+    mf_inset_on(fig = c(1 - insetSize2, 1, 1 - 2*insetSize2 - dxy2, 1 - insetSize2 - dxy2))
+    # Subset of departements for Lyon
+    tmp <- merge(tca, subCom[is.element(substr(subCom$commune_residence, 1, 2), deps), ], by.x = "insee", by.y = "commune_residence")
+    # Plot map
+    mf_theme(mar = mar.inset)
+    mf_map(tmp, type = "choro", 
+           var = thevar,
+           breaks = brks, pal = pal, 
+           border = brd.col, lwd = brd.lwd, 
+           leg_pos = "n", 
+           col_na = colNA
+    )
+    mf_title("Lyon et autour", tab = TRUE, inner = FALSE, cex = cex.title.inset.2, fg = 1, bg = gray(0, 0), line = line.title.2, pos = "center")
+    box(lwd = box.lwd, col = box.col)
+    mf_inset_off()
+    
+    
+    ## Marseille ##
+    
+    deps <- c("13", "83", "84")
+    
+    mf_inset_on(fig = c(1 - insetSize2, 1, 1 - 3*insetSize2 - 2*dxy2, 1 - 2*insetSize2 - 2*dxy2))
+    # Subset of departements for Marseille
+    tmp <- merge(tca, subCom[is.element(substr(subCom$commune_residence, 1, 2), deps), ], by.x = "insee", by.y = "commune_residence")
+    # Plot map
+    mf_theme(mar = mar.inset)
+    mf_map(tmp, type = "choro", 
+           var = thevar,
+           breaks = brks, pal = pal, 
+           border = brd.col, lwd = brd.lwd, 
+           leg_pos = "n", 
+           col_na = colNA
+    )
+    mf_title("Marseille et autour", tab = TRUE, inner = FALSE, cex = cex.title.inset.2, fg = 1, bg = gray(0, 0), line = line.title.2, pos = "center")
+    box(lwd = box.lwd, col = box.col)
+    mf_inset_off()
+    
+    
+    dev.off()
+    
+    system(paste0("open ", fname))
+    
+  } # end loop on variable
+} # end loop on date
+
+```
+
