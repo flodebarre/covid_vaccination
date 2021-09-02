@@ -1,6 +1,6 @@
 ---
-title: "maps"
-author: "FD"
+title: "vaccination maps"
+author: "Florence Débarre"
 output: html_document
 ---
 
@@ -26,13 +26,12 @@ dateVaccData <- "2021-08-31"
 
 # Load data
 
-NB: The geographic datasets are too heavy to be uploaded on GitHub. You need to download them yourself from the source. 
 
+**NB: The geographic datasets are too heavy to be uploaded on GitHub. You need to download them yourself from the source.**
 
-## France and DOM
+## France and DROM
 
 Source <https://www.banatic.interieur.gouv.fr/V5/cartographie/cartographie.php>
-
 
 ```{r}
 france <- st_read("../Sandbox/maps/data/contours_epci/2021/Metropole/EPCI_2021_region.shp")
@@ -44,12 +43,11 @@ martinique <- st_read("../Sandbox/maps/data/contours_epci/2021/Martinique/contou
 mayotte <- st_read("../Sandbox/maps/data/contours_epci/2021/Mayotte/Contour_epci_976_region.shp")
 ```
 
-
 ## Other data 
 
-Pour les infos sur les départements
-
+Composition communale   
 Source <https://www.insee.fr/fr/information/2510634>
+
 ```{r}
 composition <- read.csv("../Sandbox/maps/data/EPCI_composition-communale.csv", encoding = "UFT-8")
 ```
@@ -59,6 +57,7 @@ Departement information
 ```{r}
 departements <- read.csv("data/departement2020.csv")
 
+# Dictionnary of departement names
 dic.depname <- departements$libelle
 names(dic.depname) <- departements$dep
 ```
@@ -71,25 +70,23 @@ names(dic.depname) <- departements$dep
 Source tout <https://www.data.gouv.fr/en/datasets/decoupage-administratif-communal-francais-issu-d-openstreetmap/>
 
 Licence © les contributeurs d'OpenStreetMap sous licence ODbL
+
 ```{r}
 # Toutes les communes
 toutescommunes <- st_read("../Sandbox/maps/data/communes-20210101-shp/communes-20210101.shp")
 
-names(toutescommunes)
-toutescommunes[1,]
-
 # Arrondissements Paris Lyon Marseille
-
 arrondissements <- st_read("../Sandbox/maps/data/arrondissements_municipaux-20180711-shp/arrondissements_municipaux-20180711.shp")
 
-dim(toutescommunes)
-dim(arrondissements)
+names(toutescommunes)
+names(arrondissements)
 
+# Homogenize names
 names(toutescommunes) <- names(arrondissements)
 
 # Merge communes and arrondissement data
 tca.all <- rbind(toutescommunes, arrondissements)
-# Free some memory
+# Free up some memory
 rm(toutescommunes, arrondissements)
 ```
 
@@ -100,9 +97,12 @@ rm(toutescommunes, arrondissements)
 
 Source: <https://datavaccin-covid.ameli.fr/explore/dataset/donnees-de-vaccination-par-epci/download/?format=csv&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B>
 
+(is updated weekly, needs to be manually downloaded every week)
+
 ```{r}
 vaccEPCI <- read.csv(paste0("data/donnees-de-vaccination-par-epci_", dateVaccData, ".csv"), sep = ";")
 
+# Final date in the dataset
 maxDate <- max(vaccEPCI$date)
 maxDate
 
@@ -186,6 +186,7 @@ write.csv(df2, "data/exportGeo_EPCI.csv")
 ## Raw proportions
 
 ```{r}
+# Clean images 
 #for(i in dev.list())dev.off()
 
 # Choose an age class
@@ -200,6 +201,7 @@ ages <- list("Tous_ages" = c("TOUT_AGE"),
 prefix <- "pics/"
 
 
+# Choose the variable to be plotted (comment / uncomment)
 thevar <- "pourcent_cumu_1_inj"
 namevar <- "au moins 1 injection"
 #  thevar <- "pourcent_cumu_termine"
