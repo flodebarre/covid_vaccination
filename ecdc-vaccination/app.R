@@ -2,15 +2,21 @@
 # Load data and format the data
 # source("getData.R")
 
-# Need to update this each time the data are downloaded again
-thedate <- "2021-08-31" # TimeStamp of the data
-
 library(shiny)
 
 # Global stuff ####
 
-# Load data
-newdat <- read.csv(paste0("data/ecdc-vaccination_cumulated_", thedate, ".csv"))
+# LOAD DATA
+
+# Name of the latest data file
+latestDataFile <- max(system("ls data/ecdc-vaccination_cumulated_*", intern = TRUE))
+
+# Extract date (timestamp)
+thedate <- as.Date(substr(latestDataFile, 33, 42))
+
+# Load the data
+newdat <- read.csv(latestDataFile)
+
 
 # Load function to plot the figure
 source("plotFig.R")
@@ -22,13 +28,13 @@ countries <- as.list(ctrs[, 1])
 names(countries) <- ctrs[, 2]
 rm(ctrs) # Clean memory
 
-
 # UI ####
 ui <- fluidPage(
 
     h1("EU vaccination: compare countries"), 
     p(em("Disclaimer: Provided as-is. \n
 The figure cannot be better than what is in the data. Some countries are not reporting age-specific data to ECDC, and cannot therefore be shown here. 
+There may be issues with denominators (estimations of population size of the different age bands). Obvious issues include a vaccination rate greater than 100%; this case is denoted by an asterisk next to the corresponding age band on the figure. 
 ")), 
     HTML("<p><i>I got the idea of drawing vaccination age-pyramids after seeing @VictimOfMaths' US-UK <a href = 'https://twitter.com/VictimOfMaths/status/1424788095485071367?s=20'>example on Twitter</a>. I interverted the positions of the different colors to put the emphasis on unvaccinated populations. </i></p>"), 
     
@@ -46,7 +52,9 @@ The figure cannot be better than what is in the data. Some countries are not rep
     fluidRow(
         column(12, 
                h5("Notes"), 
-               p("'1 dose' can include completed vaccination if the Janssen vaccine was used, or in countries (like France) that give only one dose to some of the people who have had Covid-19 previously."))
+               p("'1 dose' can include completed vaccination if the Janssen vaccine was used, or in countries (like France) that give only one dose to some of the people who have had Covid-19 previously."), 
+               p(paste0("Last updated on ", thedate, "."))
+        ) 
     ),
     
     hr(),
