@@ -37,6 +37,7 @@ The figure cannot be better than what is in the data. Some countries are not rep
 There may be issues with denominators (estimations of population size of the different age bands). Obvious issues include a vaccination rate greater than 100%; this case is denoted by an asterisk next to the corresponding age band on the figure. 
 ")), 
     HTML("<p><i>I got the idea of drawing vaccination age-pyramids after seeing @VictimOfMaths' US-UK <a href = 'https://twitter.com/VictimOfMaths/status/1424788095485071367?s=20'>example on Twitter</a>. I interverted the positions of the different colors to put the emphasis on unvaccinated populations. </i></p>"), 
+   HTML("<p>If you are viewing this app from a computer, you can change the width of the figure by changing the width of your browser's window.</p>"),
     
     fluidRow(
       column(width = 6, 
