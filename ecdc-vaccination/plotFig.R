@@ -10,7 +10,7 @@ plotFig <- function(c1, c2, week, sameScale, byRec, thedate, newdat){
   # Global variable: newdat
   # c1 <- "ES"
   # c2 <- "FR"
-  # week <- "9"
+  # week <- "37"
   # byRec <- 100000
   # sameScale <- TRUE
   
@@ -28,8 +28,8 @@ plotFig <- function(c1, c2, week, sameScale, byRec, thedate, newdat){
   # Get max size of age class
   tmp1 <- tmp[tmp$ReportingCountry == c1, ]
   tmp2 <- tmp[tmp$ReportingCountry == c2, ]
-  xmax1 <- max(tmp1$Denominator / tmp1$ageWidth)
-  xmax2 <- max(tmp2$Denominator / tmp2$ageWidth)
+  xmax1 <- max(tmp1$Denominator / tmp1$ageWidth, na.rm = TRUE) # Remove potential NAs
+  xmax2 <- max(tmp2$Denominator / tmp2$ageWidth, na.rm = TRUE) # Remove potential NAs
   
   xmax <- max(c(xmax1, xmax2))
   
@@ -87,6 +87,9 @@ Code: https://github.com/flodebarre/covid_vaccination/blob/main/ECDC.Rmd"), adj 
       # Subset of the data
       tmp <- tmpp[tmpp$TargetGroup == ag, ]
       
+      # Only plot if there is a size of the age class
+      if(!is.na(tmp$RDenom)){
+        
       # Plot Total population
       rect(xleft = factor * tmp$RDenom, ybottom = tmp$minAge, 
            xright = 0, ytop = tmp$maxAge + 1, 
@@ -121,7 +124,8 @@ Code: https://github.com/flodebarre/covid_vaccination/blob/main/ECDC.Rmd"), adj 
       text(x = factor, y = tmp$minAge, labels = tmp$minAge, col = gray(0), adj = c(adjj, 0.25), cex = 0.9)
       par(xpd = FALSE)
       
-    }
+      } # end if age class size exists
+    } # end age class
     # Add country legend
     par(xpd = TRUE)
     if(factor == -1){adjj <- 0}else{adjj <- 1}
