@@ -19,6 +19,7 @@
 
 dat.England.all <- read.csv("data/nhs/combined.csv")
 head(dat.England.all)
+tail(dat.England.all)
 
 # France data from https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/
 # vacsi-a-fra-2021-08-10-19h05.csv
@@ -27,6 +28,7 @@ download.file(URL, "data/vacsi-a-fra.csv")
 dat.France.all <- read.csv("data/vacsi-a-fra.csv", sep = ";")
 #dat.France.all <- read.csv("data/vacsi-a-fra-2021-08-10-19h05.csv", sep = ";")
 head(dat.France.all)
+tail(dat.France.all)
 
 # Dico for age classes in France
 agcl <- sort(unique(dat.France.all$clage_vacsi))
@@ -253,7 +255,7 @@ for(thedate in dates){
     mtext(thedate, side = 3, line = 2.75, cex = 1.2, font = 2)
     dev.off()
     
-    system(paste0("open ", fname))
+    #system(paste0("open ", fname))
   } # end version
 } # end thedate
 
@@ -264,3 +266,8 @@ for(thedate in dates){
 system("convert -delay 150 pics/pyramid_UK-FR_*_2*.png pics/pyramid_UK-FR_2.gif")
 system("convert -delay 150 pics/pyramid_UK-FR_*_1*.png pics/pyramid_UK-FR_1.gif")
 
+# Final prop
+datEN <- dat[dat$country == "Angleterre",]
+datFR <- dat[dat$country == "France",]
+c(sum(datEN$cumDose1)/sum(datEN$pop), sum(datEN$cumComplet)/sum(datEN$pop), 
+  sum(datFR$cumDose1)/sum(datFR$pop), sum(datFR$cumComplet)/sum(datFR$pop))
