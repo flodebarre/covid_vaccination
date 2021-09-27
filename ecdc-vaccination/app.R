@@ -70,12 +70,16 @@ wellPanel(
                                       countries, selected = "FR"))
     ),
     
+    fluidRow(column(width = 6, radioButtons("densOrProp", "Type of plot", c("Population sizes" = "popsize", "Proportions" = "prop"), selected = "popsize", inline = TRUE), offset = 3)),
+    
+    conditionalPanel(condition = "input.densOrProp == 'popsize'",
     # Graduations and scale
     fluidRow(
         column(width = 3, p("\n\nChoose the precision of the population size graduations:")),
         column(width = 2, selectInput("byRec", label = "Graduations", choices = c("  5000" = 5000, " 10000" = 10000, " 25000" = 25000, " 50000" = 50000, "100000" = 100000), selected = 10000, width = '200px')),
         column(width = 4, p("Choose whether to use the same scale for both countries, or use different ones (preferable if large population size difference):")), 
-        column(width = 3, radioButtons("sameScale", "Scale", choices = c("same" = TRUE, "different" = FALSE), inline = TRUE))
+        column(width = 3, radioButtons("sameScale", "Scale", choices = c("same" = TRUE, "different" = FALSE), inline = TRUE, selected = TRUE))
+    ),
     ),
     
     # Date
@@ -89,16 +93,40 @@ wellPanel(
     
     # Trick to add white space at the bottom (not sure it is really working!)
     p("  "),
-    fluidRow(column(1))
+    fluidRow(column(1)), 
+    fluidRow(column(width = 4,
+                    downloadButton('downloadPlot', 'Download Plot'), 
+                    offset = 4, align = "center")),
+  p("  "),
+  fluidRow(column(1)), 
 )
 
 
 # Server ####
 server <- function(input, output) {
     
-    output$agePyramid <- renderPlot({
-        plotFig(as.character(input$c1), as.character(input$c2), as.character(input$week), as.logical(input$sameScale), as.numeric(input$byRec), thedate, newdat)
-    }, res = 80)
+      output$agePyramid <- renderPlot({
+        plotFig(c1 = as.character(input$c1), c2 = as.character(input$c2), 
+                week = as.character(input$week), 
+                densOrProp = as.character(input$densOrProp), 
+                sameScale = as.logical(input$sameScale), byRec = as.numeric(input$byRec), 
+                thedate = thedate, newdat = newdat)
+      }, res = 80)
+      
+      
+      output$downloadPlot <- downloadHandler(
+        # Source: https://stackoverflow.com/questions/14810409/save-plots-made-in-a-shiny-app
+        filename = function(){ paste('agePyramid_', input$c1, '-', input$c2, "_w-", input$week, '.pdf', sep='') },
+        content = function(file){
+          pdf(width = 7, height = 5.5, file = file)
+          print(plotFig(c1 = as.character(input$c1), c2 = as.character(input$c2), 
+                        week = as.character(input$week), 
+                        densOrProp = as.character(input$densOrProp), 
+                        sameScale = as.logical(input$sameScale), byRec = as.numeric(input$byRec), 
+                        thedate = thedate, newdat = newdat))
+          dev.off()
+        }
+      )
 }
 
 # Run the application ####

@@ -1,18 +1,20 @@
-plotFig <- function(c1, c2, week, sameScale, byRec, thedate, newdat){
+plotFig <- function(c1, c2, week, densOrProp, sameScale = FALSE, byRec = 100000, thedate, newdat){
   # c1        character, two-letter country name, country 1
   # c2        character, two-letter country name, country 2
   # week      numeric, week number in 2021
+  # densOrProp character, code for whether densities ("popsize") or proportions ("prop")
   # sameScale Boolean, whether to use the same scale on both sides
   # byRec     numeric, graduations for population
   # thedate   character, date of the data
   # newdat    dataframe, dataset
   
   # Global variable: newdat
-  # c1 <- "ES"
-  # c2 <- "FR"
-  # week <- "37"
+  c1 <- "ES"
+  c2 <- "FR"
+  week <- "37"
   # byRec <- 100000
   # sameScale <- TRUE
+  # densOrProp <- "prop"
   
   # Define colors 
   colPop <- gray(0.8) # Unvaccinated
@@ -35,24 +37,35 @@ plotFig <- function(c1, c2, week, sameScale, byRec, thedate, newdat){
   
   # Rescale population sizes
   # Sizes by year of age: divide by width of the age class
-  if(sameScale){
-    # If same scale, rescale using xmax for both
-    tmp1$RDenom <- tmp1$Denominator / xmax / tmp1$ageWidth
-    tmp1$R1D <- tmp1$FirstDose / xmax / tmp1$ageWidth
-    tmp1$R2D <- tmp1$SecondDose / xmax / tmp1$ageWidth
-    
-    tmp2$RDenom <- tmp2$Denominator / xmax / tmp2$ageWidth
-    tmp2$R1D <- tmp2$FirstDose / xmax / tmp2$ageWidth
-    tmp2$R2D <- tmp2$SecondDose / xmax / tmp2$ageWidth
+  if(densOrProp == "popsize"){
+    if(sameScale){
+      # If same scale, rescale using xmax for both
+      tmp1$RDenom <- tmp1$Denominator / xmax / tmp1$ageWidth
+      tmp1$R1D <- tmp1$FirstDose / xmax / tmp1$ageWidth
+      tmp1$R2D <- tmp1$SecondDose / xmax / tmp1$ageWidth
+      
+      tmp2$RDenom <- tmp2$Denominator / xmax / tmp2$ageWidth
+      tmp2$R1D <- tmp2$FirstDose / xmax / tmp2$ageWidth
+      tmp2$R2D <- tmp2$SecondDose / xmax / tmp2$ageWidth
+    }else{
+      # If different scale, rescale using the maximum of each country data
+      tmp1$RDenom <- tmp1$Denominator / xmax1 / tmp1$ageWidth
+      tmp1$R1D <- tmp1$FirstDose / xmax1 / tmp1$ageWidth
+      tmp1$R2D <- tmp1$SecondDose / xmax1 / tmp1$ageWidth
+      
+      tmp2$RDenom <- tmp2$Denominator / xmax2 / tmp2$ageWidth
+      tmp2$R1D <- tmp2$FirstDose / xmax2 / tmp2$ageWidth
+      tmp2$R2D <- tmp2$SecondDose / xmax2 / tmp2$ageWidth
+    }
   }else{
-    # If different scale, rescale using the maximum of each country data
-    tmp1$RDenom <- tmp1$Denominator / xmax1 / tmp1$ageWidth
-    tmp1$R1D <- tmp1$FirstDose / xmax1 / tmp1$ageWidth
-    tmp1$R2D <- tmp1$SecondDose / xmax1 / tmp1$ageWidth
+    # Proportions
+    tmp1$RDenom <- 1
+    tmp1$R1D <- tmp1$FirstDose / tmp1$Denominator
+    tmp1$R2D <- tmp1$SecondDose / tmp1$Denominator
     
-    tmp2$RDenom <- tmp2$Denominator / xmax2 / tmp2$ageWidth
-    tmp2$R1D <- tmp2$FirstDose / xmax2 / tmp2$ageWidth
-    tmp2$R2D <- tmp2$SecondDose / xmax2 / tmp2$ageWidth
+    tmp2$RDenom <- 1
+    tmp2$R1D <- tmp2$FirstDose / tmp2$Denominator
+    tmp2$R2D <- tmp2$SecondDose / tmp2$Denominator
   }
   
   par(xpd = FALSE, family = "sans", mgp = c(2, 0.15, 0), tck = -0.02)
@@ -70,11 +83,13 @@ Data ECDC: https://opendata.ecdc.europa.eu/covid19/vaccine_tracker/csv/data.csv
 Code: https://github.com/flodebarre/covid_vaccination/blob/main/ECDC.Rmd"), adj = 0, cex = 0.55, col = gray(0.5))
   par(family = "sans")
   
+  # For each country / side of the plot
   for(ictr in c(1, 2)){
     
+    # Get the country ID
     ctr <- c(c1, c2)[ictr]
     
-    # For each country / side of the plot
+    # Define side and colors
     factor <- (-1)^ictr
     colComplet <- get(paste0("colComplet", ictr))
     col1D <- get(paste0("col1D", ictr))
@@ -88,7 +103,7 @@ Code: https://github.com/flodebarre/covid_vaccination/blob/main/ECDC.Rmd"), adj 
       tmp <- tmpp[tmpp$TargetGroup == ag, ]
       
       # Only plot if there is a size of the age class
-      if(!is.na(tmp$RDenom)){
+      if(!is.na(tmp$RDenom) & !is.na(tmp$R1D)){
         
       # Plot Total population
       rect(xleft = factor * tmp$RDenom, ybottom = tmp$minAge, 
@@ -118,13 +133,15 @@ Code: https://github.com/flodebarre/covid_vaccination/blob/main/ECDC.Rmd"), adj 
         
       # Graduations for age class
       lines(c(factor, 0), rep(tmp$minAge, 2), col = "white", lwd = 1.5)
+      
+      } # end if age class size exists
+      
       # Age values
       par(xpd = TRUE)
       if(factor == -1){adjj <- 1}else{adjj <- 0}
       text(x = factor, y = tmp$minAge, labels = tmp$minAge, col = gray(0), adj = c(adjj, 0.25), cex = 0.9)
       par(xpd = FALSE)
       
-      } # end if age class size exists
     } # end age class
     # Add country legend
     par(xpd = TRUE)
@@ -135,25 +152,43 @@ Code: https://github.com/flodebarre/covid_vaccination/blob/main/ECDC.Rmd"), adj 
   }
   
   cexl <- 0.9 # Text size of legend of axes
-  mtext(paste0("Population by year of age
+  
+  # Legend / title
+  if(densOrProp == "popsize"){
+    t1 <- paste0("Population by year of age
 (One rectangle: ", format(byRec, scientific = FALSE)," individuals)
-* next to an age class means potential denominator issues in the data"), side = 1, line = 1.25, cex = cexl)
+* next to an age class means potential denominator issues in the data")
+  }else{
+    t1 <- paste0("Proportions by age class")
+  }
+  
+  mtext(t1, side = 1, line = 1.25, cex = cexl)
   
   par(xpd = FALSE)
   # Graduations
   wfine <- 0.3
-  # Horizontal by year
-  for(i in 0:110){
-    lines(c(-1, 1), rep(i, 2), col = "white", lwd = wfine)
+  # Horizontal by year of age
+  # Only if populations size
+  if(densOrProp == "popsize"){
+    for(i in 0:110){
+      lines(c(-1, 1), rep(i, 2), col = "white", lwd = wfine)
+    }
   }
   # Vertical by byRec (10000 for instance)
-  for(i in seq(0, 2*10^6, by = byRec)){
-    if(sameScale){
-      abline(v = i/xmax, col = "white", lwd = wfine)
-      abline(v = -i/xmax, col = "white", lwd = wfine)
-    }else{
-      abline(v = i/xmax2, col = "white", lwd = wfine)
-      abline(v = -i/xmax1, col = "white", lwd = wfine)
+  if(densOrProp == "popsize"){
+    for(i in seq(0, 2*10^6, by = byRec)){
+      if(sameScale){
+        abline(v = i/xmax, col = "white", lwd = wfine)
+        abline(v = -i/xmax, col = "white", lwd = wfine)
+      }else{
+        abline(v = i/xmax2, col = "white", lwd = wfine)
+        abline(v = -i/xmax1, col = "white", lwd = wfine)
+      }
+    }
+  }else{
+    for(i in seq(0, 1, by = 0.1)){
+      abline(v = i, col = "white", lwd = wfine)
+      abline(v = -i, col = "white", lwd = wfine)
     }
   }
   # Vertical separation of the two countries
@@ -164,8 +199,8 @@ Code: https://github.com/flodebarre/covid_vaccination/blob/main/ECDC.Rmd"), adj 
   par(xpd = TRUE)
   
   yl <- 100   # y position of "Age" 
-  text("Age", x = 1, y = yl, cex = cexl, adj = c(0.5, 1))
-  text("Age", x = -1, y = yl, cex = cexl, adj = c(0.5, 1))
+  text("Age", x = 1, y = yl, cex = cexl, adj = c(0, 1))
+  text("Age", x = -1, y = yl, cex = cexl, adj = c(1, 1))
   
   
   # Plot legend (manually centered)

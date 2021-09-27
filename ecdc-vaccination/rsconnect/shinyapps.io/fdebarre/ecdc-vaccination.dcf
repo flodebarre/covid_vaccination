@@ -1,0 +1,13 @@
+name: ecdc-vaccination
+title: ecdc-vaccination
+username:
+account: fdebarre
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4529539
+bundleId: 5049508
+url: https://fdebarre.shinyapps.io/ecdc-vaccination/
+when: 1632081632.58544
+lastSyncTime: 1632081632.58545
+asMultiple: FALSE
+asStatic: FALSE
