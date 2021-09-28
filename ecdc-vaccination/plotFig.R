@@ -8,13 +8,17 @@ plotFig <- function(c1, c2, week, densOrProp, sameScale = FALSE, byRec = 100000,
   # thedate   character, date of the data
   # newdat    dataframe, dataset
   
-  # Global variable: newdat
-  c1 <- "ES"
-  c2 <- "FR"
-  week <- "37"
+
+  #----------------------------
+  # This is just for testing the function -- comment out when you are done
+  # c1 <- "ES"
+  # c2 <- "FR"
+  # week <- "37"
   # byRec <- 100000
   # sameScale <- TRUE
   # densOrProp <- "prop"
+  #----------------------------
+  
   
   # Define colors 
   colPop <- gray(0.8) # Unvaccinated
@@ -22,7 +26,6 @@ plotFig <- function(c1, c2, week, densOrProp, sameScale = FALSE, byRec = 100000,
   col1D1 <- "#FF6939" # 1 dose, left
   colComplet2 <- "#044063" # 2 doses, right
   col1D2 <- "#4F92BA" # 1 dose, right
-  
   
   # Subset of the data with these countries
   tmp <- newdat[is.element(newdat$ReportingCountry, c(c1, c2)) & (newdat$YearWeekISO == paste0("2021-W", sprintf("%02d", as.numeric(week)))), ]
@@ -159,7 +162,9 @@ Code: https://github.com/flodebarre/covid_vaccination/blob/main/ECDC.Rmd"), adj 
 (One rectangle: ", format(byRec, scientific = FALSE)," individuals)
 * next to an age class means potential denominator issues in the data")
   }else{
-    t1 <- paste0("Proportions by age class")
+    t1 <- paste0("Proportions by age class
+Graduations every 10%
+* next to an age class means potential denominator issues in the data")
   }
   
   mtext(t1, side = 1, line = 1.25, cex = cexl)

@@ -99,8 +99,18 @@ wellPanel(
                     offset = 4, align = "center")),
   p("  "),
   fluidRow(column(1)), 
+
+  h3("Frequently Asked Questions"),
+  h4("Why cannot I find Germany?"),
+  p("Some countries do not provide age-stratified data to ECDC. Germany is one of them."),
+  h4("Why cannot I find the UK?"),
+  p("The UK has left the UE and is not concerned by ECDC anymore."),
+  h4("Why are some age classes missing?"),
+  p("Some countries have not provided demographic data (population size of the age class) on all age classes.")
+
 )
 
+#-------------------------------------------------------------------------------------------------------------------
 
 # Server ####
 server <- function(input, output) {
