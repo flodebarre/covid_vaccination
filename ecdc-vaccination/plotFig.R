@@ -160,11 +160,11 @@ Code: https://github.com/flodebarre/covid_vaccination/blob/main/ECDC.Rmd"), adj 
   if(densOrProp == "popsize"){
     t1 <- paste0("Population by year of age
 (One rectangle: ", format(byRec, scientific = FALSE)," individuals)
-* next to an age class means potential denominator issues in the data")
+* next to an age band means potential denominator issues in the data")
   }else{
-    t1 <- paste0("Proportions by age class
+    t1 <- paste0("Proportions by age band
 Graduations every 10%
-* next to an age class means potential denominator issues in the data")
+* next to an age band means potential denominator issues in the data")
   }
   
   mtext(t1, side = 1, line = 1.25, cex = cexl)
@@ -210,7 +210,7 @@ Graduations every 10%
   
   # Plot legend (manually centered)
   par(family = "mono")
-  legend(x = 0, y = 105, pch = 15, col = c(colComplet1, col1D1, colPop, colComplet2, col1D2, colPop), ncol = 2, legend = c("     2 doses", "     1 dose", " non vaccinated", "", "", ""), xjust = 0.29, yjust = 0, box.lwd = -1, text.font = 1, pt.cex = 2, cex = 0.8)
+  legend(x = 0, y = 105, pch = 15, col = c(colComplet1, col1D1, colPop, colComplet2, col1D2, colPop), ncol = 2, legend = c("     2 doses", "     1 dose", " non vaccinated", "", "", ""), xjust = 0.29, yjust = 0, box.lwd = -1, text.font = 1, pt.cex = 2, cex = 0.8, bg = gray(0, 0))
   
   # Add title 
   par(family = "sans")

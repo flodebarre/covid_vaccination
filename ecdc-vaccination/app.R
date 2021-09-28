@@ -36,9 +36,7 @@ ui <- fluidPage(
 The figure cannot be better than what is in the data. Some countries are not reporting age-specific data to ECDC, and cannot therefore be shown here. 
 There may be issues with denominators (estimations of population size of the different age bands). Obvious issues include a vaccination rate greater than 100%; this case is denoted by an asterisk next to the corresponding age band on the figure. 
 ")), 
-    HTML("<p><i>I got the idea of drawing vaccination age-pyramids after seeing @VictimOfMaths' US-UK <a href = 'https://twitter.com/VictimOfMaths/status/1424788095485071367?s=20'>example on Twitter</a>. I interverted the positions of the different colors to put the emphasis on unvaccinated populations. </i></p>"), 
-   HTML("<p>If you are viewing this app from a computer, you can change the width of the figure by changing the width of your browser's window.</p>"),
-    
+
     fluidRow(
       column(width = 6, 
           h5("Data"),
@@ -51,62 +49,86 @@ There may be issues with denominators (estimations of population size of the dif
     ),
     
     fluidRow(
-        column(12, 
-               h5("Notes"), 
-               p("'1 dose' can include completed vaccination if the Janssen vaccine was used, or in countries (like France) that give only one dose to some of the people who have had Covid-19 previously."), 
+        column(6, align = "center", offset = 3, 
                p(paste0("Last updated on ", thedate, "."))
         ) 
     ),
     
     hr(),
+   
+   sidebarLayout(
+     
+     sidebarPanel(width = 5,
+       #--------------------------------------------------------------------
+       # PARAMETERS
+       
+       # Countries
+       fluidRow(
+         column(width = 6, selectInput("c1", "Country 1:",
+                                       countries, selected = "ES"), offset = 0), 
+         column(width = 6, selectInput("c2", "Country 2:",
+                                       countries, selected = "FR"))
+       ),
+       
+       fluidRow(column(width = 12, radioButtons("densOrProp", "Type of plot", c("Population sizes" = "popsize", "Proportions" = "prop"), selected = "popsize", inline = TRUE), offset = 0, align = "center")),
+       
+       # Display these options only if plotting population sizes
+       conditionalPanel(condition = "input.densOrProp == 'popsize'",
+                        # Graduations and scale
+                        HTML("<p><b>Scale</b>  Choose whether to use the same scale for both countries, or use different ones (preferable if large population size difference):</p>"),
+                        fluidRow(
+                          column(width = 12, align = "center", radioButtons("sameScale", NULL, choices = c("same" = TRUE, "different" = FALSE), inline = TRUE, selected = TRUE))),
+                        HTML("<p><b>Graduations</b>  Choose the precision of the population size graduations:</p>"),
+                        fluidRow(
+                          column(width = 6, offset = 3, align = "center", selectInput("byRec", label = NULL, choices = c("  5000" = 5000, " 10000" = 10000, " 25000" = 25000, " 50000" = 50000, "100000" = 100000), selected = 50000, width = '200px')),
+                        ),
+       ), # End of conditional panel
+       
+       # Date
+       fluidRow(
+         column(width = 12, offset = 0, sliderInput(inputId = "week", label = "2021 Week number (click play to animate)", min = 1, max = as.numeric(substr(max(newdat$YearWeekISO), start = 7, stop = 8)), value = as.numeric(substr(max(newdat$YearWeekISO), start = 7, stop = 8)), step = 1, animate = animationOptions(interval = 750, playButton = "play"), width = '100%'))
+       ),
+       #--------------------------------------------------------------------
+       
+     ), # end of sidebarPanel
+     
+     mainPanel(width = 7,
+       
+       # Plot
+       fluidRow(column(width = 10, offset = 1, plotOutput("agePyramid", height = 500, width = 600), align = "center")),
+       
+       # Trick to add white space at the bottom (not sure it is really working!)
+       p("  "),
+       fluidRow(column(1)), 
+       fluidRow(column(width = 4,
+                       downloadButton('downloadPlot', 'Download Plot'), 
+                       offset = 4, align = "center")),
+       
+       
+     ), # End of mainPanel
+   ), # end of sidebarLayout
 
-    # Parameters (grayed)
-wellPanel(
-    # Countries
-    fluidRow(
-        column(width = 4, selectInput("c1", "Country 1:",
-                                                  countries, selected = "ES"), offset = 2), 
-        column(width = 4, selectInput("c2", "Country 2:",
-                                      countries, selected = "FR"))
-    ),
-    
-    fluidRow(column(width = 6, radioButtons("densOrProp", "Type of plot", c("Population sizes" = "popsize", "Proportions" = "prop"), selected = "popsize", inline = TRUE), offset = 3)),
-    
-    conditionalPanel(condition = "input.densOrProp == 'popsize'",
-    # Graduations and scale
-    fluidRow(
-        column(width = 3, p("\n\nChoose the precision of the population size graduations:")),
-        column(width = 2, selectInput("byRec", label = "Graduations", choices = c("  5000" = 5000, " 10000" = 10000, " 25000" = 25000, " 50000" = 50000, "100000" = 100000), selected = 10000, width = '200px')),
-        column(width = 4, p("Choose whether to use the same scale for both countries, or use different ones (preferable if large population size difference):")), 
-        column(width = 3, radioButtons("sameScale", "Scale", choices = c("same" = TRUE, "different" = FALSE), inline = TRUE, selected = TRUE))
-    ),
-    ),
-    
-    # Date
-    fluidRow(
-        column(width = 6, offset = 3, sliderInput(inputId = "week", label = "2021 Week number (click play to animate)", min = 1, max = as.numeric(substr(max(newdat$YearWeekISO), start = 7, stop = 8)), value = as.numeric(substr(max(newdat$YearWeekISO), start = 7, stop = 8)), step = 1, animate = animationOptions(interval = 750, playButton = "play"), width = '100%'))
-    ),
-), 
-    
-    # Plot
-    fluidRow(column(width = 10, offset = 1, plotOutput("agePyramid", height = 500))),
-    
-    # Trick to add white space at the bottom (not sure it is really working!)
-    p("  "),
-    fluidRow(column(1)), 
-    fluidRow(column(width = 4,
-                    downloadButton('downloadPlot', 'Download Plot'), 
-                    offset = 4, align = "center")),
+  
+
   p("  "),
   fluidRow(column(1)), 
 
+  h3("Notes"), 
+  p("'1 dose' can include completed vaccination if the Janssen vaccine was used, or in countries (like France) that give only one dose to some of the people who have had Covid-19 previously."), 
+  
   h3("Frequently Asked Questions"),
   h4("Why cannot I find Germany?"),
   p("Some countries do not provide age-stratified data to ECDC. Germany is one of them."),
   h4("Why cannot I find the UK?"),
   p("The UK has left the UE and is not concerned by ECDC anymore."),
   h4("Why are some age classes missing?"),
-  p("Some countries have not provided demographic data (population size of the age class) on all age classes.")
+  p("Some countries have not provided demographic data (population size of the age class) on all age classes."),
+  
+  
+  
+  h3("Credits"), 
+  HTML("<p>I got the idea of drawing vaccination age-pyramids after seeing Colin Angus' (@VictimOfMaths) US-UK <a href = 'https://twitter.com/VictimOfMaths/status/1424788095485071367?s=20'>example on Twitter</a>. I interverted the positions of the different colors to put the emphasis on unvaccinated populations.<br/>
+       Rich FitzJohn suggested a code modification to better order the countries in the drop-down list. </p>"), 
 
 )
 
