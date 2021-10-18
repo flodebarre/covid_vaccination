@@ -28,13 +28,15 @@ dlData <- FALSE
 
 Source <https://datavaccin-covid.ameli.fr/explore/dataset/donnees-vaccination-par-tranche-dage-type-de-vaccin-et-departement/information/?sort=-date_reference>
 
-```{r}
-URL <- "https://datavaccin-covid.ameli.fr/explore/dataset/donnees-vaccination-par-tranche-dage-type-de-vaccin-et-departement/download/?format=csv&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B"
+```{r loadData}
+URL.AmeliDep <- "https://datavaccin-covid.ameli.fr/explore/dataset/donnees-vaccination-par-tranche-dage-type-de-vaccin-et-departement/download/?format=csv&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B"
+## does not work
 
-dataFile <- paste0("data/vacciDeps_residence.csv") # name file with today's date
+dataFile <- paste0("data/donnees-vaccination-par-tranche-dage-type-de-vaccin-et-departement_", Sys.Date(),".csv") # name file with today's date
 if(dlData){
-  download.file(URL, dataFile) # download file from repo
+  system(paste0("wget -O ", dataFile, " ", URL.AmeliDep))
 }
+
 dat.residence <- read.csv(dataFile, sep = ";", stringsAsFactors = FALSE, dec = ",")
 head(dat.residence)
 ```
@@ -47,42 +49,71 @@ Source <https://www.data.gouv.fr/en/datasets/donnees-relatives-aux-personnes-vac
 
 ```{r}
 URL <- "https://www.data.gouv.fr/en/datasets/r/4f39ec91-80d7-4602-befb-4b522804c0af"
-dataFile <- paste0("data/vacciDeps_injection.csv") # name file with today's date
+URL.SPFadep <- "https://www.data.gouv.fr/en/datasets/r/83cbbdb9-23cb-455e-8231-69fc25d58111"
+
+dataFile <- paste0("data/vacciDeps_injection_", Sys.Date(),".csv") # name file with today's date
+dataFile2 <- paste0("data/vacciDeps_injection-a_", Sys.Date(),".csv") # name file with today's date
 if(dlData){
   download.file(URL, dataFile) # download file from repo
+  download.file(URL.SPFadep, dataFile2) # download file from repo
 }
 dat.injection <- read.csv(dataFile, sep = ";", stringsAsFactors = FALSE, dec = ",")
+dat.injection.a <- read.csv(dataFile2, sep = ";", stringsAsFactors = FALSE, dec = ",")
 head(dat.injection)
+head(dat.injection.a)
 ```
 
 ## Clean data
 
 ```{r, results = 'hide'}
-# Departement as numeric
-unique(dat.residence$departement_residence)
-dat.residence$dep_res <- dat.residence$departement_residence
-dat.residence[which(is.element(dat.residence$departement_residence, c("2A", "2B"))), "departement_residence"] <- "20" # Corse 
+# 
+# ## Actually no real need to convert to numeric??
+# 
+# # Departement as numeric
+# unique(dat.residence$departement_residence)
+# dat.residence$dep_res <- dat.residence$departement_residence
+# dat.residence[which(is.element(dat.residence$departement_residence, c("2A", "2B"))), "departement_residence"] <- "20" # Corse 
+# 
+# # Remove "Tout department" because is redundant
+# dat.residence[which(is.element(dat.residence$departement_residence, c("Tout département"))), "departement_residence"] <- NA # Redundant
+# 
+# 
+# dat.residence$dep <- as.numeric(dat.residence$departement_residence)
+# sort(unique(dat.residence$dep))
+# 
+# unique(dat.injection$dep)
+# dat.injection[which(is.element(dat.injection$dep, c("2A", "2B"))), "dep"] <- "20" # Corse 
+# dat.injection$dep <- as.numeric(dat.injection$dep)
+# head(dat.injection)
+# unique(dat.injection$dep)
+```
 
-dat.residence[which(is.element(dat.residence$departement_residence, c("Tout département"))), "departement_residence"] <- NA # Redundant
 
+```{r}
+# Compare age classes
+# For the moment, we just look at all ages, but note that we could look at the detail as well one day when we find the time
+sort(unique(dat.residence$classe_age))
 
-dat.residence$dep <- as.numeric(dat.residence$departement_residence)
-sort(unique(dat.residence$dep))
-
-dat.injection[which(is.element(dat.injection$dep, c("2A", "2B"))), "dep"] <- "20" # Corse 
-dat.injection$dep <- as.numeric(dat.injection$dep)
-head(dat.injection)
-unique(dat.injection$dep)
+sort(unique(dat.injection.a$clage_vacsi))
 ```
 
 
 ```{r, results = 'hide'}
 # Select all ages and all vaccines
 
+
 dat.residence <- dat.residence[which(dat.residence$classe_age == "TOUT_AGE" & dat.residence$type_vaccin == "Tout vaccin" & !is.na(dat.residence$dep)), ]
 
+head(dat.residence)
 # 999 : pas connu -> 0 (same code as other dataset)
-dat.residence[which(dat.residence$dep == 999), "dep"] <- 0
+#dat.residence[which(dat.residence$dep == 999), "dep"] <- 0
+
+# Merge the datasets
+# Keep only common dates and departements
+dat <- merge(dat.residence, dat.injection, by.x = c("date", "departement_residence"), by.y = c("jour", "dep"))
+head(dat)
+sort(unique(tmp$date))
+
 ```
 
 Dates
@@ -93,6 +124,8 @@ dat.injection$date <- as.Date(dat.injection$jour)
 ```
 
 # Plots
+
+## Initial versions
 
 ```{r}
 colInjection <- "#e9a3c9"
@@ -244,6 +277,194 @@ text(x = c(1 + xposneg/2, xposneg + (x0 - xposneg)/2), y = 0.65*c(usr[4], usr[3]
 dev.off()
 system(paste("open", filename))
 ```
+
+## New version
+
+```{r}
+# Compute differences in couverture among datasets
+# 1 injection
+dat$diff_1_inj <- -(as.numeric(dat$taux_cumu_1_inj) * 100 - as.numeric(dat$couv_dose1))
+
+# full
+dat$diff_complet <- -(as.numeric(dat$taux_cumu_termine) * 100 - as.numeric(dat$couv_complet))
+
+# Maximum absolute value (to scale the figures)
+rangemax <- range(c(dat$diff_1_inj, dat$diff_complet), na.rm = TRUE)
+dmax <- max(abs(rangemax))
+dmax
+dmax.round <- ceiling(dmax/10)*10
+```
+
+```{r}
+dept <- "92"
+sub <- dat[dat$departement_residence == dept,]
+head(sub)
+
+plot(as.Date(sub$date), as.numeric(sub$taux_cumu_1_inj) * 100, ylim = c(0, 100))
+points(as.Date(sub$date), sub$couv_dose1)
+
+
+plot(as.Date(sub$date), as.numeric(sub$taux_cumu_1_inj) * 100, ylim = c(0, 100))
+points(as.Date(sub$date), sub$couv_dose1)
+
+plot(as.Date(sub$date), as.numeric(sub$effectif_cumu_1_inj))
+points(as.Date(sub$date), sub$n_cum_dose1)
+
+xx <- as.Date(sub$date)
+yy <- as.numeric(sub$taux_cumu_1_inj) * 100 - as.numeric(sub$couv_dose1)
+ipos <- (yy > 0)
+izero <- (yy == 0)
+ineg <- (yy < 0)
+
+colPos <- "red"
+colNeg <- "blue"
+colZero <- "black"
+lwdh <- 6
+par(las = 1)
+plot(xx, yy, ylim = c(-dmax, dmax), 
+     xlab = "Date", 
+     ylab = "Ameli - SPF, % points", 
+     type = "n")
+points(xx[ipos], yy[ipos], col = colPos, type = "h", lend = "butt", lwd = lwdh)
+points(xx[ineg], yy[ineg], col = colNeg, type = "h", lend = "butt", lwd = lwdh)
+points(xx[izero], yy[izero], col = colZero, type = "h", lend = "butt", lwd = lwdh)
+abline(h = 0)
+
+```
+
+## Geographic
+
+## Geographic
+
+### L452R 
+
+Source idea map: [Le Monde map](https://www.lemonde.fr/les-decodeurs/article/2020/05/05/coronavirus-age-mortalite-departements-pays-suivez-l-evolution-de-l-epidemie-en-cartes-et-graphiques_6038751_4355770.html) [| archived](https://archive.is/eJ68m)
+
+```{r}
+# Colors
+colPos <- "#00918C" # Diff value is greater than the + threshold
+colNeg <- "#EE9D00" # Diff value is smaller than the - threshold
+colZero <- gray(0.75) # Diff value is between the - and + threshold
+lwdh <- 6
+
+par(las = 1)
+
+# Function to scale values
+scale.xy <- function(z, z1, z2, yrange){
+  # z raw values
+  # z1 new min value after scaling
+  # z2 new max value after scaling
+  # yrange range of values of z (if goes beyong z)
+  z01 <- (z - yrange[1])/(yrange[2] - yrange[1])
+  # z01 has to be between 0 and 1
+  stopifnot(z01 >= 0 | z01 <= 1 | is.na(z01))
+  z1 + (z2 - z1) * z01
+}
+
+# Function to draw single rectangle figure
+drawRec <- function(depDat, x, y, dxy, whichDiff = "1_inj", yrange, thrCol){
+  # depDat: dataset for this departement
+  # x: x position of the bottom left corner
+  # y: y position of the bottom left corner
+  # dxy: rectangle size c(dx, dy)
+  # whichDiff: "1_inj" or "complet", which metric to plot 
+  # yrange: range of y values
+  # thrCol: threhold absolute difference value, above which colorize
+
+  # x values, time
+  relTime <- as.numeric(as.Date(depDat$date) - min(as.Date(depDat$date)))/as.numeric(max(as.Date(depDat$date)) - min(as.Date(depDat$date)))
+  # y values, couverture
+  diffCouv <- depDat[, paste0("diff_", whichDiff)]
+  
+  # Scale x and y values  
+  xx <- scale.xy(relTime, x, x + dxy[1], yrange = c(0, 1))
+  yy <- scale.xy(diffCouv, y, y + dxy[2], yrange = yrange)
+  
+  # Identify indices depending on the chosen threshold
+  ipos <- (diffCouv > thrCol)
+  izero <- (diffCouv <= thrCol & diffCouv >= -thrCol)
+  ineg <- (diffCouv < -thrCol)
+
+  # Plot values separately to have different colors
+  points(xx[ipos], yy[ipos], col = colPos, pch = 16, cex = 0.2, lwd = 0.7)
+  points(xx[ineg], yy[ineg], col = colNeg, pch = 16, cex = 0.2, lwd = 0.7)
+  points(xx[izero], yy[izero], col = colZero, pch = 16, cex = 0.2, lwd = 0.7)
+  
+  
+}
+```
+
+```{r, fig.width = 7, fig.height = 9}
+# Load positions of the departements
+geog <- read.csv("../nouveauCriblage/data/position_deps.csv", header = FALSE)
+names(geog) <- c("x", "y", "dep", "shortName")
+rr <- 2 # Rounding factor
+
+# Extract sizes to get rectangle size
+d1 <- c(5.367367157581877, 1.008996513422371)
+d2 <- c(6.203498009030808, 1.7266142092327605)
+dd <- d2 - d1
+ddr <- round(dd, rr)
+
+thrCol <- 5 # Threshold absolute value of the difference for coloring
+ylm <- rangemax # ylim for the rectangles # c(-dmax, dmax)
+
+par(mar = rep(0.2, 4) + c(2, 0, 2, 0))
+# Initialize plot with rect positions
+plot(c(round(geog$x, rr), round(geog$x, rr) + ddr[1]), c(round(geog$y, rr), round(geog$y, rr) + ddr[2]), type = "n", asp = 1, axes = FALSE, xlab = "", ylab = "")
+
+# Add titles of the plots
+text(x = round(geog$x, rr) + ddr[1]/2, y = round(geog$y, rr) + ddr[2], labels = paste0(geog$shortName, "(", geog$dep, ")"), bg = "white", adj = c(0.5, -0.4), cex = 0.45)
+
+# For each departement
+for(i in seq_len(nrow(geog))){
+  # Draw rectangle
+  rect(xleft = round(geog[i, "x"], rr), ybottom = round(geog[i, "y"], rr), xright = round(geog[i, "x"], rr) + ddr[1], ytop = round(geog[i, "y"], rr) + ddr[2], lwd = 0.5, border = gray(0.6))
+  
+  # Select departement data
+  depDat <- dat[which(dat$departement_residence == geog[i, "dep"]), ]
+  
+  # Horizontal line for 0 
+  lines(c(round(geog[i, "x"], rr), round(geog[i, "x"], rr) + ddr[1]), rep(scale.xy(0, round(geog[i, "y"], rr), round(geog[i, "y"], rr) + ddr[2], yrange = ylm), 2), lty = 1, col = gray(0.6), lwd = 0.5)
+  
+  # Draw curve
+  drawRec(depDat, x = round(geog[i, "x"], rr), y = round(geog[i, "y"], rr), dxy = ddr, whichDiff = "1_inj", yrange = ylm, thrCol = thrCol)
+
+#    readline(prompt="Press [enter] to continue")
+
+}
+
+
+#drawRec(depDat, x = 5.73820184045573, y = 7.01837788404748, dxy = ddr, col = col452R)
+
+minDay <- format(as.Date(min(dat$date)), "%d/%m")
+maxDay <- format(as.Date(max(dat$date)), "%d/%m")
+
+# Position of Paris
+xP <- 1.34031283936975
+yP <- 15.0106959818622
+cexLeg <- 0.45
+text(x = xP, y = yP, adj = c(1, 0), labels = ylm[1], cex = 0.4)
+text(x = xP, y = yP + ddr[2], adj = c(1, 0.5), labels = ylm[2], cex = cexLeg)
+text(x = xP, y = scale.xy(0, yP, yP + ddr[2], ylm), adj = c(1, 0.5), labels = "0", cex = cexLeg)
+
+text(x = c(xP, xP + ddr[1]), y = c(yP, yP), adj = c(0.5, 1.5), labels = c(minDay, maxDay), cex = cexLeg)
+
+title("Difference entre données par lieu de vaccination (SPF) et lieu de résidence (Ameli)")
+
+  mtext("  @flodebarre
+  Données SPF https://www.data.gouv.fr/en/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/#
+  Données Ameli https://datavaccin-covid.ameli.fr/explore/dataset/donnees-vaccination-par-tranche-dage-type-de-vaccin-et-departement/information/
+  Code : https://github.com/flodebarre/
+  Idée carte : Les Decodeurs, Le Monde https://tinyurl.com/carteFRDecLM", side = 1, line = 1, cex = 0.6, col = gray(0.5), adj = 0)
+  
+cexLegend <- 0.6
+legend("topright", legend = c("Proportion L452R, < 50% le dernier jour", "≥ 50% le dernier jour"), cex = cexLegend, bty = "n", col = c(col452R, col452R.complement), lty = 1, pch = 16)
+legend("topright", legend = c("", paste0("Données tracées si au moins ", 100*thrp, "% des cas criblés
+et au moins ", thrntot, " criblages sur la semaine. 
+Itv confiance sur nb crib. moyen 7 derniers jours.")), cex = cexLegend, bty = "n")
+```
+
 
 # Export
 ```{r}
