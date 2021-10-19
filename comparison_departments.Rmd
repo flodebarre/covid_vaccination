@@ -112,7 +112,6 @@ head(dat.residence)
 # Keep only common dates and departements
 dat <- merge(dat.residence, dat.injection, by.x = c("date", "departement_residence"), by.y = c("jour", "dep"))
 head(dat)
-sort(unique(tmp$date))
 
 ```
 
@@ -158,7 +157,7 @@ There are more injections in the by injection dataset than in the by residency d
 
 Merge datasets
 
-```{r}
+```{r eval=FALSE}
 # Merge datasets
 names(final.residence)
 final.both <- merge(final.residence, final.injection, by = "dep", all = FALSE)
@@ -189,7 +188,7 @@ sum(final.both$diffInjRes.1D) # NB not the same as before because more geog info
 ```
 
 Plot differences per departement 
-```{r}
+```{r eval=FALSE}
 relatif <- TRUE
 
 if(relatif){
@@ -334,9 +333,6 @@ abline(h = 0)
 
 ## Geographic
 
-## Geographic
-
-### L452R 
 
 Source idea map: [Le Monde map](https://www.lemonde.fr/les-decodeurs/article/2020/05/05/coronavirus-age-mortalite-departements-pays-suivez-l-evolution-de-l-epidemie-en-cartes-et-graphiques_6038751_4355770.html) [| archived](https://archive.is/eJ68m)
 
@@ -386,9 +382,10 @@ drawRec <- function(depDat, x, y, dxy, whichDiff = "1_inj", yrange, thrCol){
   ineg <- (diffCouv < -thrCol)
 
   # Plot values separately to have different colors
-  points(xx[ipos], yy[ipos], col = colPos, pch = 16, cex = 0.2, lwd = 0.7)
-  points(xx[ineg], yy[ineg], col = colNeg, pch = 16, cex = 0.2, lwd = 0.7)
-  points(xx[izero], yy[izero], col = colZero, pch = 16, cex = 0.2, lwd = 0.7)
+  cexx <- 0.4
+  points(xx[ipos], yy[ipos], col = colPos, pch = 16, cex = cexx, lwd = 0.7)
+  points(xx[ineg], yy[ineg], col = colNeg, pch = 16, cex = cexx, lwd = 0.7)
+  points(xx[izero], yy[izero], col = colZero, pch = 16, cex = cexx, lwd = 0.7)
   
   
 }
@@ -409,6 +406,8 @@ ddr <- round(dd, rr)
 thrCol <- 5 # Threshold absolute value of the difference for coloring
 ylm <- rangemax # ylim for the rectangles # c(-dmax, dmax)
 
+
+for(whichDiff in c("1_inj", "complet")){
 par(mar = rep(0.2, 4) + c(2, 0, 2, 0))
 # Initialize plot with rect positions
 plot(c(round(geog$x, rr), round(geog$x, rr) + ddr[1]), c(round(geog$y, rr), round(geog$y, rr) + ddr[2]), type = "n", asp = 1, axes = FALSE, xlab = "", ylab = "")
@@ -428,7 +427,7 @@ for(i in seq_len(nrow(geog))){
   lines(c(round(geog[i, "x"], rr), round(geog[i, "x"], rr) + ddr[1]), rep(scale.xy(0, round(geog[i, "y"], rr), round(geog[i, "y"], rr) + ddr[2], yrange = ylm), 2), lty = 1, col = gray(0.6), lwd = 0.5)
   
   # Draw curve
-  drawRec(depDat, x = round(geog[i, "x"], rr), y = round(geog[i, "y"], rr), dxy = ddr, whichDiff = "1_inj", yrange = ylm, thrCol = thrCol)
+  drawRec(depDat, x = round(geog[i, "x"], rr), y = round(geog[i, "y"], rr), dxy = ddr, whichDiff = whichDiff, yrange = ylm, thrCol = thrCol)
 
 #    readline(prompt="Press [enter] to continue")
 
@@ -444,30 +443,30 @@ maxDay <- format(as.Date(max(dat$date)), "%d/%m")
 xP <- 1.34031283936975
 yP <- 15.0106959818622
 cexLeg <- 0.45
-text(x = xP, y = yP, adj = c(1, 0), labels = ylm[1], cex = 0.4)
-text(x = xP, y = yP + ddr[2], adj = c(1, 0.5), labels = ylm[2], cex = cexLeg)
-text(x = xP, y = scale.xy(0, yP, yP + ddr[2], ylm), adj = c(1, 0.5), labels = "0", cex = cexLeg)
+text(x = xP, y = yP, adj = c(1.3, 0), labels = ylm[1], cex = 0.4)
+text(x = xP, y = yP + ddr[2], adj = c(1.3, 0.5), labels = ylm[2], cex = cexLeg)
+text(x = xP, y = scale.xy(0, yP, yP + ddr[2], ylm), adj = c(1.2, 0.5), labels = "0", cex = cexLeg)
 
 text(x = c(xP, xP + ddr[1]), y = c(yP, yP), adj = c(0.5, 1.5), labels = c(minDay, maxDay), cex = cexLeg)
 
-title("Difference entre données par lieu de vaccination (SPF) et lieu de résidence (Ameli)")
+addT <- ifelse(whichDiff == "1_inj", "1 injection au moins", "vaccination complète")
+title(paste0("Difference entre données par lieu de vaccination (SPF) 
+et lieu de résidence (Ameli), ", addT))
 
   mtext("  @flodebarre
   Données SPF https://www.data.gouv.fr/en/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/#
   Données Ameli https://datavaccin-covid.ameli.fr/explore/dataset/donnees-vaccination-par-tranche-dage-type-de-vaccin-et-departement/information/
-  Code : https://github.com/flodebarre/
-  Idée carte : Les Decodeurs, Le Monde https://tinyurl.com/carteFRDecLM", side = 1, line = 1, cex = 0.6, col = gray(0.5), adj = 0)
+  Code : https://github.com/flodebarre/covid_vaccination/blob/main/comparison_departments.Rmd
+  Idée carte : Les Decodeurs, Le Monde https://tinyurl.com/carteFRDecLM", side = 1, line = 1, cex = 0.55, col = gray(0.5), adj = 0)
   
-cexLegend <- 0.6
-legend("topright", legend = c("Proportion L452R, < 50% le dernier jour", "≥ 50% le dernier jour"), cex = cexLegend, bty = "n", col = c(col452R, col452R.complement), lty = 1, pch = 16)
-legend("topright", legend = c("", paste0("Données tracées si au moins ", 100*thrp, "% des cas criblés
-et au moins ", thrntot, " criblages sur la semaine. 
-Itv confiance sur nb crib. moyen 7 derniers jours.")), cex = cexLegend, bty = "n")
+cexLegend <- 0.8
+legend("topright", legend = c(paste0("différence > ", thrCol, " points %"), paste0("différence < - ", thrCol, " points %"), paste0("|différence| < ", thrCol, " points %")), cex = cexLegend, bty = "n", col = c(colPos, colNeg, colZero), lty = 1, pch = 16)
+}
 ```
 
 
 # Export
-```{r}
+```{r eval = FALSE}
 save(final.both, file = paste0("data/outputComparisonDeps_finalCommonDate.Rdata"))
 ```
 
