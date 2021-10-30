@@ -1,0 +1,801 @@
+---
+title: "Cuverture vaccinale"
+author: "FD"
+output: 
+  html_document: 
+      code_folding: hide
+      toc: TRUE
+      toc_float: TRUE
+      self_contained: no
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list = ls())
+```
+
+```{r, include = FALSE}
+dlData <- FALSE
+# Whether to download the data again
+```
+
+
+# Load data
+
+## Vacination par EPCI et commune
+
+Source EPCI <https://datavaccin-covid.ameli.fr/explore/dataset/donnees-de-vaccination-par-epci/information/>  
+Source Communes <https://datavaccin-covid.ameli.fr/explore/dataset/donnees-de-vaccination-par-commune/information/>
+
+```{r loadDataAmeli1}
+
+# Download data
+if(dlData){
+  source("0_loadAmeliData.R")
+}
+
+# Load data
+dat.EPCI <- read.csv("data/vaccEPCI.csv", sep = ";")
+dat.Com <- read.csv("data/vaccCom.csv", sep = ";")
+```
+
+
+## Vaccination par département de résidence
+
+Source <https://datavaccin-covid.ameli.fr/explore/dataset/donnees-vaccination-par-tranche-dage-type-de-vaccin-et-departement/information/?sort=-date_reference>
+
+```{r loadData}
+URL.AmeliDep <- "https://datavaccin-covid.ameli.fr/explore/dataset/donnees-vaccination-par-tranche-dage-type-de-vaccin-et-departement/download/?format=csv&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B"
+## does not work
+
+dataFile <- paste0("data/donnees-vaccination-par-tranche-dage-type-de-vaccin-et-departement_", Sys.Date(),".csv") # name file with today's date
+if(dlData){
+  system(paste0("wget -O ", dataFile, " ", URL.AmeliDep))
+}
+
+dat.residence <- read.csv(dataFile, sep = ";", stringsAsFactors = FALSE, dec = ",")
+head(dat.residence)
+
+# Remove details about vaccines
+dat.residence <- dat.residence[dat.residence$type_vaccin == "Tout vaccin", ]
+```
+
+## Vaccination par département d'injection
+
+Source <https://www.data.gouv.fr/en/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/>  
+`vacsi-dep`
+
+```{r}
+URL <- "https://www.data.gouv.fr/en/datasets/r/4f39ec91-80d7-4602-befb-4b522804c0af"
+URL.SPFadep <- "https://www.data.gouv.fr/en/datasets/r/83cbbdb9-23cb-455e-8231-69fc25d58111"
+
+dataFile <- paste0("data/vacciDeps_injection_", Sys.Date(),".csv") # name file with today's date
+dataFile2 <- paste0("data/vacciDeps_injection-a_", Sys.Date(),".csv") # name file with today's date
+if(dlData){
+  download.file(URL, dataFile) # download file from repo
+  download.file(URL.SPFadep, dataFile2) # download file from repo
+}
+dat.injection.noage <- read.csv(dataFile, sep = ";", stringsAsFactors = FALSE, dec = ",")
+dat.injection <- read.csv(dataFile2, sep = ";", stringsAsFactors = FALSE, dec = ",")
+# head(dat.injection)
+head(dat.injection)
+
+```
+
+
+## Vaccination France totale, SPF
+
+```{r}
+# SPF, France
+
+URL <- "https://www.data.gouv.fr/fr/datasets/r/54dd5f8d-1e2e-4ccb-8fb8-eac68245befd"
+
+dataFile <- "data/vacciFrance.csv"
+if(dlData){
+  download.file(URL, dataFile)
+}
+datFra <- read.csv(dataFile, sep = ";", stringsAsFactors = FALSE, dec = ",")
+head(datFra)
+
+# Population sizes are given in another file
+# SPF, final, which contains population values
+tmp <- read.csv("data/vaccSPF_tot.csv", sep = ";")
+
+# Add this info to the SPF dataset
+datFra <- merge(datFra, tmp[, c("clage_vacsi", "pop")], by = "clage_vacsi", all = TRUE)
+```
+
+
+
+## Clean data
+
+```{r, results = 'hide'}
+# 
+# ## Actually no real need to convert to numeric??
+# 
+# # Departement as numeric
+# unique(dat.residence$departement_residence)
+# dat.residence$dep_res <- dat.residence$departement_residence
+# dat.residence[which(is.element(dat.residence$departement_residence, c("2A", "2B"))), "departement_residence"] <- "20" # Corse 
+# 
+# # Remove "Tout department" because is redundant
+# dat.residence[which(is.element(dat.residence$departement_residence, c("Tout département"))), "departement_residence"] <- NA # Redundant
+# 
+# 
+# dat.residence$dep <- as.numeric(dat.residence$departement_residence)
+# sort(unique(dat.residence$dep))
+# 
+# unique(dat.injection$dep)
+# dat.injection[which(is.element(dat.injection$dep, c("2A", "2B"))), "dep"] <- "20" # Corse 
+# dat.injection$dep <- as.numeric(dat.injection$dep)
+# head(dat.injection)
+# unique(dat.injection$dep)
+```
+
+```{r}
+lastDate <- max(dat.EPCI$date)
+lastDate
+```
+
+add pop in SPF
+
+```{r}
+tmp <- dat.injection[dat.injection$jour == lastDate, ]
+vpop2020 <- tmp$n_cum_dose1 / (as.numeric(tmp$couv_dose1) / 100)
+vpop2020[vpop2020 == Inf] <- NA
+
+tmp2 <- cbind(tmp, pop2020 = vpop2020)
+tmp2 <- tmp2[, c("clage_vacsi", "dep", "pop2020")]
+
+# Add population sizes
+#dat.injection <- merge(dat.injection, tmp2, all.x = TRUE, by = c("clage_vacsi", "dep"))
+```
+
+
+## Age classes 
+
+```{r}
+# Compare age classes
+# For the moment, we just look at all ages, but note that we could look at the detail as well one day when we find the time
+sort(unique(dat.EPCI$classe_age))
+sort(unique(dat.Com$classe_age))
+
+sort(unique(dat.residence$classe_age))
+
+sort(unique(dat.injection$clage_vacsi))
+```
+
+```{r}
+# Define common age classes
+agCom <- list("00-39" = c("00-19", "20-39"), 
+              "40-64" = c("40-54", "55-64"),
+              "65-74" = "65-74",
+              "75+" = "75 et +",
+              "Tous âges" = "TOUT_AGE")
+
+agEPCI <- agCom 
+
+agDepRes <- list("00-39" = c("12-17", "18-24", "25-39"), 
+                 "40-64" = c("40-54", "55-64"),
+                 "65-74" = "65-74",
+                 "75+" = "75 et +",
+                 "Tous âges" = "TOUT_AGE")
+
+agDepInj <- list("00-39" = c(4, 9, 11, 17, 24, 29, 39), 
+                 "40-64" = c(49, 59, 64),
+                 "65-74" = c(69, 74),
+                 "75+" = c(79, 80),
+                 "Tous âges" = 0)
+
+ageClasses <- names(agEPCI)
+```
+
+
+## Locations
+
+```{r}
+tmp <- dat.EPCI[dat.EPCI$epci == 999999999 & dat.EPCI$classe_age == "TOUT_AGE" & dat.EPCI$libelle_classe_age != "",]
+tail(tmp[order(tmp$semaine_injection),])
+```
+
+
+Comparisons of population sizes in Ameli data
+
+```{r}
+# SIREN codes
+epci_grandParis <- 200054781
+epci_Lyon <- 200046977
+epci_Marseille <- 200054807
+
+cols <- c("population_carto", "effectif_cumu_1_inj", "effectif_cumu_termine")
+
+# Compute coverage
+cvr <- function(p){
+  print(p)
+  as.numeric(p$effectif_cumu_1_inj) / as.numeric(p$population_carto)
+}
+
+sort(unique(dat.Com$commune_residence))
+
+## PARIS
+ParisEPCI <- dat.EPCI[dat.EPCI$epci == epci_grandParis & dat.EPCI$classe_age == "TOUT_AGE", ]
+
+cvr(ParisEPCI[ParisEPCI$date == lastDate, cols])
+
+ParisCom <- dat.Com[(dat.Com$commune_residence >= "75000" & dat.Com$commune_residence != "83120" & dat.Com$commune_residence != "84089") & dat.Com$classe_age == "TOUT_AGE", ]
+
+cvr(as.data.frame(t(apply(ParisCom[ParisCom$date == lastDate, cols], 2, sum))))
+
+## MARSEILLE
+MarseilleEPCI <- dat.EPCI[dat.EPCI$epci == epci_Marseille & dat.EPCI$classe_age == "TOUT_AGE", ]
+
+cvr(MarseilleEPCI[MarseilleEPCI$date == lastDate, cols])
+
+MarseilleCom <- dat.Com[(dat.Com$commune_residence <= "14000" | dat.Com$commune_residence >= "83000" & dat.Com$commune_residence <= "84999") & dat.Com$classe_age == "TOUT_AGE", ]
+
+cvr(as.data.frame(t(apply(MarseilleCom[MarseilleCom$date == lastDate, cols], 2, sum))))
+
+## LYON
+LyonEPCI <- dat.EPCI[dat.EPCI$epci == epci_Lyon & dat.EPCI$classe_age == "TOUT_AGE", ]
+
+cvr(LyonEPCI[LyonEPCI$date == lastDate, cols])
+
+LyonCom <- dat.Com[dat.Com$commune_residence <= "70000" & dat.Com$commune_residence >= "69000" & dat.Com$classe_age == "TOUT_AGE", ]
+
+cvr(as.data.frame(t(apply(LyonCom[LyonCom$date == lastDate, cols], 2, sum))))
+
+```
+
+Add departments and regions
+
+Departement 
+
+Source <https://www.insee.fr/fr/information/2510634>
+```{r}
+composition <- read.csv("data/EPCI_composition-communale.csv", encoding = "UFT-8")
+```
+
+```{r}
+departements <- read.csv("data/departement2020.csv")
+
+dic.depname <- departements$libelle
+names(dic.depname) <- departements$dep
+```
+
+
+```{r}
+# Information about departement in which the different EPCI are
+# Some are across multiple departements: keep the information by collating them with "_"
+agg_nbdep <- aggregate(composition$DEP, by = list(composition$EPCI), FUN = function(i) paste(sort(unique(i)), collapse = "_"))
+table(agg_nbdep$x, useNA = "ifany")
+
+# Dictionnary of departement(s) associated to EPCI
+dic.dep <- agg_nbdep$x
+names(dic.dep) <- agg_nbdep$Group.1
+
+# Add the dep information to our data
+dat.EPCI$dep <- dic.dep[as.character(dat.EPCI$epci)]
+
+# Add the libelle information
+dat.EPCI$dep_libelle <- dic.depname[as.character(dat.EPCI$dep)]
+
+# Add DROM information
+dat.EPCI$DROM <- ifelse(nchar(dat.EPCI$dep) == 3, TRUE, FALSE)
+
+# EPCI for which we do not have a dep
+unique(dat.EPCI[is.na(dat.EPCI$dep), "epci"])
+# This is the code when home is not known
+
+# La répartition par EPCI n’est pas possible pour certains patients dont le département de résidence ou la commune est inconnu(e). Ces patients sont rattachés à l’EPCI « 999999999 » dans le jeu de données.
+
+```
+
+Add region information 
+
+Source region codes <https://www.data.gouv.fr/en/datasets/regions-de-france/>
+
+```{r, results = 'hide'}
+# Load region codes 
+reg <- read.csv("data/regions-france.csv")
+reg
+
+# As dictionnary
+reg.dic <- c(reg$nom_region)
+names(reg.dic) <- reg$code_region # !! Name has to be in quotes
+
+sort(unique(dat.EPCI$reg_code))
+
+# Regions in the data
+sort(unique(dat.EPCI$reg_code))
+
+# missing region
+unique(dat.EPCI[dat.EPCI$reg_code == "", "epci"])
+```
+
+Add region information to the other datasets
+```{r}
+dic.depreg <- departements$reg
+names(dic.depreg) <- departements$dep
+
+dat.injection$reg <- dic.depreg[dat.injection$dep]
+
+dat.residence[1,]
+
+unique(dat.residence$departement_residence)
+unique(dat.residence$region_residence)
+```
+
+## Add INSEE 2021 Demographic data
+
+```{r loadDatasets}
+# Load demographic data
+# Sources: Population par classe d'age
+# https://www.insee.fr/fr/statistiques/1893198
+#
+# Population par année d'âge (par milliers)
+# https://www.insee.fr/fr/statistiques/5347620#tableau-figure6_radio1
+#
+demoAmeli <- read.csv("data/demographic/insee_2021_Ameli.csv")
+demoAmeli
+demoSPF <- read.csv("data/demographic/insee_2021_SPF.csv")
+demoSPF
+
+demoCommon <- read.csv("data/demographic/insee_2021_commonAgeClass.csv")
+
+# Add new population data to SPF
+dat.injection <- merge(dat.injection, demoSPF, "clage_vacsi")
+
+# Compute new rates
+dat.injection$couv_tot_dose1_2021 <- 100 * dat.injection$n_cum_dose1 / dat.injection$pop2021
+dat.injection$couv_tot_complet_2021 <- 100 * dat.injection$n_cum_complet / dat.injection$pop2021
+
+# Add population data to the other Ameli dataset
+names(demoAmeli) <- c("classe_age", "pop2021")
+#dat.residence2 <- merge(dat.residence, demoAmeli, by = "classe_age")
+
+#unique(dat.residence$classe_age)
+#unique(dat.residence2$classe_age)
+```
+
+
+
+
+## Population sizes SPF
+
+```{r}
+# SPF, final, which contains population values
+#tmp <- read.csv("data/vaccSPF_tot.csv", sep = ";")
+
+
+
+# 
+tmp <- read.csv("data/vaccSPF-dep-tot.csv", sep = ";")
+tmp <- tmp[, c("dep", "clage_vacsi", "pop")]
+names(tmp) <- c("dep", "clage_vacsi", "pop2020")
+
+# Add this info to the SPF dataset
+dat.injection <- merge(dat.injection, tmp, by = c("clage_vacsi", "dep"), all = TRUE)
+
+head(dat.injection)
+```
+
+# Useful stuff 
+
+```{r}
+is.empty <- function(x){
+  is.na(x) | (x == "") | (x == "NS")
+}
+```
+
+```{r}
+colEPCI <- "#fc8d62"
+colDep <- "#8da0cb"
+colSPF <- "#66c2a5"
+```
+
+# Comparisons, France entiere
+
+
+```{r}
+#thedate <- lastDate
+#agcl <- "00-39"
+#inj <- "1"
+#agcl <- "Tous âges"
+
+getCouv <- function(thedate, agcl, inj){
+  
+  if(agcl == "Tous âges"){agg <- "TOUT_AGE"}else{agg <- agcl}
+  # Population sizes, INSEE 2021
+  insee2021 <- demoCommon[demoCommon$classe_age == agg, "population_carto2021"]
+
+  ## EPCI data
+  tmpEPCI <- dat.EPCI[is.element(dat.EPCI$classe_age, agEPCI[[agcl]]) & dat.EPCI$date == thedate, ]
+  
+  if(inj == "1"){
+    linesOK <- which(!is.empty(tmpEPCI$effectif_cumu_1_inj) & !is.empty(tmpEPCI$population_carto))
+    
+    txEPCI <- sum(as.numeric(tmpEPCI[linesOK, "effectif_cumu_1_inj"])) / sum(as.numeric(tmpEPCI[linesOK, "population_carto"]))
+    
+    linesOKw <- which(!is.empty(tmpEPCI$effectif_1_inj) & !is.empty(tmpEPCI$population_carto))
+    txEPCIw <- sum(as.numeric(tmpEPCI[linesOKw, "effectif_1_inj"])) / sum(as.numeric(tmpEPCI[linesOKw, "population_carto"]))
+  }
+  
+  if(inj == "complet"){
+    linesOK <- which(!is.empty(tmpEPCI$effectif_cumu_termine) & !is.empty(tmpEPCI$population_carto))
+  
+    txEPCI <- sum(as.numeric(tmpEPCI[linesOK, "effectif_cumu_termine"])) / sum(as.numeric(tmpEPCI[linesOK, "population_carto"]))
+    
+    linesOKw <- which(!is.empty(tmpEPCI$effectif_termine) & !is.empty(tmpEPCI$population_carto))
+    txEPCIw <- sum(as.numeric(tmpEPCI[linesOKw, "effectif_termine"])) / sum(as.numeric(tmpEPCI[linesOKw, "population_carto"]))
+
+  }
+  
+  txEPCI
+  
+  ##----------------------------
+  
+  ## Departement data, Ameli
+  
+  tmpResidence <- dat.residence[is.element(dat.residence$classe_age, agDepRes[[agcl]]) & dat.residence$date == thedate & dat.residence$libelle_region == "FRANCE", ]
+  
+  
+  ## 
+  if(inj == "1"){
+    linesOK <- which(!is.empty(tmpResidence$effectif_cumu_1_inj) & !is.empty(tmpResidence$population_insee))
+    
+    txRes <- sum(as.numeric(tmpResidence[linesOK, "effectif_cumu_1_inj"])) / sum(as.numeric(tmpResidence[linesOK, "population_insee"]))
+    
+    txRes2 <- sum(as.numeric(tmpResidence[linesOK, "effectif_cumu_1_inj"])) / insee2021
+
+    linesOKw <- which(!is.empty(tmpResidence$effectif_1_inj) & !is.empty(tmpResidence$population_insee))
+    txResw <- sum(as.numeric(tmpResidence[linesOKw, "effectif_1_inj"])) / sum(as.numeric(tmpResidence[linesOKw, "population_insee"]))
+    txRes2w <- sum(as.numeric(tmpResidence[linesOKw, "effectif_1_inj"])) / insee2021
+
+  }
+  
+  if(inj == "complet"){
+    linesOK <- which(!is.empty(tmpResidence$effectif_cumu_termine) & !is.empty(tmpResidence$population_insee))
+  
+    txRes <- sum(as.numeric(tmpResidence[linesOK, "effectif_cumu_termine"])) / sum(as.numeric(tmpResidence[linesOK, "population_insee"]))
+    txRes2 <- sum(as.numeric(tmpResidence[linesOK, "effectif_cumu_termine"])) / insee2021
+
+    linesOKw <- which(!is.empty(tmpResidence$effectif_termine) & !is.empty(tmpResidence$population_insee))
+    txResw <- sum(as.numeric(tmpResidence[linesOKw, "effectif_termine"])) / sum(as.numeric(tmpResidence[linesOKw, "population_insee"]))
+    txRes2w <- sum(as.numeric(tmpResidence[linesOKw, "effectif_termine"])) / insee2021
+  }
+  
+  #---
+  # Departement data, SPF
+  
+#  tmpInjection <- dat.injection[is.element(dat.injection$clage_vacsi, agDepInj[[agcl]]) & dat.injection$jour == thedate, ]
+  
+#  tmpInjection2 <- dat.injection.noage[dat.injection.noage$jour == thedate, ]
+  
+  tmpSPF <- datFra[is.element(datFra$clage_vacsi, agDepInj[[agcl]]) & datFra$jour == thedate, ]
+  
+  tmpSPFw <- datFra[is.element(datFra$clage_vacsi, agDepInj[[agcl]]) & as.Date(datFra$jour) <= as.Date(thedate) & as.Date(datFra$jour) >= as.Date(thedate) - 6, ]
+  
+  if(inj == "1"){
+    linesOK <- which(!is.empty(tmpSPF$n_cum_dose1) & !is.empty(tmpSPF$pop))
+    
+    txSPF <- sum(as.numeric(tmpSPF[linesOK, "n_cum_dose1"])) / sum(as.numeric(tmpSPF[linesOK, "pop"]))
+    
+    txSPF2 <- sum(as.numeric(tmpSPF[linesOK, "n_cum_dose1"])) / insee2021
+
+    linesOKw <- which(!is.empty(tmpSPFw$n_dose1) & !is.empty(tmpSPFw$pop))
+    txSPFw <- sum(as.numeric(tmpSPFw[linesOKw, "n_dose1"])) / (sum(as.numeric(tmpSPFw[linesOKw, "pop"])) /7)
+    txSPF2w <- sum(as.numeric(tmpSPFw[linesOKw, "n_dose1"])) / insee2021
+  }
+  
+  if(inj == "complet"){
+    linesOK <- which(!is.empty(tmpSPF$n_cum_complet) & !is.empty(tmpSPF$pop))
+  
+    txSPF <- sum(as.numeric(tmpSPF[linesOK, "n_cum_complet"])) / sum(as.numeric(tmpSPF[linesOK, "pop"]))
+    
+    txSPF2 <- sum(as.numeric(tmpSPF[linesOK, "n_cum_complet"])) / insee2021
+    
+    linesOKw <- which(!is.empty(tmpSPFw$n_complet) & !is.empty(tmpSPFw$pop))
+    txSPFw <- sum(as.numeric(tmpSPFw[linesOKw, "n_complet"])) / (sum(as.numeric(tmpSPFw[linesOKw, "pop"]))/7)
+    txSPF2w <- sum(as.numeric(tmpSPFw[linesOKw, "n_complet"])) / insee2021
+  }
+  
+  out <- c(txEPCI, txRes, txRes2, txSPF, txSPF2, txEPCIw, txResw, txRes2w, txSPFw, txSPF2w)
+  out
+}
+
+
+getCouv(lastDate, "75+", "1")
+
+getCouv(lastDate, "75+", "complet")
+
+parms <- expand.grid(thedate = sort(unique(dat.EPCI$date)), agcl = names(agCom), inj = c("1", "complet"))
+
+nrow(parms)
+
+res <- lapply(seq_len(nrow(parms)), function(i) do.call(getCouv, parms[i, ]))
+
+mres <- as.data.frame(matrix(unlist(res), byrow = TRUE, nrow = nrow(parms)))
+names(mres) <- c("txEPCI", "txRes", "txRes2", "txSPF", "txSPF2", 
+                 "txEPCIw", "txResw", "txRes2w", "txSPFw", "txSPF2w")
+
+mres <- cbind(parms, mres)
+
+mres$date <- as.Date(mres$thedate)
+```
+
+
+```{r}
+for(inj in c("1", "complet")){
+  for(agcl in names(agCom)){
+    mres1 <- mres[mres$inj == inj, ]
+    mm <- mres1[mres1$agcl == agcl, ]
+    
+    thetype <- "o"
+    thecex <- 0.3
+    
+    tit1 <- ifelse(inj == "1", "Premières injections", "Vaccinations complètes")
+    
+    agg <- agcl
+    if(agg == "Tous âges") agg <- "tousages"
+    if(agg == "75+") agg <- "75-etplus"
+    
+    fname <- paste0("pics/vaccComparaison_cum_", agg, inj, ".pdf")
+    pdf(file = fname, width = 5, height = 4.5)
+    par(las = 1, mgp = c(2, 0.5, 0), tck = -0.015, xpd = TRUE, 
+        mar = c(3.25, 3, 3, 2.5))
+    plot(mm$date, mm$txEPCI, col = colEPCI, ylim = c(0, 1), 
+          xaxs = "i", yaxs = "i", 
+         xlab = "date", ylab = "proportion", 
+         main = paste(tit1, "cumulées, ", agcl), 
+         type = thetype, cex = thecex)
+    if(!is.element(agcl, c("00-39", "Tous âges"))){
+      points(mm$date, mm$txRes, col = colDep, 
+         type = thetype, cex = thecex)
+    }
+    points(mm$date, mm$txSPF, col = colSPF, 
+         type = thetype, cex = thecex)
+    points(mm$date, mm$txRes2, col = colDep, pch = 2, 
+         type = thetype, cex = thecex, lty = 2)
+    points(mm$date, mm$txSPF2, col = colSPF, pch = 2, 
+         type = thetype, cex = thecex, lty = 2)
+    legend("topleft", col = c(colEPCI, colDep, colSPF, colDep, colSPF), lty = c(1, 1, 1, 2, 2), legend = c("Ameli, assurés sociaux", "Ameli, INSEE 2020", "SPF, INSEE 2020", "Ameli, INSEE 2021", "SPF, INSEE 2021"), lwd = 2, bty = "n", cex = 0.5)
+    axis(4)
+    dev.off()
+    
+    
+    fname2 <- paste0("pics/vaccComparaison_sem_", agg, inj, ".pdf")
+    pdf(file = fname2, width = 5, height = 4.5)
+    par(las = 1, mgp = c(2, 0.5, 0), tck = -0.015, xpd = TRUE, 
+        mar = c(3.25, 3, 3, 2.5))
+    plot(mm$date, mm$txEPCIw, col = colEPCI, ylim = c(0, 0.1), type = thetype, 
+         xaxs = "i", yaxs = "i", 
+         xlab = "date", ylab = "proportion", 
+         cex = thecex, 
+         main = paste(tit1, "de la semaine, ", agcl))
+    if(!is.element(agcl, c("00-39", "Tous âges"))){
+      points(mm$date, mm$txResw, col = colDep, type = thetype, cex = thecex)
+    }
+    points(mm$date, mm$txSPFw, col = colSPF, type = thetype, cex = thecex)
+    points(mm$date, mm$txRes2w, col = colDep, pch = 2, type = thetype, cex = thecex, lty = 2)
+    points(mm$date, mm$txSPF2w, col = colSPF, pch = 2, type = thetype, cex = thecex, lty = 2)
+    
+    legend("topleft", col = c(colEPCI, colDep, colSPF, colDep, colSPF), lty = c(1, 1, 1, 2, 2), legend = c("Ameli, assurés sociaux", "Ameli, INSEE 2020", "SPF, INSEE 2020", "Ameli, INSEE 2021", "SPF, INSEE 2021"), lwd = 2, bty = "n", cex = 0.5)
+    axis(4)
+    dev.off()
+
+    
+    system(paste("open", fname))
+    system(paste("open", fname2))
+
+  }
+}
+
+
+
+
+```
+
+# Comparisons, departements
+
+```{r}
+sort(unique(dat.Com$commune_residence))
+
+dep <- "75"
+agcl <- "Tous âges"
+thedate <- lastDate
+
+# 83, 84 in Marseille
+
+getCouvDep <- function(thedate, agcl, inj, dep){
+  if(is.element(dep, c("13", "75", "91", "92", "93", "69", "83", "84"))){
+    
+    ## EPCI data
+    tmpEPCI <- dat.EPCI[which(is.element(dat.EPCI$classe_age, agEPCI[[agcl]]) & dat.EPCI$date == thedate & grepl(dep, dat.EPCI$dep, fixed = TRUE) & nchar(dat.EPCI$dep) != 3), ]
+    # Remove P, L, M
+    tmpEPCI <- tmpEPCI[!is.element(tmpEPCI$epci, c(epci_grandParis, epci_Lyon, epci_Marseille)), ]
+    
+      ## Com data for this departement
+  tmpCom <- dat.Com[is.element(dat.Com$classe_age, agCom[[agcl]]) & dat.Com$date == thedate & substr(dat.Com$commune_residence, 1, 2) == dep, ]
+  
+  columns <- c("date", "effectif_1_inj",
+               "effectif_termine", "effectif_cumu_1_inj", 
+               "effectif_cumu_termine", "population_carto")
+  tmp <- rbind(tmpEPCI[, columns], tmpCom[, columns])
+  tmp
+  nrow(tmp)
+  
+    if(inj == "1"){
+    linesOK <- which(!is.empty(tmp$effectif_cumu_1_inj) & !is.empty(tmp$population_carto))
+    
+    txAmeli <- sum(as.numeric(tmp[linesOK, "effectif_cumu_1_inj"])) / sum(as.numeric(tmp[linesOK, "population_carto"]))
+    
+    linesOKw <- which(!is.empty(tmp$effectif_1_inj) & !is.empty(tmp$population_carto))
+    txAmeliw <- sum(as.numeric(tmp[linesOKw, "effectif_1_inj"])) / sum(as.numeric(tmp[linesOKw, "population_carto"]))
+  }
+  
+  if(inj == "complet"){
+    linesOK <- which(!is.empty(tmp$effectif_cumu_termine) & !is.empty(tmp$population_carto))
+  
+    txAmeli <- sum(as.numeric(tmp[linesOK, "effectif_cumu_termine"])) / sum(as.numeric(tmp[linesOK, "population_carto"]))
+    
+    linesOKw <- which(!is.empty(tmp$effectif_termine) & !is.empty(tmp$population_carto))
+    txAmeliw <- sum(as.numeric(tmp[linesOKw, "effectif_termine"])) / sum(as.numeric(tmp[linesOKw, "population_carto"]))
+  }
+    
+  }else{
+    
+    # Plus facile
+  }
+
+  
+  ##----------------------------
+  
+  ## Departement data, Ameli
+  
+  tmpResidence <- dat.residence[which(is.element(dat.residence$classe_age, agDepRes[[agcl]]) & dat.residence$date == thedate & dat.residence$departement_residence == dep), ]
+  
+  
+  
+  ## 
+  if(inj == "1"){
+    linesOK <- which(!is.empty(tmpResidence$effectif_cumu_1_inj) & !is.empty(tmpResidence$population_insee))
+    
+    txRes <- sum(as.numeric(tmpResidence[linesOK, "effectif_cumu_1_inj"])) / sum(as.numeric(tmpResidence[linesOK, "population_insee"]))
+    
+    linesOKw <- which(!is.empty(tmpResidence$effectif_1_inj) & !is.empty(tmpResidence$population_insee))
+    txResw <- sum(as.numeric(tmpResidence[linesOKw, "effectif_1_inj"])) / sum(as.numeric(tmpResidence[linesOKw, "population_insee"]))
+  
+  }
+  
+  if(inj == "complet"){
+    linesOK <- which(!is.empty(tmpResidence$effectif_cumu_termine) & !is.empty(tmpResidence$population_insee))
+  
+    txRes <- sum(as.numeric(tmpResidence[linesOK, "effectif_cumu_termine"])) / sum(as.numeric(tmpResidence[linesOK, "population_insee"]))
+    
+    linesOKw <- which(!is.empty(tmpResidence$effectif_termine) & !is.empty(tmpResidence$population_insee))
+    txResw <- sum(as.numeric(tmpResidence[linesOKw, "effectif_termine"])) / sum(as.numeric(tmpResidence[linesOKw, "population_insee"]))
+  }
+  
+  ## Departement data, SPF
+  tmpSPF <- dat.injection[which(is.element(dat.injection$clage_vacsi, agDepInj[[agcl]]) & dat.injection$jour == thedate & dat.injection$dep == dep), ]
+    
+  tmpSPFw <- dat.injection[which(dat.injection$dep == dep & is.element(dat.injection$clage_vacsi, agDepInj[[agcl]])), ]
+  tmpSPFw <- tmpSPFw[as.Date(tmpSPFw$jour) <= as.Date(thedate) & (as.Date(tmpSPFw$jour) >= as.Date(thedate) - 6), ]
+  
+  if(inj == "1"){
+    linesOK <- which(!is.empty(tmpSPF$n_cum_dose1) & !is.empty(tmpSPF$pop2020))
+    
+    txSPF <- sum(as.numeric(tmpSPF[linesOK, "n_cum_dose1"])) / sum(as.numeric(tmpSPF[linesOK, "pop2020"]))
+    
+    linesOKw <- which(!is.empty(tmpSPFw$n_dose1) & !is.empty(tmpSPFw$pop2020))
+    txSPFw <- sum(as.numeric(tmpSPFw[linesOKw, "n_dose1"])) / (sum(as.numeric(tmpSPFw[linesOKw, "pop2020"])) /7)
+  }
+  
+  if(inj == "complet"){
+    linesOK <- which(!is.empty(tmpSPF$n_cum_complet) & !is.empty(tmpSPF$pop2020))
+  
+    txSPF <- sum(as.numeric(tmpSPF[linesOK, "n_cum_complet"])) / sum(as.numeric(tmpSPF[linesOK, "pop2020"]))
+    
+    linesOKw <- which(!is.empty(tmpSPFw$n_complet) & !is.empty(tmpSPFw$pop2020))
+    txSPFw <- sum(as.numeric(tmpSPFw[linesOKw, "n_complet"])) / (sum(as.numeric(tmpSPFw[linesOKw, "pop2020"]))/7)
+  }
+  
+  out <- c(txAmeli, txRes, txSPF, txAmeliw, txResw, txSPFw)
+  out
+  
+}
+
+
+getCouvDep(lastDate, "Tous âges", "1", "75")
+
+```
+
+```{r}
+parms <- expand.grid(thedate = sort(unique(dat.EPCI$date)), agcl = names(agCom), inj = c("1", "complet"), dep = c("93"))
+
+nrow(parms)
+
+res <- lapply(seq_len(nrow(parms)), function(i) do.call(getCouvDep, parms[i, ]))
+
+mres <- as.data.frame(matrix(unlist(res), byrow = TRUE, nrow = nrow(parms)))
+names(mres) <- c("txEPCI", "txRes", "txSPF", 
+                 "txEPCIw", "txResw", "txSPFw")
+
+mres <- cbind(parms, mres)
+
+mres$date <- as.Date(mres$thedate)
+
+```
+
+### Plot
+
+```{r}
+inj <- "1"
+agcl <- "Tous âges"
+dep <- "75"
+for(inj in c("1", "complet")){
+  for(agcl in names(agCom)){
+    mres1 <- mres[mres$inj == inj & mres$dep == dep, ]
+    mm <- mres1[mres1$agcl == agcl, ]
+    
+    thetype <- "o"
+    thecex <- 0.3
+    
+    tit1 <- ifelse(inj == "1", "Premières injections", "Vaccinations complètes")
+    
+    agg <- agcl
+    if(agg == "Tous âges") agg <- "tousages"
+    if(agg == "75+") agg <- "75-etplus"
+    
+    fname <- paste0("pics/vaccComparaison_cum_", agg, "_", inj, "_", dep, ".pdf")
+#    pdf(file = fname, width = 5, height = 4.5)
+    par(las = 1, mgp = c(2, 0.5, 0), tck = -0.015, xpd = TRUE, 
+        mar = c(3.25, 3, 3, 2.5))
+    plot(mm$date, mm$txEPCI, col = colEPCI, ylim = c(0, 1), 
+          xaxs = "i", yaxs = "i", 
+         xlab = "date", ylab = "proportion", 
+         main = paste(tit1, "cumulées, ", agcl, "\n Dep", dep), 
+         type = thetype, cex = thecex)
+    if(!is.element(agcl, c("00-39"))){
+      points(mm$date, mm$txRes, col = colDep, 
+         type = thetype, cex = thecex)
+    }
+    points(mm$date, mm$txSPF, col = colSPF, 
+         type = thetype, cex = thecex)
+    legend("topleft", col = c(colEPCI, colDep, colSPF), lty = c(1, 1, 1), legend = c("Ameli, assurés sociaux", "Ameli, INSEE 2020", "SPF, INSEE 2020"), lwd = 2, bty = "n", cex = 0.5)
+    axis(4)
+    dev.off()
+    
+    
+    fname2 <- paste0("pics/vaccComparaison_sem_", agg, "_", inj, "_", dep, ".pdf")
+    #pdf(file = fname2, width = 5, height = 4.5)
+    par(las = 1, mgp = c(2, 0.5, 0), tck = -0.015, xpd = TRUE, 
+        mar = c(3.25, 3, 3, 2.5))
+    plot(mm$date, mm$txEPCIw, col = colEPCI, ylim = c(0, 0.1), type = thetype, 
+         xaxs = "i", yaxs = "i", 
+         xlab = "date", ylab = "proportion", 
+         cex = thecex, 
+         main = paste(tit1, "de la semaine, ", agcl, "\nDep", dep))
+    if(!is.element(agcl, c("00-39"))){
+      points(mm$date, mm$txResw, col = colDep, type = thetype, cex = thecex)
+    }
+    points(mm$date, mm$txSPFw, col = colSPF, type = thetype, cex = thecex)
+
+    legend("topleft", col = c(colEPCI, colDep, colSPF), lty = c(1, 1, 1), legend = c("Ameli, assurés sociaux", "Ameli, INSEE 2020", "SPF, INSEE 2020"), lwd = 2, bty = "n", cex = 0.5)
+    axis(4)
+    dev.off()
+
+    
+    system(paste("open", fname))
+    system(paste("open", fname2))
+
+  }
+}
+
+
+
+
+```
+
