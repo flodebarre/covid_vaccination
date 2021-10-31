@@ -50,7 +50,8 @@ Source <https://datavaccin-covid.ameli.fr/explore/dataset/donnees-vaccination-pa
 URL.AmeliDep <- "https://datavaccin-covid.ameli.fr/explore/dataset/donnees-vaccination-par-tranche-dage-type-de-vaccin-et-departement/download/?format=csv&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B"
 ## does not work
 
-dataFile <- paste0("data/donnees-vaccination-par-tranche-dage-type-de-vaccin-et-departement_", Sys.Date(),".csv") # name file with today's date
+#dataFile <- paste0("data/donnees-vaccination-par-tranche-dage-type-de-vaccin-et-departement_", Sys.Date(),".csv") # name file with today's date
+dataFile <- "data/vaccDep.csv"
 if(dlData){
   system(paste0("wget -O ", dataFile, " ", URL.AmeliDep))
 }
@@ -606,14 +607,16 @@ dep <- "75"
 agcl <- "Tous âges"
 thedate <- lastDate
 
+table(dat.EPCI$dep)
 # 83, 84 in Marseille
 
 getCouvDep <- function(thedate, agcl, inj, dep){
-  if(is.element(dep, c("13", "75", "91", "92", "93", "69", "83", "84"))){
+  if(is.element(dep, c("13", "75", "91", "92", "93", "94", "95", "69", "83", "84"))){
+    # If departement for which we have communes data
     
     ## EPCI data
     tmpEPCI <- dat.EPCI[which(is.element(dat.EPCI$classe_age, agEPCI[[agcl]]) & dat.EPCI$date == thedate & grepl(dep, dat.EPCI$dep, fixed = TRUE) & nchar(dat.EPCI$dep) != 3), ]
-    # Remove P, L, M
+    # Remove P, L, M to avoid counting them twice (included in Dep)
     tmpEPCI <- tmpEPCI[!is.element(tmpEPCI$epci, c(epci_grandParis, epci_Lyon, epci_Marseille)), ]
     
       ## Com data for this departement
@@ -625,6 +628,23 @@ getCouvDep <- function(thedate, agcl, inj, dep){
   tmp <- rbind(tmpEPCI[, columns], tmpCom[, columns])
   tmp
   nrow(tmp)
+  }else{
+    
+    # Plus facile
+    # ####################################
+    # ####################################
+    # ####################################
+    # ####################################
+    # ####################################
+    # A FAIRE !!!! #######################
+    # ####################################
+    # ####################################
+    # ####################################
+    # ####################################
+    # ####################################
+    # ####################################
+  }
+
   
     if(inj == "1"){
     linesOK <- which(!is.empty(tmp$effectif_cumu_1_inj) & !is.empty(tmp$population_carto))
@@ -644,10 +664,6 @@ getCouvDep <- function(thedate, agcl, inj, dep){
     txAmeliw <- sum(as.numeric(tmp[linesOKw, "effectif_termine"])) / sum(as.numeric(tmp[linesOKw, "population_carto"]))
   }
     
-  }else{
-    
-    # Plus facile
-  }
 
   
   ##----------------------------
@@ -732,11 +748,12 @@ mres$date <- as.Date(mres$thedate)
 ### Plot
 
 ```{r}
-inj <- "1"
+inj <- "complet"
 agcl <- "Tous âges"
-dep <- "75"
-for(inj in c("1", "complet")){
-  for(agcl in names(agCom)){
+#agcl <- "75+"
+dep <- "93"
+#for(inj in c("1", "complet")){
+#  for(agcl in names(agCom)){
     mres1 <- mres[mres$inj == inj & mres$dep == dep, ]
     mm <- mres1[mres1$agcl == agcl, ]
     
@@ -766,7 +783,7 @@ for(inj in c("1", "complet")){
          type = thetype, cex = thecex)
     legend("topleft", col = c(colEPCI, colDep, colSPF), lty = c(1, 1, 1), legend = c("Ameli, assurés sociaux", "Ameli, INSEE 2020", "SPF, INSEE 2020"), lwd = 2, bty = "n", cex = 0.5)
     axis(4)
-    dev.off()
+    #dev.off()
     
     
     fname2 <- paste0("pics/vaccComparaison_sem_", agg, "_", inj, "_", dep, ".pdf")
@@ -785,14 +802,14 @@ for(inj in c("1", "complet")){
 
     legend("topleft", col = c(colEPCI, colDep, colSPF), lty = c(1, 1, 1), legend = c("Ameli, assurés sociaux", "Ameli, INSEE 2020", "SPF, INSEE 2020"), lwd = 2, bty = "n", cex = 0.5)
     axis(4)
-    dev.off()
+    #dev.off()
 
     
-    system(paste("open", fname))
-    system(paste("open", fname2))
+    #system(paste("open", fname))
+    #system(paste("open", fname2))
 
-  }
-}
+#  }
+#}
 
 
 
