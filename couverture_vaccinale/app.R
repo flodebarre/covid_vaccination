@@ -5,10 +5,10 @@ library(shiny)
 # Load data
 
 ## Couvertures calculées
-out <- read.csv("../data/calc_vaccDep_alldeps.csv")
+out <- read.csv("data/calc_vaccDep_alldeps.csv")
 
 ## Departement information
-departements <- read.csv("../data/departement2020.csv")
+departements <- read.csv("data/departement2020.csv")
 # Sort departement information
 depsTable <- departements[is.element(departements$dep, sort(unique(out$dep))), ]
 # List of departement names for input
@@ -39,7 +39,8 @@ ui <- fluidPage(
     # Application title
     titlePanel("Couvertures vaccinales en France"),
 
-    p("Notes explicatives en bas de page."), 
+    HTML("<p>Notes explicatives en bas de page. Données de vaccination jusqu'au 24 octobre 2021, mise à jour du code le 1er novembre 2021. <br/>
+         Une question, une suggestion, une correction ? <a href = 'mailto:florence.debarre@normalesup.org?subject=ShinyApp_CouvVaccinale'>Envoyez-moi un email</a>.<p>"), 
     
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
@@ -94,7 +95,15 @@ ui <- fluidPage(
          <li>Le lieu indiqué est le lieu de résidence de la personne vaccinée -- comme pour l'autre jeu Ameli</li>
          <li>Dans le calcul des taux de vaccination, le numérateur et le dénominateur correspondent à la même population dont la taille est connue -- avantage spécifique à ce jeu de données</li>
          </ol></p>"),
-    fluidRow()
+    
+    h2("Calculs"), 
+    HTML("<p>Les trois jeux de données utilisent des subdivisions différentes pour les classes d'âges. Pour pouvoir comparer les jeux de données entre eux, les classes d'âges sont harmonisées, et sont donc moins détaillées à la fin qu'elles ne le sont dans chacun des jeux de données. </br>
+         Pour la classe d'âge 00-39, les résultats d'Ameli, denom. INSEE 2020 ne sont pas affichées, parce que les données 00-12 ne sont pas fournies. (Peut-être serait-il possible de les reconstituer à partir des données 'Tous âges' mais je n'ai pas essayé). </p>
+         <p>Pour les données par EPCI, un EPCI à cheval sur plusieurs départements est compté dans chacun de ces départements (à l'exception des EPCI de Paris, Lyon, Marseille ou les données par commune sont disponibles et permettent de distinguer les différents départements). </p>"),
+    h2("Code"), 
+    HTML("<p><ul><li>Le code pour générer cette application Shiny et tracer les courbes est disponible <a href = 'https://github.com/flodebarre/covid_vaccination/blob/main/couverture_vaccinale/app.R'>ici</a>.</li>
+         <li>Le code pour calculer les couvertures vaccinales par département et classe d'âge est disponible <a href = 'https://github.com/flodebarre/covid_vaccination/blob/main/couverture_vaccinale.Rmd'>ici</a> (section '# Comparisons, departements').</li></ul></p>"),
+    fluidRow(HTML("&nbsp;"))
     
 
 )

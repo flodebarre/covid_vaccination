@@ -19,6 +19,8 @@ NOTES:
 
 - Need to manually check age classes from time to time, as they might change in Ameli data
 
+- IMPORTANT : NEED TO PUT THE DATA IN THE SHINY FOLDER
+
 -->
 
 ```{r setup, include=FALSE}

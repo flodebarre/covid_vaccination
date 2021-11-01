@@ -1,0 +1,13 @@
+name: couverture_vaccinale
+title: couverture_vaccinale
+username:
+account: fdebarre
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 5017362
+bundleId: 5199043
+url: https://fdebarre.shinyapps.io/couverture_vaccinale/
+when: 1635786337.03414
+lastSyncTime: 1635786337.03416
+asMultiple: FALSE
+asStatic: FALSE
