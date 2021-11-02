@@ -83,8 +83,8 @@ Source <https://www.data.gouv.fr/en/datasets/donnees-relatives-aux-personnes-vac
 URL <- "https://www.data.gouv.fr/en/datasets/r/4f39ec91-80d7-4602-befb-4b522804c0af"
 URL.SPFadep <- "https://www.data.gouv.fr/en/datasets/r/83cbbdb9-23cb-455e-8231-69fc25d58111"
 
-dataFile <- paste0("data/vacciDeps_injection_", Sys.Date(),".csv") # name file with today's date
-dataFile2 <- paste0("data/vacciDeps_injection-a_", Sys.Date(),".csv") # name file with today's date
+dataFile <- paste0("data/vacciDeps_injection.csv") # name file with today's date
+dataFile2 <- paste0("data/vacciDeps_injection-a.csv") # name file with today's date
 if(dlData){
   download.file(URL, dataFile) # download file from repo
   download.file(URL.SPFadep, dataFile2) # download file from repo
@@ -123,6 +123,11 @@ datFra <- merge(datFra, tmp[, c("clage_vacsi", "pop")], by = "clage_vacsi", all 
 ## Clean data
 
 ```{r}
+# Change "NS" into "NA"
+dat.EPCI[dat.EPCI$population_carto == "NS", "population_carto"] <- NA
+dat.Com[dat.Com$population_carto == "NS", "population_carto"] <- NA
+
+
 # Get final date in the data
 lastDate <- max(dat.EPCI$date)
 lastDate
@@ -376,8 +381,8 @@ is.empty <- function(x){
 ```{r}
 trp <- 0.8
 colEPCI <- adjustcolor(col = "#1f78b4", alpha.f = trp)
-colDep <- adjustcolor(col = "#a6cee3", alpha.f = trp)
-colSPF <- adjustcolor(col = "#b2df8a", alpha.f = trp)
+colDep <- adjustcolor(col = "#F1B200", alpha.f = trp)
+colSPF <- adjustcolor(col = "#FF581F", alpha.f = trp)
 ```
 
 
@@ -396,28 +401,37 @@ getCouv <- function(thedate, agcl, inj){
   # Population sizes, INSEE 2021
   insee2021 <- demoCommon[demoCommon$classe_age == agg, "population_carto2021"]
 
+  # Define column names depending on the chose type of injection
+  # (Ameli and SPF names differ)
+  
+  if(inj == "1"){
+    thecol <- "effectif_cumu_1_inj"
+    thecolw <- "effectif_1_inj"
+    thecolSPF <- "n_cum_dose1"
+    thecolSPFw <- "n_dose1"
+  }
+  if(inj == "complet"){
+    thecol <- "effectif_cumu_termine"
+    thecolw <- "effectif_termine"
+    thecolSPF <- "n_cum_complet"
+    thecolSPFw <- "n_complet"
+  }
+  
   ## EPCI data
   tmpEPCI <- dat.EPCI[is.element(dat.EPCI$classe_age, agEPCI[[agcl]]) & dat.EPCI$date == thedate, ]
   
-  if(inj == "1"){
-    linesOK <- which(!is.empty(tmpEPCI$effectif_cumu_1_inj) & !is.empty(tmpEPCI$population_carto))
-    
-    txEPCI <- sum(as.numeric(tmpEPCI[linesOK, "effectif_cumu_1_inj"])) / sum(as.numeric(tmpEPCI[linesOK, "population_carto"]))
-    
-    linesOKw <- which(!is.empty(tmpEPCI$effectif_1_inj) & !is.empty(tmpEPCI$population_carto))
-    txEPCIw <- sum(as.numeric(tmpEPCI[linesOKw, "effectif_1_inj"])) / sum(as.numeric(tmpEPCI[linesOKw, "population_carto"]))
-  }
+  linesOK <- which(!is.empty(tmpEPCI[, thecol]) & !is.empty(tmpEPCI[, "population_carto"]))
+  txEPCI <- sum(as.numeric(tmpEPCI[linesOK, thecol])) / sum(as.numeric(tmpEPCI[linesOK, "population_carto"]))
+  V1EPCI <- sum(as.numeric(tmpEPCI[, thecol]), na.rm = TRUE)
+  N1EPCI <- sum(as.numeric(tmpEPCI[, "population_carto"]), na.rm = TRUE)
+  V2EPCI <- sum(as.numeric(tmpEPCI[linesOK, thecol]))
+  N2EPCI <- sum(as.numeric(tmpEPCI[linesOK, "population_carto"]))
   
-  if(inj == "complet"){
-    linesOK <- which(!is.empty(tmpEPCI$effectif_cumu_termine) & !is.empty(tmpEPCI$population_carto))
-  
-    txEPCI <- sum(as.numeric(tmpEPCI[linesOK, "effectif_cumu_termine"])) / sum(as.numeric(tmpEPCI[linesOK, "population_carto"]))
-    
-    linesOKw <- which(!is.empty(tmpEPCI$effectif_termine) & !is.empty(tmpEPCI$population_carto))
-    txEPCIw <- sum(as.numeric(tmpEPCI[linesOKw, "effectif_termine"])) / sum(as.numeric(tmpEPCI[linesOKw, "population_carto"]))
+  linesOKw <- which(!is.empty(tmpEPCI[, thecolw]) & !is.empty(tmpEPCI[, "population_carto"]))
+  txEPCIw <- sum(as.numeric(tmpEPCI[linesOKw, thecolw])) / sum(as.numeric(tmpEPCI[linesOKw, "population_carto"]))
+  V1wEPCI <- sum(as.numeric(tmpEPCI[, thecolw]), na.rm = TRUE)
+  V2wEPCI <- sum(as.numeric(tmpEPCI[linesOKw, thecolw]))
 
-  }
-  
   txEPCI
   
   ##----------------------------
@@ -426,68 +440,60 @@ getCouv <- function(thedate, agcl, inj){
   
   tmpResidence <- dat.residence[is.element(dat.residence$classe_age, agDepRes[[agcl]]) & dat.residence$date == thedate & dat.residence$libelle_region == "FRANCE", ]
   
-  
   ## 
-  if(inj == "1"){
-    linesOK <- which(!is.empty(tmpResidence$effectif_cumu_1_inj) & !is.empty(tmpResidence$population_insee))
-    
-    txRes <- sum(as.numeric(tmpResidence[linesOK, "effectif_cumu_1_inj"])) / sum(as.numeric(tmpResidence[linesOK, "population_insee"]))
-    
-    txRes2 <- sum(as.numeric(tmpResidence[linesOK, "effectif_cumu_1_inj"])) / insee2021
-
-    linesOKw <- which(!is.empty(tmpResidence$effectif_1_inj) & !is.empty(tmpResidence$population_insee))
-    txResw <- sum(as.numeric(tmpResidence[linesOKw, "effectif_1_inj"])) / sum(as.numeric(tmpResidence[linesOKw, "population_insee"]))
-    txRes2w <- sum(as.numeric(tmpResidence[linesOKw, "effectif_1_inj"])) / insee2021
-
-  }
+  linesOK <- which(!is.empty(tmpResidence[, thecol]) & !is.empty(tmpResidence[, "population_insee"]))
   
-  if(inj == "complet"){
-    linesOK <- which(!is.empty(tmpResidence$effectif_cumu_termine) & !is.empty(tmpResidence$population_insee))
+  txRes <- sum(as.numeric(tmpResidence[linesOK, thecol])) / sum(as.numeric(tmpResidence[linesOK, "population_insee"]))
   
-    txRes <- sum(as.numeric(tmpResidence[linesOK, "effectif_cumu_termine"])) / sum(as.numeric(tmpResidence[linesOK, "population_insee"]))
-    txRes2 <- sum(as.numeric(tmpResidence[linesOK, "effectif_cumu_termine"])) / insee2021
-
-    linesOKw <- which(!is.empty(tmpResidence$effectif_termine) & !is.empty(tmpResidence$population_insee))
-    txResw <- sum(as.numeric(tmpResidence[linesOKw, "effectif_termine"])) / sum(as.numeric(tmpResidence[linesOKw, "population_insee"]))
-    txRes2w <- sum(as.numeric(tmpResidence[linesOKw, "effectif_termine"])) / insee2021
-  }
+  V1Res <- sum(as.numeric(tmpResidence[, thecol]), na.rm = TRUE)
+  N1Res <- sum(as.numeric(tmpResidence[, "population_insee"]), na.rm = TRUE)
+  V2Res <- sum(as.numeric(tmpResidence[linesOK, thecol]))
+  N2Res <- sum(as.numeric(tmpResidence[linesOK, "population_insee"]))
+  N3 <- insee2021
   
-  #---
+  txRes2 <- sum(as.numeric(tmpResidence[linesOK, thecol])) / insee2021
+  
+  linesOKw <- which(!is.empty(tmpResidence[, thecolw]) & !is.empty(tmpResidence$population_insee))
+  txResw <- sum(as.numeric(tmpResidence[linesOKw, thecolw])) / sum(as.numeric(tmpResidence[linesOKw, "population_insee"]))
+  txRes2w <- sum(as.numeric(tmpResidence[linesOKw, thecolw])) / insee2021
+  
+  V1wRes <- sum(as.numeric(tmpResidence[, thecolw]), na.rm = TRUE)
+  V2wRes <- sum(as.numeric(tmpResidence[linesOKw, thecolw]))
+  
+  #*******************************
   # Departement data, SPF
-  
-#  tmpInjection <- dat.injection[is.element(dat.injection$clage_vacsi, agDepInj[[agcl]]) & dat.injection$jour == thedate, ]
-  
-#  tmpInjection2 <- dat.injection.noage[dat.injection.noage$jour == thedate, ]
   
   tmpSPF <- datFra[is.element(datFra$clage_vacsi, agDepInj[[agcl]]) & datFra$jour == thedate, ]
   
   tmpSPFw <- datFra[is.element(datFra$clage_vacsi, agDepInj[[agcl]]) & as.Date(datFra$jour) <= as.Date(thedate) & as.Date(datFra$jour) >= as.Date(thedate) - 6, ]
-  
-  if(inj == "1"){
-    linesOK <- which(!is.empty(tmpSPF$n_cum_dose1) & !is.empty(tmpSPF$pop))
-    
-    txSPF <- sum(as.numeric(tmpSPF[linesOK, "n_cum_dose1"])) / sum(as.numeric(tmpSPF[linesOK, "pop"]))
-    
-    txSPF2 <- sum(as.numeric(tmpSPF[linesOK, "n_cum_dose1"])) / insee2021
 
-    linesOKw <- which(!is.empty(tmpSPFw$n_dose1) & !is.empty(tmpSPFw$pop))
-    txSPFw <- sum(as.numeric(tmpSPFw[linesOKw, "n_dose1"])) / (sum(as.numeric(tmpSPFw[linesOKw, "pop"])) /7)
-    txSPF2w <- sum(as.numeric(tmpSPFw[linesOKw, "n_dose1"])) / insee2021
-  }
   
-  if(inj == "complet"){
-    linesOK <- which(!is.empty(tmpSPF$n_cum_complet) & !is.empty(tmpSPF$pop))
+  linesOK <- which(!is.empty(tmpSPF[, thecolSPF]) & !is.empty(tmpSPF$pop))
   
-    txSPF <- sum(as.numeric(tmpSPF[linesOK, "n_cum_complet"])) / sum(as.numeric(tmpSPF[linesOK, "pop"]))
-    
-    txSPF2 <- sum(as.numeric(tmpSPF[linesOK, "n_cum_complet"])) / insee2021
-    
-    linesOKw <- which(!is.empty(tmpSPFw$n_complet) & !is.empty(tmpSPFw$pop))
-    txSPFw <- sum(as.numeric(tmpSPFw[linesOKw, "n_complet"])) / (sum(as.numeric(tmpSPFw[linesOKw, "pop"]))/7)
-    txSPF2w <- sum(as.numeric(tmpSPFw[linesOKw, "n_complet"])) / insee2021
-  }
+  txSPF <- sum(as.numeric(tmpSPF[linesOK, thecolSPF])) / sum(as.numeric(tmpSPF[linesOK, "pop"]))
   
-  out <- c(txEPCI, txRes, txRes2, txSPF, txSPF2, txEPCIw, txResw, txRes2w, txSPFw, txSPF2w)
+  txSPF2 <- sum(as.numeric(tmpSPF[linesOK, thecolSPF])) / insee2021
+  
+  V1SPF <- sum(as.numeric(tmpSPF[, thecolSPF]), na.rm = TRUE) 
+  V2SPF <- sum(as.numeric(tmpSPF[linesOK, thecolSPF])) 
+  N1SPF <- sum(as.numeric(tmpSPF[, "pop"]), na.rm = TRUE)
+  N2SPF <- sum(as.numeric(tmpSPF[linesOK, "pop"]))
+  
+  linesOKw <- which(!is.empty(tmpSPFw[, thecolSPFw]) & !is.empty(tmpSPFw$pop))
+  
+  txSPFw <- sum(as.numeric(tmpSPFw[linesOKw, thecolSPFw])) / (sum(as.numeric(tmpSPFw[linesOKw, "pop"])) /7)
+  txSPF2w <- sum(as.numeric(tmpSPFw[linesOKw, thecolSPFw])) / insee2021
+  
+  V1wSPF <- sum(as.numeric(tmpSPFw[, thecolSPFw]), na.rm = TRUE) 
+  V2wSPF <- sum(as.numeric(tmpSPFw[linesOKw, thecolSPFw]))   
+
+  out <- c(txEPCI, txRes, txRes2, txSPF, txSPF2, 
+           txEPCIw, txResw, txRes2w, txSPFw, txSPF2w, 
+           V1EPCI, V2EPCI, N1EPCI, N2EPCI, V1wEPCI, V2wEPCI, 
+           V1Res, V2Res, N1Res, N2Res, V1wRes, V2wRes, 
+           V1SPF, V2SPF, N1SPF, N2SPF, V1wSPF, V2wSPF, 
+           N3
+           )
   out
 }
 
@@ -495,7 +501,10 @@ getCouv <- function(thedate, agcl, inj){
 getCouv(lastDate, "75+", "1")
 
 getCouv(lastDate, "75+", "complet")
+```
 
+
+```{r}
 parms <- expand.grid(thedate = sort(unique(dat.EPCI$date)), agcl = names(agCom), inj = c("1", "complet"))
 
 nrow(parms)
@@ -504,12 +513,72 @@ res <- lapply(seq_len(nrow(parms)), function(i) do.call(getCouv, parms[i, ]))
 
 mres <- as.data.frame(matrix(unlist(res), byrow = TRUE, nrow = nrow(parms)))
 names(mres) <- c("txEPCI", "txRes", "txRes2", "txSPF", "txSPF2", 
-                 "txEPCIw", "txResw", "txRes2w", "txSPFw", "txSPF2w")
+                 "txEPCIw", "txResw", "txRes2w", "txSPFw", "txSPF2w", 
+                 "V1EPCI", "V2EPCI", "N1EPCI", "N2EPCI", "V1wEPCI", "V2wEPCI", 
+                 "V1Res", "V2Res", "N1Res", "N2Res", "V1wRes", "V2wRes", 
+                 "V1SPF", "V2SPF", "N1SPF", "N2SPF", "V1wSPF", "V2wSPF", 
+                 "N3")
 
 mres <- cbind(parms, mres)
 
 mres$date <- as.Date(mres$thedate)
 ```
+
+### Plot tests
+
+```{r, eval = FALSE}
+#thedate <- lastDate
+#agcl <- "00-39"
+inj <- "1"
+agcl <- "Tous âges"
+
+mres1 <- mres[mres$inj == inj, ]
+mm <- mres1[mres1$agcl == agcl, ]
+names(mm)
+
+nend <- nrow(mm)
+
+plot(mm$date, mm$N1EPCI, ylim = c(60*10^6, 70*10^6))
+points(mm$date, mm$V1EPCI)
+
+points(mm$date, mm$N1Res, col = colDep)
+points(mm$date, mm$N1SPF, col = colSPF)
+points(mm$date, mm$N1EPCI, col = colEPCI)
+
+points(mm$date, mm$N2Res, col  = colDep, pch = 2)
+points(mm$date, mm$N2SPF, col = colSPF, pch = 2)
+points(mm$date, mm$N2EPCI, col = colEPCI, pch = 2)
+
+
+mm[nend, "N2EPCI"]
+
+
+plot(mm$date, mm$N1EPCI, ylim = c(0*10^6, 70*10^6))
+points(mm$date, mm$V1Res, col = colDep)
+points(mm$date, mm$V1SPF, col = colSPF)
+points(mm$date, mm$V1EPCI, col = colEPCI)
+
+points(mm$date, mm$V2Res, col  = colDep, pch = 2)
+points(mm$date, mm$V2SPF, col = colSPF, pch = 2)
+points(mm$date, mm$V2EPCI, col = colEPCI, pch = 2)
+
+
+plot(mm$date, mm$N1EPCI, ylim = c(0*10^6, 7*10^6))
+points(mm$date, mm$V1wRes, col = colDep)
+points(mm$date, mm$V1wSPF, col = colSPF)
+points(mm$date, mm$V1wEPCI, col = colEPCI)
+
+points(mm$date, mm$V2wRes, col  = colDep, pch = 2)
+points(mm$date, mm$V2wSPF, col = colSPF, pch = 2)
+points(mm$date, mm$V2wEPCI, col = colEPCI, pch = 2)
+
+
+mm[nend, ]
+
+
+
+```
+
 
 ### Plot France entiere
 
@@ -597,6 +666,23 @@ for(inj in c("1", "complet")){
 # 83, 84 in Marseille
 
 getCouvDep <- function(thedate, agcl, inj, dep){
+  
+  # Define column names depending on the chose type of injection
+  # (Ameli and SPF names differ)
+  
+  if(inj == "1"){
+    thecol <- "effectif_cumu_1_inj"
+    thecolw <- "effectif_1_inj"
+    thecolSPF <- "n_cum_dose1"
+    thecolSPFw <- "n_dose1"
+  }
+  if(inj == "complet"){
+    thecol <- "effectif_cumu_termine"
+    thecolw <- "effectif_termine"
+    thecolSPF <- "n_cum_complet"
+    thecolSPFw <- "n_complet"
+  }
+
   #if(is.element(dep, c("13", "75", "91", "92", "93", "94", "95", "69", "83", "84"))){
     # If departement for which we have communes data
     # Actually no need to do it, tmpCom will be empty if not included
@@ -623,53 +709,43 @@ getCouvDep <- function(thedate, agcl, inj, dep){
   tmp
   nrow(tmp)
   
-    if(inj == "1"){
-    linesOK <- which(!is.empty(tmp$effectif_cumu_1_inj) & !is.empty(tmp$population_carto))
-    
-    txAmeli <- sum(as.numeric(tmp[linesOK, "effectif_cumu_1_inj"])) / sum(as.numeric(tmp[linesOK, "population_carto"]))
-    
-    linesOKw <- which(!is.empty(tmp$effectif_1_inj) & !is.empty(tmp$population_carto))
-    txAmeliw <- sum(as.numeric(tmp[linesOKw, "effectif_1_inj"])) / sum(as.numeric(tmp[linesOKw, "population_carto"]))
-  }
+  linesOK <- which(!is.empty(tmp[, thecol]) & !is.empty(tmp$population_carto))
   
-  if(inj == "complet"){
-    linesOK <- which(!is.empty(tmp$effectif_cumu_termine) & !is.empty(tmp$population_carto))
+  txAmeli <- sum(as.numeric(tmp[linesOK, thecol])) / sum(as.numeric(tmp[linesOK, "population_carto"]))
+  V1EPCI <- sum(as.numeric(tmp[, thecol]), na.rm = TRUE)
+  V2EPCI <- sum(as.numeric(tmp[linesOK, thecol]))
+  N1EPCI <- sum(as.numeric(tmp[, "population_carto"]), na.rm = TRUE)
+  N2EPCI <- sum(as.numeric(tmp[linesOK, "population_carto"]))
   
-    txAmeli <- sum(as.numeric(tmp[linesOK, "effectif_cumu_termine"])) / sum(as.numeric(tmp[linesOK, "population_carto"]))
-    
-    linesOKw <- which(!is.empty(tmp$effectif_termine) & !is.empty(tmp$population_carto))
-    txAmeliw <- sum(as.numeric(tmp[linesOKw, "effectif_termine"])) / sum(as.numeric(tmp[linesOKw, "population_carto"]))
-  }
+  linesOKw <- which(!is.empty(tmp[, thecolw]) & !is.empty(tmp$population_carto))
+  txAmeliw <- sum(as.numeric(tmp[linesOKw, thecolw])) / sum(as.numeric(tmp[linesOKw, "population_carto"]))
+  
+  V1wEPCI <- sum(as.numeric(tmp[, thecolw]), na.rm = TRUE)
+  V2wEPCI <- sum(as.numeric(tmp[linesOKw, thecolw]))
+  
     
 
-  
   ##----------------------------
   
   ## Departement data, Ameli
   
   tmpResidence <- dat.residence[which(is.element(dat.residence$classe_age, agDepRes[[agcl]]) & dat.residence$date == thedate & dat.residence$departement_residence == dep), ]
   
+  linesOK <- which(!is.empty(tmpResidence[, thecol]) & !is.empty(tmpResidence$population_insee))
   
+  txRes <- sum(as.numeric(tmpResidence[linesOK, thecol])) / sum(as.numeric(tmpResidence[linesOK, "population_insee"]))
   
-  ## 
-  if(inj == "1"){
-    linesOK <- which(!is.empty(tmpResidence$effectif_cumu_1_inj) & !is.empty(tmpResidence$population_insee))
-    
-    txRes <- sum(as.numeric(tmpResidence[linesOK, "effectif_cumu_1_inj"])) / sum(as.numeric(tmpResidence[linesOK, "population_insee"]))
-    
-    linesOKw <- which(!is.empty(tmpResidence$effectif_1_inj) & !is.empty(tmpResidence$population_insee))
-    txResw <- sum(as.numeric(tmpResidence[linesOKw, "effectif_1_inj"])) / sum(as.numeric(tmpResidence[linesOKw, "population_insee"]))
+  linesOKw <- which(!is.empty(tmpResidence[, thecolw]) & !is.empty(tmpResidence$population_insee))
+  txResw <- sum(as.numeric(tmpResidence[linesOKw, thecolw])) / sum(as.numeric(tmpResidence[linesOKw, "population_insee"]))
   
-  }
+  V1Res <- sum(as.numeric(tmpResidence[, thecol]), na.rm = TRUE)
+  V2Res <- sum(as.numeric(tmpResidence[linesOK, thecol]))
+  N1Res <- sum(as.numeric(tmpResidence[, "population_insee"]), na.rm = TRUE)
+  N2Res <- sum(as.numeric(tmpResidence[linesOK, "population_insee"]))
   
-  if(inj == "complet"){
-    linesOK <- which(!is.empty(tmpResidence$effectif_cumu_termine) & !is.empty(tmpResidence$population_insee))
+  V1wRes <- sum(as.numeric(tmpResidence[, thecolw]), na.rm = TRUE)
+  V2wRes <- sum(as.numeric(tmpResidence[linesOKw, thecolw]))
   
-    txRes <- sum(as.numeric(tmpResidence[linesOK, "effectif_cumu_termine"])) / sum(as.numeric(tmpResidence[linesOK, "population_insee"]))
-    
-    linesOKw <- which(!is.empty(tmpResidence$effectif_termine) & !is.empty(tmpResidence$population_insee))
-    txResw <- sum(as.numeric(tmpResidence[linesOKw, "effectif_termine"])) / sum(as.numeric(tmpResidence[linesOKw, "population_insee"]))
-  }
   
   #--------------------------------
   ## Departement data, SPF
@@ -679,31 +755,41 @@ getCouvDep <- function(thedate, agcl, inj, dep){
   tmpSPFw <- dat.injection[which(dat.injection$dep == dep & is.element(dat.injection$clage_vacsi, agDepInj[[agcl]])), ]
   tmpSPFw <- tmpSPFw[as.Date(tmpSPFw$jour) <= as.Date(thedate) & (as.Date(tmpSPFw$jour) >= as.Date(thedate) - 6), ]
   
-  if(inj == "1"){
-    linesOK <- which(!is.empty(tmpSPF$n_cum_dose1) & !is.empty(tmpSPF$pop2020))
-    
-    txSPF <- sum(as.numeric(tmpSPF[linesOK, "n_cum_dose1"])) / sum(as.numeric(tmpSPF[linesOK, "pop2020"]))
-    
-    linesOKw <- which(!is.empty(tmpSPFw$n_dose1) & !is.empty(tmpSPFw$pop2020))
-    txSPFw <- sum(as.numeric(tmpSPFw[linesOKw, "n_dose1"])) / (sum(as.numeric(tmpSPFw[linesOKw, "pop2020"])) /7)
-  }
   
-  if(inj == "complet"){
-    linesOK <- which(!is.empty(tmpSPF$n_cum_complet) & !is.empty(tmpSPF$pop2020))
+  linesOK <- which(!is.empty(tmpSPF[, thecolSPF]) & !is.empty(tmpSPF$pop2020))
   
-    txSPF <- sum(as.numeric(tmpSPF[linesOK, "n_cum_complet"])) / sum(as.numeric(tmpSPF[linesOK, "pop2020"]))
-    
-    linesOKw <- which(!is.empty(tmpSPFw$n_complet) & !is.empty(tmpSPFw$pop2020))
-    txSPFw <- sum(as.numeric(tmpSPFw[linesOKw, "n_complet"])) / (sum(as.numeric(tmpSPFw[linesOKw, "pop2020"]))/7)
-  }
+  txSPF <- sum(as.numeric(tmpSPF[linesOK, thecolSPF])) / sum(as.numeric(tmpSPF[linesOK, "pop2020"]))
   
-  out <- c(txAmeli, txRes, txSPF, txAmeliw, txResw, txSPFw)
+  linesOKw <- which(!is.empty(tmpSPFw[, thecolSPFw]) & !is.empty(tmpSPFw$pop2020))
+  txSPFw <- sum(as.numeric(tmpSPFw[linesOKw, thecolSPFw])) / (sum(as.numeric(tmpSPFw[linesOKw, "pop2020"])) /7)
+  
+  V1SPF <- sum(as.numeric(tmpSPF[, thecolSPF]), na.rm = TRUE)
+  V2SPF <- sum(as.numeric(tmpSPF[linesOK, thecolSPF]))
+  N1SPF <- sum(as.numeric(tmpSPF[, "pop2020"]), na.rm = TRUE)
+  N2SPF <- sum(as.numeric(tmpSPF[linesOK, "pop2020"]))
+  
+  V1wSPF <- sum(as.numeric(tmpSPFw[, thecolSPFw]), na.rm = TRUE) 
+  V2wSPF <- sum(as.numeric(tmpSPFw[linesOKw, thecolSPFw])) 
+  
+
+  out <- c(txAmeli, txRes, txSPF, txAmeliw, txResw, txSPFw, 
+           V1EPCI, V2EPCI, N1EPCI, N2EPCI, V1wEPCI, V2wEPCI, 
+           V1Res, V2Res, N1Res, N2Res, V1wRes, V2wRes, 
+           V1SPF, V2SPF, N1SPF, N2SPF, V1wSPF, V2wSPF
+  )
   out
   
 }
 
 # Check
-getCouvDep(lastDate, "Tous âges", "1", "75")
+m <- getCouvDep(lastDate, "Tous âges", "1", "75")
+m <- getCouvDep("2021-07-11", "Tous âges", "1", "75")
+names(m) <- c("txEPCI", "txRes", "txSPF", 
+                 "txEPCIw", "txResw", "txSPFw", 
+                 "V1EPCI", "V2EPCI", "N1EPCI", "N2EPCI", "V1wEPCI", "V2wEPCI", 
+                 "V1Res", "V2Res", "N1Res", "N2Res", "V1wRes", "V2wRes", 
+                 "V1SPF", "V2SPF", "N1SPF", "N2SPF", "V1wSPF", "V2wSPF")
+m
 getCouvDep(lastDate, "Tous âges", "1", "23")
 getCouvDep(lastDate, "Tous âges", "1", "972")
 ```
@@ -712,12 +798,17 @@ getCouvDep(lastDate, "Tous âges", "1", "972")
 # All departements
 deps <- sort(unique(dat.residence$departement_residence))
 deps <- deps[nchar(deps) < 4]
+deps
 
 # Initialize output
 out <- data.frame(matrix(NA, nrow = 0, ncol = 11))
 names(out) <- c("thedate", "agcl", "inj", "dep", 
                 "txEPCI", "txRes", "txSPF", 
-                "txEPCIw", "txResw", "txSPFw", "date")
+                "txEPCIw", "txResw", "txSPFw", 
+                "V1EPCI", "V2EPCI", "N1EPCI", "N2EPCI", "V1wEPCI", "V2wEPCI", 
+                "V1Res", "V2Res", "N1Res", "N2Res", "V1wRes", "V2wRes", 
+                "V1SPF", "V2SPF", "N1SPF", "N2SPF", "V1wSPF", "V2wSPF",
+                "date")
 
 # Loop on departements
 for(dep in deps){
@@ -751,6 +842,9 @@ for(dep in deps){
 }
 # Debut 7h45
 # fin vers 9h45
+
+# Debut 15h45
+# Fin 17h41
 ```
 
 
