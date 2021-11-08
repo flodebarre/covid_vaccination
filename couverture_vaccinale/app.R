@@ -39,7 +39,7 @@ ui <- fluidPage(
     # Application title
     titlePanel("Couvertures vaccinales en France"),
 
-    HTML("<p>Notes explicatives en bas de page. Données de vaccination jusqu'au 24 octobre 2021, mise à jour du code le 1er novembre 2021. <br/>
+    HTML("<p>Notes explicatives en bas de page. Données de vaccination jusqu'au 31 octobre 2021, mise à jour du code le 8 novembre 2021. <br/>
          Une question, une suggestion, une correction ? <a href = 'mailto:florence.debarre@normalesup.org?subject=ShinyApp_CouvVaccinale'>Envoyez-moi un email</a>.<p>"), 
     
     # Sidebar with a slider input for number of bins 
