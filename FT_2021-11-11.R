@@ -1,5 +1,7 @@
 # Context: Wondering about the 8.4% unvaxxed estimate given in https://twitter.com/vincentglad/status/1458745794769608707?s=20 
 
+#### LOAD DATA #### 
+
 # SPF DATA
 # File source: 
 # https://static.data.gouv.fr/resources/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/20211110-190602/vacsi-tot-a-reg-2021-11-10-19h06.csv
@@ -11,7 +13,14 @@ dim(a)
 # https://twitter.com/jburnmurdoch/status/1458752303939428354?s=20
 popUN <- 56146413
 
-# The source of this UN estimate is 
+# UN population estimates - compute them again
+source("FT_UNpopEstimates.R")
+
+popUN2 <- demog(pops_FR)[2] # Estimate for "France" data (mainland France)
+# Compare to John's estimate (0 = same)
+popUN - popUN2
+
+# -> The source of this UN estimate is 
 # https://population.un.org/wpp/Download/Standard/CSV/
 # Medium variant, annual projections from 2020 to 2100 (CSV, 277.91 MB)
 # year 2020, "France"
@@ -19,6 +28,10 @@ popUN <- 56146413
 
 # Here is the UN estimate for 12+ with dependencies
 popUN_withdep <- 58486854
+
+# Just check I typed it correctly (0 = OK)
+popUN_withdep - demog(pops_FRandDep)[2]
+
 
 #### 1) MAINLAND FRANCE ONLY #####
 
