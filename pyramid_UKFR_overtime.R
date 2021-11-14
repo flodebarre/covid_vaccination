@@ -41,7 +41,7 @@ dat.France.all$age <- ages[as.character(dat.France.all$clage_vacsi)]
 # Remove age class "all"
 dat.France.all <- dat.France.all[dat.France.all$age != "All", ]
 
-# Data population France 
+# Data population France (2021)
 # https://www.insee.fr/fr/statistiques/2381472
 popFrance <- read.csv("data/popFrance_insee.csv")
 # Turn into dictionnary
@@ -143,7 +143,8 @@ for(thedate in dates){
     par(family = "mono")
     mtext(side = 1, line = 4.5, text = paste0("@flodebarre, d'après @VictimOfMaths ; ", thedate, ",  
   Données UK : https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/
-  France : https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/
+  France : https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/, 
+      population INSEE 2021 https://www.insee.fr/fr/statistiques/2381472
   Code : https://github.com/flodebarre/covid_vaccination/blob/main/pyramid_UKFR_overtime.R"), adj = 0, cex = 0.55, col = gray(0.4))
     par(family = "sans")
     
