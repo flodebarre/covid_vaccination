@@ -52,11 +52,11 @@ names(popFr) <- popFrance$ageClass
 dat.France.all$pop <- popFr[dat.France.all$age]
 
 # Select the columns that we want
-dat.France.all <- dat.France.all[, c("jour", "age", "pop", "n_cum_complet", "n_cum_dose1")]
-names(dat.France.all) <- c("date", "ageClass", "pop", "cumComplet", "cumDose1")
+dat.France.all <- dat.France.all[, c("jour", "age", "pop", "n_cum_complet", "n_cum_dose1", "n_cum_rappel")]
+names(dat.France.all) <- c("date", "ageClass", "pop", "cumComplet", "cumDose1", "cumRappel")
 
-dat.England.all <- dat.England.all[, c("date", "age", "pop", "dose2", "dose1")]
-names(dat.England.all) <- c("date", "ageClass", "pop", "cumComplet", "cumDose1")
+dat.England.all <- dat.England.all[, c("date", "age", "pop", "dose2", "dose1", "dose3")]
+names(dat.England.all) <- c("date", "ageClass", "pop", "cumComplet", "cumDose1", "cumRappel")
 
 # Add country information
 dat.England.all$country <- "Angleterre"
@@ -94,14 +94,17 @@ dat.all$width <- dat.all$agemax - dat.all$agemin + 1
 dat.all$pop.byY <- dat.all$pop / dat.all$width
 dat.all$cumComplet.byY <- dat.all$cumComplet / dat.all$width
 dat.all$cumDose1.byY   <- dat.all$cumDose1 / dat.all$width
+dat.all$cumRappel.byY   <- dat.all$cumRappel / dat.all$width
 
 
 # Colors
-colPop <- gray(0.8) # Unvaccinated
-colCompletEN <- "#9B2500"
-col1DEN <- "#FF6939"
-colCompletFR <- "#044063"
-col1DFR <- "#4F92BA"
+colPop <- gray(0.925) # Unvaccinated
+colRappelEN <- "#922300"
+colCompletEN <- "#ED4009"
+col1DEN <- "#FF8B66"
+colRappelFR <- "#043D5F"
+colCompletFR <- "#3177A1"
+col1DFR <- "#ABD2E9"
 
 factorEN <- 1 # Means that England on the right-hand side
 
@@ -142,9 +145,9 @@ for(thedate in dates){
     # Write Credits
     par(family = "mono")
     mtext(side = 1, line = 4.5, text = paste0("@flodebarre, d'après @VictimOfMaths ; ", thedate, ",  
-  Données UK : https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/
+  Données NHS : https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/
   France : https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/, 
-      population INSEE 2021 https://www.insee.fr/fr/statistiques/2381472
+           population INSEE 2021 https://www.insee.fr/fr/statistiques/2381472
   Code : https://github.com/flodebarre/covid_vaccination/blob/main/pyramid_UKFR_overtime.R"), adj = 0, cex = 0.55, col = gray(0.4))
     par(family = "sans")
     
@@ -155,10 +158,12 @@ for(thedate in dates){
         factor <- factorEN
         colComplet <- colCompletEN
         col1D <- col1DEN
+        colRappel <- colRappelEN
       }else{
         factor <- -1 * factorEN
         colComplet <- colCompletFR
         col1D <- col1DFR
+        colRappel <- colRappelFR
       }
       
       tmp <- dat[dat$country == ctr, ]
@@ -183,7 +188,13 @@ for(thedate in dates){
           rect(xleft = factor * tmp$cumComplet.byY, ybottom = tmp$agemin, 
                xright = 0, ytop = tmp$agemax + 1, 
                col = colComplet, border = gray(0, 0))
-        }else{
+          
+          # Vaccinated, booster
+          rect(xleft = factor * tmp$cumRappel.byY, ybottom = tmp$agemin, 
+               xright = 0, ytop = tmp$agemax + 1, 
+               col = colRappel, border = gray(0, 0))
+        
+          }else{
           ## Full vaccination in the end
           # Vaccinated, 1 dose
           rect(xleft = factor * (tmp$pop.byY - tmp$cumDose1.byY), ybottom = tmp$agemin, 
@@ -195,13 +206,18 @@ for(thedate in dates){
                xright = factor * tmp$pop.byY, ytop = tmp$agemax + 1, 
                col = colComplet, border = gray(0, 0))
           
+          # Vaccinated, booster
+          rect(xleft = factor * (tmp$pop.byY - tmp$cumRappel.byY), ybottom = tmp$agemin, 
+               xright = factor * tmp$pop.byY, ytop = tmp$agemax + 1, 
+               col = colRappel, border = gray(0, 0))
+        
         }
         
         # Graduations for age class
         lines(c(factor*10^6, 0), rep(tmp$agemin, 2), col = "white", lwd = 1.5)
         # Age values
         par(xpd = TRUE)
-        text(x = factor*10^6, y = tmp$agemin, labels = tmp$agemin, col = gray(0), adj = c(0.5, 0.25), cex = 0.9)
+        text(x = factor*10^6, y = tmp$agemin, labels = tmp$agemin, col = gray(0), adj = c(-factor, 0.25), cex = 0.9)
         par(xpd = FALSE)
         
       }
@@ -249,10 +265,11 @@ for(thedate in dates){
     
     # Plot legend (manually centered)
     par(family = "mono")
-    legend(x = 0, y = 105, pch = 15, col = c(colCompletFR, col1DFR, colPop, colCompletEN, col1DEN, colPop), ncol = 2, legend = c("Vaccination complète", " Vaccination 1 dose", "   Non vacciné·e", "", "", ""), xjust = 0.29, yjust = 0, box.lwd = -1, text.font = 1, pt.cex = 2, cex = 0.8)
+    legend(x = 0, y = 105, pch = 15, col = c(colRappelFR, colCompletFR, col1DFR, colPop, colRappelEN, colCompletEN, col1DEN, colPop), ncol = 2, legend = c("   Dose de rappel", "Vaccination complète", " Vaccination 1 dose", "   Non vacciné·e", "", "", "", ""), xjust = 0.29, yjust = 0, box.lwd = -1, text.font = 1, pt.cex = 2, cex = 0.8)
     
     # Add title 
     par(family = "sans")
+    
     mtext(thedate, side = 3, line = 2.75, cex = 1.2, font = 2)
     dev.off()
     
@@ -262,6 +279,7 @@ for(thedate in dates){
 
 ## Evaluate this in console to convert pdfs to png
 # for p in pics/pyramid_UK-FR_*.pdf; do; pdftoppm "$p" "${p%.*}" -png; done
+system("./pyramid_UK-FR_gifScript.sh")
 
 # Build gif
 system("convert -delay 150 pics/pyramid_UK-FR_*_2*.png pics/pyramid_UK-FR_2.gif")
