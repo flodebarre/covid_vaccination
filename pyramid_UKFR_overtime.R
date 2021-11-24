@@ -17,6 +17,8 @@
 # I downloaded Excel sheets for specific dates (see `data/nhs/`)
 # and manually reorganized them into a single file (`combined`)
 
+rm(list = ls()) # I am doing this knowingly
+
 dat.England.all <- read.csv("data/nhs/combined.csv")
 head(dat.England.all)
 tail(dat.England.all)
@@ -24,7 +26,7 @@ tail(dat.England.all)
 # France data from https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/
 # vacsi-a-fra-2021-08-10-19h05.csv
 URL <- "https://www.data.gouv.fr/fr/datasets/r/54dd5f8d-1e2e-4ccb-8fb8-eac68245befd"
-download.file(URL, "data/vacsi-a-fra.csv")
+#download.file(URL, "data/vacsi-a-fra.csv")
 dat.France.all <- read.csv("data/vacsi-a-fra.csv", sep = ";")
 #dat.France.all <- read.csv("data/vacsi-a-fra-2021-08-10-19h05.csv", sep = ";")
 head(dat.France.all)
@@ -99,9 +101,9 @@ dat.all$cumRappel.byY   <- dat.all$cumRappel / dat.all$width
 
 # Colors
 colPop <- gray(0.925) # Unvaccinated
-colRappelEN <- "#922300"
-colCompletEN <- "#ED4009"
-col1DEN <- "#FF8B66"
+colRappelEN <- "#006833"  #"#922300"
+colCompletEN <- "#2FB16F"#"#ED4009"
+col1DEN <- "#ABEDCB" #"#FF8B66"
 colRappelFR <- "#043D5F"
 colCompletFR <- "#3177A1"
 col1DFR <- "#ABD2E9"
@@ -111,8 +113,8 @@ factorEN <- 1 # Means that England on the right-hand side
 
 
 
-for(thedate in dates){
-  #thedate <- dates[length(dates)]
+#for(thedate in dates){
+  thedate <- dates[length(dates)]
   
   # Select values at this date
   dat <- dat.all[dat.all$date == thedate, ]
@@ -134,7 +136,7 @@ for(thedate in dates){
     
     pdf(fname, width = 7.5, height = 7)
     
-    par(xpd = FALSE, family = "sans", mgp = c(2, 0.15, 0), tck = -0.02)
+    par(xpd = FALSE, family = "sans", mgp = c(1.5, 0.0, 0), tck = -0.02)
     par(mar = c(6, 2.5, 4, 2.5))
     
     # Initialize plot
@@ -144,10 +146,10 @@ for(thedate in dates){
     
     # Write Credits
     par(family = "mono")
-    mtext(side = 1, line = 4.5, text = paste0("@flodebarre, d'après @VictimOfMaths ; ", thedate, ",  
+    mtext(side = 1, line = 4.75, text = paste0("@flodebarre, d'après @VictimOfMaths ; ", thedate, ",  
   Données NHS : https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/
   France : https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/, 
-           population INSEE 2021 https://www.insee.fr/fr/statistiques/2381472
+           Population INSEE 2021 https://www.insee.fr/fr/statistiques/2381472
   Code : https://github.com/flodebarre/covid_vaccination/blob/main/pyramid_UKFR_overtime.R"), adj = 0, cex = 0.55, col = gray(0.4))
     par(family = "sans")
     
@@ -173,10 +175,24 @@ for(thedate in dates){
         # Subset of the data
         tmp <- dat[dat$country == ctr & dat$ageClass == ag, ]
         
+        # Check if issues with pop size estimations
+        popSizePb <- FALSE
+        
+        # If there is an issue: 
+        if(is.na(tmp$cumDose1) | tmp$cumDose1 > tmp$pop){
+          popSizePb <- TRUE # Update the indicator
+          
+          # Change pop size to the number of first doses
+          tmp$pop <- tmp$cumDose1
+          # Recompute by year version
+          tmp$pop.byY <- tmp$pop / tmp$width
+        }
+        
         # Plot Total population
         rect(xleft = factor * tmp$pop.byY, ybottom = tmp$agemin, 
              xright = 0, ytop = tmp$agemax + 1, 
              col = colPop, border = gray(0, 0))
+        
         
         if(version == 1){
           # Vaccinated, 1 dose
@@ -220,6 +236,12 @@ for(thedate in dates){
         text(x = factor*10^6, y = tmp$agemin, labels = tmp$agemin, col = gray(0), adj = c(-factor, 0.25), cex = 0.9)
         par(xpd = FALSE)
         
+        # If pb, add star to notify it at mid 
+        if(popSizePb){
+          text(x = factor * tmp$pop.byY, y = (tmp$agemin + tmp$agemax + 1)/2, labels = "*", cex = 2, font = 2, adj = -factor)
+        }
+        
+        
       }
       # Add country legend
       par(xpd = TRUE)
@@ -233,11 +255,6 @@ for(thedate in dates){
     #xx <- c(0, 250000, 500000, 750000, 1000000)
     #axis(1, at = c(-xx, xx), labels = format(abs(c(-xx, xx)), trim = TRUE), cex.axis = 0.8)
     
-    # Horizontal axis
-    axis(1, at = seq(-10^6, 10^6, by = 100000), labels = c("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""), cex.axis = 0.8, pos = -1)
-    axis(1, at = c(-500000, 500000, 0, 10^6, -10^6), labels = c("500 000", "500 000", "0", "1Mio", "1Mio"), lwd.ticks = -1, lwd = -1)
-    cexl <- 0.9 # Text size of legend of axes
-    mtext("Population par année d'âge", side = 1, line = 1.25, cex = cexl)
     
     par(xpd = FALSE)
     # Graduations
@@ -254,6 +271,13 @@ for(thedate in dates){
     # Vertical separation of the two countries
     #abline(v = 0, col = gray(0), lwd = 1.5)
     lines(x = c(0, 0), y = c(0, max(dat$agemax) + 1), col = 1, lwd = 1.5, lend = "butt")
+    
+    # Horizontal axis
+    axis(1, at = seq(-10^6, 10^6, by = 100000), labels = c("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""), cex.axis = 0.8, pos = -1)
+    axis(1, at = c(-500000, 500000, 0, 10^6, -10^6), labels = c("500 000", "500 000", "0", "1Mio", "1Mio"), lwd.ticks = -1, lwd = -1)
+    cexl <- 0.9 # Text size of legend of axes
+    mtext("Population par année d'âge", side = 1, line = 1, cex = cexl)
+    mtext("Une étoile * signifie un potentiel problème d'estimation de la taille de la classe d'âge dans les données démographiques utilisées", side = 1, line = 1.75, cex = 0.6*cexl)
     
     # Legend ages
     par(xpd = TRUE)
@@ -273,20 +297,24 @@ for(thedate in dates){
     mtext(thedate, side = 3, line = 2.75, cex = 1.2, font = 2)
     dev.off()
     
-    #system(paste0("open ", fname))
+    system(paste0("open ", fname))
   } # end version
-} # end thedate
+#} # end thedate
 
-## Evaluate this in console to convert pdfs to png
-# for p in pics/pyramid_UK-FR_*.pdf; do; pdftoppm "$p" "${p%.*}" -png; done
-system("./pyramid_UK-FR_gifScript.sh")
-
-# Build gif
-system("convert -delay 150 pics/pyramid_UK-FR_*_2*.png pics/pyramid_UK-FR_2.gif")
-system("convert -delay 150 pics/pyramid_UK-FR_*_1*.png pics/pyramid_UK-FR_1.gif")
+  
+  
+# ## Evaluate this in console to convert pdfs to png
+# # for p in pics/pyramid_UK-FR_*.pdf; do; pdftoppm "$p" "${p%.*}" -png; done
+# system("./pyramid_UK-FR_gifScript.sh")
+# 
+# # Build gif
+# system("convert -delay 150 pics/pyramid_UK-FR_*_2*.png pics/pyramid_UK-FR_2.gif")
+# system("convert -delay 150 pics/pyramid_UK-FR_*_1*.png pics/pyramid_UK-FR_1.gif")
 
 # Final prop
 datEN <- dat[dat$country == "Angleterre",]
 datFR <- dat[dat$country == "France",]
-c(sum(datEN$cumDose1)/sum(datEN$pop), sum(datEN$cumComplet)/sum(datEN$pop), 
-  sum(datFR$cumDose1)/sum(datFR$pop), sum(datFR$cumComplet)/sum(datFR$pop))
+c(sum(datEN$cumDose1, na.rm = TRUE)/sum(datEN$pop, na.rm = TRUE), 
+  sum(datEN$cumComplet, na.rm = TRUE)/sum(datEN$pop, na.rm = TRUE), 
+  sum(datFR$cumDose1, na.rm = TRUE)/sum(datFR$pop, na.rm = TRUE), 
+  sum(datFR$cumComplet, na.rm = TRUE)/sum(datFR$pop, na.rm = TRUE))
