@@ -25,7 +25,7 @@ NOTES:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-rm(list = ls())
+rm(list = ls()) # I don't care, I am doing it anyway
 ```
 
 ```{r, include = FALSE}
@@ -494,6 +494,12 @@ getCouv <- function(thedate, agcl, inj){
            V1SPF, V2SPF, N1SPF, N2SPF, V1wSPF, V2wSPF, 
            N3
            )
+  names(out) <- c("txEPCI", "txRes", "txRes2", "txSPF", "txSPF2", 
+                 "txEPCIw", "txResw", "txRes2w", "txSPFw", "txSPF2w", 
+                 "V1EPCI", "V2EPCI", "N1EPCI", "N2EPCI", "V1wEPCI", "V2wEPCI", 
+                 "V1Res", "V2Res", "N1Res", "N2Res", "V1wRes", "V2wRes", 
+                 "V1SPF", "V2SPF", "N1SPF", "N2SPF", "V1wSPF", "V2wSPF", 
+                 "N3")
   out
 }
 
@@ -501,6 +507,26 @@ getCouv <- function(thedate, agcl, inj){
 getCouv(lastDate, "75+", "1")
 
 getCouv(lastDate, "75+", "complet")
+
+vv <- getCouv(lastDate, "Tous âges", "1")
+vv
+
+vv['N1Res'] - vv['N1SPF']
+
+vv['V1EPCI'] / vv['N1EPCI']
+vv['V2EPCI'] / vv['N2EPCI']
+
+vv['V2SPF'] / vv['N2SPF']
+vv['V2Res'] / vv['N2Res']
+
+#
+
+names(vv) <- c("txEPCI", "txRes", "txRes2", "txSPF", "txSPF2", 
+                 "txEPCIw", "txResw", "txRes2w", "txSPFw", "txSPF2w", 
+                 "V1EPCI", "V2EPCI", "N1EPCI", "N2EPCI", "V1wEPCI", "V2wEPCI", 
+                 "V1Res", "V2Res", "N1Res", "N2Res", "V1wRes", "V2wRes", 
+                 "V1SPF", "V2SPF", "N1SPF", "N2SPF", "V1wSPF", "V2wSPF", 
+                 "N3")
 ```
 
 
@@ -801,7 +827,7 @@ deps <- deps[nchar(deps) < 4]
 deps
 
 # Initialize output
-out <- data.frame(matrix(NA, nrow = 0, ncol = 11))
+out <- data.frame(matrix(NA, nrow = 0, ncol = 29))
 names(out) <- c("thedate", "agcl", "inj", "dep", 
                 "txEPCI", "txRes", "txSPF", 
                 "txEPCIw", "txResw", "txSPFw", 
@@ -855,6 +881,35 @@ write.csv(out, file = "data/calc_vaccDep_alldeps.csv", row.names = FALSE)
 save(out, file = "resultsbyDep.RData")
 ```
 
+## Tests
+
+```{r}
+inj <- "1"
+agcl <- "Tous âges"
+dep <- "75"
+mres1 <- out[out$inj == inj & out$dep == dep, ]
+mm <- mres1[mres1$agcl == agcl, ]
+
+names(mm)
+mm$N1EPCI
+mm$V1EPCI
+mm$V1wEPCI
+
+plot(mm$V1EPCI, mm$V1Res)
+points(mm$V1SPF, mm$V1Res, col = 2)
+abline(a = 0, b = 1)
+
+plot(mm$V1wSPF, col = colSPF, type = "o")
+points(mm$V1wRes, col = colDep, type = "o")
+points(mm$V1wEPCI, col = colEPCI, type = "o")
+
+
+plot(mm$V2wEPCI / mm$N2EPCI - mm$txEPCIw)
+plot(mm$V2EPCI / mm$N2EPCI - mm$txEPCI)
+plot(mm$V2SPF / mm$N2SPF - mm$txSPF)
+
+
+```
 
 ## Plot vaccination by dep
 
@@ -882,7 +937,7 @@ addLegendDep <- function(){
 
 inj <- "1"
 agcl <- "40-64"#"Tous âges"
-dep <- "78"
+dep <- "75"
 
 colLine <- gray(0.9)
 lwdCurve <- 2
@@ -985,3 +1040,42 @@ points(mm$date, mm$txSPFw, col = colSPF, type = thetype, cex = thecex, lwd = lwd
 #dev.off()
 ```
 
+# Changing population size?
+
+Check whether population size varies over time for one EPCI x age class (whether e.g. deaths are taken into account)
+
+```{r}
+# Aggregate data by EPCI and age class
+
+# Variance in pop sizes
+popvar <- aggregate(as.numeric(dat.EPCI$population_carto), by = list(epci = dat.EPCI$epci, clage = dat.EPCI$classe_age), FUN = var)
+
+# Difference between max and min pop size
+popvar2 <- aggregate(as.numeric(dat.EPCI$population_carto), by = list(epci = dat.EPCI$epci, libelle_epci = dat.EPCI$libelle_epci, reg = dat.EPCI$reg_code, clage = dat.EPCI$classe_age), FUN = function(x) diff(range(x)))
+
+# Check that there are indeed multiple values when we do this!
+unique(aggregate(as.numeric(dat.EPCI$population_carto), by = list(epci = dat.EPCI$epci, clage = dat.EPCI$classe_age), FUN = length)$x)
+
+# EPCI 99999999 is when not residency is found
+popvar2[popvar2$epci == 999999999, ]
+popvar[popvar$epci == 999999999, ]
+# Remove this point
+popvar2 <- popvar2[popvar2$epci != 999999999, ]
+popvar <- popvar[popvar$epci != 999999999, ]
+
+# Rename last column with more informative name than "x"
+names(popvar2)[ncol(popvar2)] <- "diffRange"
+names(popvar)[ncol(popvar)] <- "var"
+
+# Plot result 
+plot(popvar2$epci, popvar2$diffRange)
+plot(popvar$epci, popvar$var)
+
+# Nicer version of the plot
+par(las = 1)
+plot(popvar2$diffRange, xlab = "epci x age class", ylab = "max difference in pop size")
+
+# Check that it is indeed just 0 like the plots suggest
+unique(popvar2$diffRange)
+unique(popvar$var)
+```
