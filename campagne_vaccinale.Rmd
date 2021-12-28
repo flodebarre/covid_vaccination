@@ -284,7 +284,7 @@ for(ctr in c("EN", "FR")){
   # Find the maximum p value for scaling
   maxp <- max(c(dat$p1, dat$p2, dat$p3))
   # Function to scale the colors
-  scalefunc <- function(p, exponent = 1) (p/maxp)^(exponent)
+  scalefunc <- function(p, exponent = 0.9) (p/maxp)^(exponent)
   
   # Plot parameters
   # Colors for doses
@@ -297,7 +297,7 @@ for(ctr in c("EN", "FR")){
   
   # Initialize plot window
   par(las = 1)
-  par(mar = c(4, 3, 4, 3))
+  par(mar = c(4, 2.5, 4, 2.5))
   par(mgp = c(2, 0, 0))
   par(bg = "black", fg = gray(0.8))
   plot(NULL, 
@@ -343,17 +343,17 @@ for(ctr in c("EN", "FR")){
   
   # Annotations
   # Axes, vertical
-  cexx <- 0.9
-  axis(2, lwd = 0, at = seq(0, maxAge, by = 10), col.axis = par("fg"), cex = cexx)
-  axis(4, lwd = 0, at = seq(0, maxAge, by = 10), col.axis = par("fg"), cex = cexx)
-  mtext("age", side = 2, line = 2, las = 3)
+  cexx <- 0.8
+  axis(2, lwd = 0, at = seq(0, maxAge, by = 10), col.axis = par("fg"), cex.axis = cexx)
+  axis(4, lwd = 0, at = seq(0, maxAge, by = 10), col.axis = par("fg"), cex.axis = cexx)
+  mtext("age", side = 2, line = 1.5, las = 3, cex = cexx)
 
   # Horizontal axis
   axis(1, at = datesmonths$timeSinceFirstDay, 
-       labels = format(datesmonths$months, "%b\n%Y"), cex.axis = cexx, padj = 1, lwd = 0, lwd.ticks = 1, tck = -0.01, col.axis = par("fg"))
+       labels = format(datesmonths$months, "%b\n%Y"), cex.axis = cexx, padj = 0.75, lwd = 0, lwd.ticks = 1, tck = -0.01, col.axis = par("fg"))
   
   # Legend  
-  legend(0, 100, inset = c(0, -0), col = c(color1, color2, color3), pch = 15, legend = c("Première Dose", "Dose 2 / complète", "Dose de rappel"), horiz = TRUE, yjust = 0, xpd = TRUE, bty = "n")
+  legend(0, maxAge, inset = c(0, -0), col = c(color1, color2, color3), pch = 15, legend = c("Première Dose", "Dose 2 / complète", "Dose de rappel"), horiz = TRUE, yjust = 0, xpd = TRUE, bty = "n")
   
   # Title
   if(ctr == "EN"){
@@ -361,10 +361,15 @@ for(ctr in c("EN", "FR")){
   }else{
     pays <- "France"
   }
-  mtext(pays, side = 3, line = 2, font = 2, cex = 1.5)
+  mtext(pays, side = 3, line = 2, font = 2, cex = 1.3)
   
   # Credits
-  mtext(side = 1, text = paste0("@flodebarre, inspiré de @VictimOfMaths, ", Sys.Date()), col = par("fg"), line = 3)
+  if(ctr == "EN"){
+    src <- "https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&areaCode=E92000001&metric=vaccinationsAgeDemographics&format=csv"
+  }else{
+    src <- "https://www.data.gouv.fr/en/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/"
+  }
+  mtext(side = 1, text = paste0("@flodebarre, inspiré de @VictimOfMaths, ", Sys.Date(), "\nDonnées : ", src, "\nCode : ", "https://github.com/flodebarre/covid_vaccination/blob/main/campagne_vaccinale.Rmd"), col = par("fg"), line = 3, family = "mono", adj = 0, cex = 0.5)
   
   if(plotPNG){
     dev.off()
