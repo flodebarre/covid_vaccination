@@ -26,9 +26,9 @@ tail(dat.England.all)
 # France data from https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/
 # vacsi-a-fra-2021-08-10-19h05.csv
 URL <- "https://www.data.gouv.fr/fr/datasets/r/54dd5f8d-1e2e-4ccb-8fb8-eac68245befd"
-#download.file(URL, "data/vacsi-a-fra.csv")
+download.file(URL, "data/vacsi-a-fra.csv")
 dat.France.all <- read.csv("data/vacsi-a-fra.csv", sep = ";")
-#dat.France.all <- read.csv("data/vacsi-a-fra-2021-08-10-19h05.csv", sep = ";")
+
 head(dat.France.all)
 tail(dat.France.all)
 
