@@ -1,0 +1,380 @@
+---
+title: "Campagne vaccinale"
+author: "FD"
+output: 
+  html_document: 
+      code_folding: hide
+      toc: TRUE
+      toc_float: TRUE
+      self_contained: no
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list = ls()) # I don't care, I am doing it anyway
+```
+
+```{r, include = FALSE}
+dlData <- FALSE
+# Whether to download the data again
+```
+
+
+# Load data
+
+## England 
+
+Source England data
+<https://coronavirus.data.gov.uk/details/download>
+
+```{r}
+URL.EN <- "https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&areaCode=E92000001&metric=vaccinationsAgeDemographics&format=csv"
+destEN <- "data/vaccAgeEN.csv"
+  
+if(dlData){
+  download.file(URL.EN, destEN)
+}
+
+datEN <- read.csv(destEN)
+```
+
+## France
+
+Source France data
+<https://www.data.gouv.fr/en/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/>
+
+```{r}
+URL.FR <- "https://www.data.gouv.fr/fr/datasets/r/54dd5f8d-1e2e-4ccb-8fb8-eac68245befd"
+destFR <- "data/vaccAgeFR.csv"
+if(dlData){
+  download.file(URL.FR, destFR)
+}
+
+datFR <- read.csv(destFR, sep = ";")
+```
+
+# Clean and homogenize data
+
+## Ages 
+
+```{r}
+maxAge <- 100
+
+# EN
+unique(datEN$age)
+
+# Extract min and max age
+datEN$ageMin <- substr(datEN$age, 1, 2)
+datEN$ageMax <- substr(datEN$age, 4, 5)
+datEN[datEN$age == "90+", "ageMax"] <- as.character(maxAge)
+
+# Turn into numeric
+datEN$ageMin <- as.numeric(datEN$ageMin)
+datEN$ageMax <- as.numeric(datEN$ageMax)
+
+
+# FR
+# Remove all ages
+datFR <- datFR[datFR$clage_vacsi > 0, ]
+sort(unique(datFR$clage_vacsi))
+
+datFR$ageMax <- datFR$clage_vacsi
+datFR[datFR$ageMax == 80, "ageMax"] <- maxAge
+
+datFR$ageMin <- NA
+datFR[datFR$clage_vacsi == 4, "ageMin"] <- 0
+datFR[datFR$clage_vacsi == 9, "ageMin"] <- 5
+datFR[datFR$clage_vacsi == 11, "ageMin"] <- 10
+datFR[datFR$clage_vacsi == 17, "ageMin"] <- 12
+datFR[datFR$clage_vacsi == 24, "ageMin"] <- 18
+datFR[datFR$clage_vacsi == 29, "ageMin"] <- 25
+datFR[datFR$clage_vacsi == 39, "ageMin"] <- 30
+datFR[datFR$clage_vacsi == 49, "ageMin"] <- 40
+datFR[datFR$clage_vacsi == 59, "ageMin"] <- 50
+datFR[datFR$clage_vacsi == 64, "ageMin"] <- 60
+datFR[datFR$clage_vacsi == 69, "ageMin"] <- 65
+datFR[datFR$clage_vacsi == 74, "ageMin"] <- 70
+datFR[datFR$clage_vacsi == 79, "ageMin"] <- 75
+datFR[datFR$clage_vacsi == 80, "ageMin"] <- 80
+
+table(datFR$ageMax, useNA = "ifany")
+table(datFR$ageMin, useNA = "ifany")
+
+```
+
+## Doses
+
+Note: In France, people who have been previously infected skipped the second dose, and they were immediately "fully vaccinated" after their first dose. 
+
+```{r}
+datEN$d1 <- datEN$newPeopleVaccinatedFirstDoseByVaccinationDate
+datEN$d2 <- datEN$newPeopleVaccinatedSecondDoseByVaccinationDate
+datEN$d3 <- datEN$newPeopleVaccinatedThirdInjectionByVaccinationDate
+
+datFR$d1 <- datFR$n_dose1
+datFR$d2 <- datFR$n_complet
+datFR$d3 <- datFR$n_rappel
+```
+
+## Dates
+
+```{r}
+# as date
+datEN$date <- as.Date(datEN$date)
+datFR$date <- as.Date(datFR$jour)
+
+
+# Date range
+range(c(datEN$date, datFR$date))
+firstDate <- as.Date("2020-12-07") # Monday
+mondays <- seq(firstDate, max(c(datEN$date, datFR$date))+7, by = "week")
+mondays
+
+# Number weeks from first week in the data
+datEN$wk <- sapply(datEN$date, FUN = function(i) sum(i >= mondays))
+datFR$wk <- sapply(datFR$date, FUN = function(i) sum(i >= mondays))
+
+tmp <- sapply(mondays, FUN = function(i) sum(i >= mondays))
+dates <- data.frame(wk = tmp, mondays = mondays, timeSinceFirstDay = as.numeric(mondays - firstDate))
+
+
+# Add year and week
+datEN$year <- format(datEN$date, "%Y")
+datEN$week <- format(datEN$date, "%W")
+datEN$month <- format(datEN$date, "%m")
+
+datFR$year <- format(datFR$date, "%Y")
+datFR$week <- format(datFR$date, "%W")
+datFR$month <- format(datFR$date, "%m")
+
+# Round days
+months <- seq(as.Date("2020-12-01"), max(c(datFR$date, datEN$date)) + 30, by = "month")
+tmp <- sapply(months, FUN = function(i) sum(i >= mondays))
+datesmonths <- data.frame(months = months, timeSinceFirstDay = as.numeric(months - firstDate))
+
+```
+
+## Population
+
+Source UK, ONS: <https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fpopulationandmigration%2fpopulationestimates%2fdatasets%2fpopulationestimatesforukenglandandwalesscotlandandnorthernireland%2fmid2020/ukpopestimatesmid2020on2021geography.xls>
+
+Source France, INSEE: <https://www.insee.fr/fr/statistiques/2381472>
+
+Both grouped by age class
+
+```{r}
+# France
+popFR <- read.csv("data/popFrance_insee.csv")
+# Turn into dictionary
+popFr <- popFR$pop
+# Rewrite age classes
+agcl <- matrix(unlist(strsplit(popFR$ageClass, "_")), byrow = TRUE, ncol = 2)[, 2]
+agcl[agcl == "120"] <- "80"
+
+names(popFr) <- as.numeric(agcl)
+
+# Add pop information to France data
+datFR$pop <- popFr[as.character(datFR$clage_vacsi)]
+table(datFR$pop, useNA = "ifany")
+
+# Relative number of doses
+datFR$p1 <- datFR$d1 / datFR$pop
+datFR$p2 <- datFR$d2 / datFR$pop
+datFR$p3 <- datFR$d3 / datFR$pop
+
+
+# England
+popEN <- read.csv("data/ONS_popEstimates_mid2020.csv")
+# Turn into dictionary 
+popEn <- popEN$pop
+names(popEn) <- popEN$ageClass
+
+datEN$pop <- popEn[datEN$age]
+table(datEN$pop, useNA = "ifany")
+
+# Relative number of doses
+datEN$p1 <- datEN$d1 / datEN$pop
+datEN$p2 <- datEN$d2 / datEN$pop
+datEN$p3 <- datEN$d3 / datEN$pop
+```
+
+## Aggregate
+
+```{r}
+cols <- c("d1", "d2", "d3", "p1", "p2", "p3")
+
+datFRwk <- aggregate(datFR[, cols], by = list(wk = datFR$wk, clage_vacsi = datFR$clage_vacsi), FUN = sum)
+
+datENwk <- aggregate(datEN[, cols], by = list(wk = datEN$wk, age = datEN$age), FUN = sum)
+
+```
+
+
+### Ages on aggregated data
+
+```{r}
+maxAge <- 95
+
+# EN
+# Extract min and max age
+datENwk$ageMin <- substr(datENwk$age, 1, 2)
+datENwk$ageMax <- substr(datENwk$age, 4, 5)
+datENwk[datENwk$age == "90+", "ageMax"] <- as.character(maxAge)
+
+# Turn into numeric
+datENwk$ageMin <- as.numeric(datENwk$ageMin)
+datENwk$ageMax <- as.numeric(datENwk$ageMax)
+
+
+# FR
+# Remove all ages
+datFRwk <- datFRwk[datFRwk$clage_vacsi > 0, ]
+sort(unique(datFRwk$clage_vacsi))
+
+datFRwk$ageMax <- datFRwk$clage_vacsi
+datFRwk[datFRwk$ageMax == 80, "ageMax"] <- maxAge
+
+datFRwk$ageMin <- NA
+datFRwk[datFRwk$clage_vacsi == 4, "ageMin"] <- 0
+datFRwk[datFRwk$clage_vacsi == 9, "ageMin"] <- 5
+datFRwk[datFRwk$clage_vacsi == 11, "ageMin"] <- 10
+datFRwk[datFRwk$clage_vacsi == 17, "ageMin"] <- 12
+datFRwk[datFRwk$clage_vacsi == 24, "ageMin"] <- 18
+datFRwk[datFRwk$clage_vacsi == 29, "ageMin"] <- 25
+datFRwk[datFRwk$clage_vacsi == 39, "ageMin"] <- 30
+datFRwk[datFRwk$clage_vacsi == 49, "ageMin"] <- 40
+datFRwk[datFRwk$clage_vacsi == 59, "ageMin"] <- 50
+datFRwk[datFRwk$clage_vacsi == 64, "ageMin"] <- 60
+datFRwk[datFRwk$clage_vacsi == 69, "ageMin"] <- 65
+datFRwk[datFRwk$clage_vacsi == 74, "ageMin"] <- 70
+datFRwk[datFRwk$clage_vacsi == 79, "ageMin"] <- 75
+datFRwk[datFRwk$clage_vacsi == 80, "ageMin"] <- 80
+
+table(datFRwk$ageMax, useNA = "ifany")
+table(datFRwk$ageMin, useNA = "ifany")
+```
+
+### Dates on aggregated data
+
+```{r}
+tmp <- sapply(mondays, FUN = function(i) sum(i >= mondays))
+dates <- data.frame(wk = tmp, mondays = mondays, timeSinceFirstDay = as.numeric(mondays - firstDate))
+
+datFRwk <- merge(datFRwk, dates, by = "wk", all.x = TRUE)
+datENwk <- merge(datENwk, dates, by = "wk", all.x = TRUE)
+```
+
+# Plot
+
+
+```{r countriesDoses, fig.width=12, fig.height=5}
+
+for(ctr in c("EN", "FR")){
+    
+  
+  plotPNG <- FALSE # Whether to save as png (no need if Knit)
+  fname <- paste0("pics/joyPlot_", ctr, ".png") # Fig file name
+  if(plotPNG) png(fname, width = 1000, height = 400)
+  
+  # Get the data for the country we want
+  dat <- get(paste0("dat", ctr, "wk"))
+  
+  # Find the maximum p value for scaling
+  maxp <- max(c(dat$p1, dat$p2, dat$p3))
+  # Function to scale the colors
+  scalefunc <- function(p, exponent = 1) (p/maxp)^(exponent)
+  
+  # Plot parameters
+  # Colors for doses
+  color1 <- "#FFC107" # Alternative: "#004D40"
+  color2 <- "#1E88E5"
+  color3 <- "#D81B60"
+  # Color for border of the rectangles
+  colBorder <- "black"#par("bg")
+  lwdd <- 0.2 # width of the border
+  
+  # Initialize plot window
+  par(las = 1)
+  par(mar = c(4, 3, 4, 3))
+  par(mgp = c(2, 0, 0))
+  par(bg = "black", fg = gray(0.8))
+  plot(NULL, 
+       ylim = c(0, maxAge), 
+       xlim = c(0, max(dat$timeSinceFirstDay)+14), 
+       xlab = "", ylab = "", 
+       xaxs = "i", yaxs = "i", frame.plot = FALSE, axes = FALSE)
+  
+  # For each week
+  for (wkk in sort(unique(dat$wk))){
+    
+    # Subset of the data for this week
+    m <- dat[dat$wk == wkk, ]
+  
+    # First doses
+    rect(xleft = m$timeSinceFirstDay, 
+         xright = m$timeSinceFirstDay + 7, 
+         ybottom = m$ageMin, 
+         ytop = m$ageMax + 1, 
+         border = colBorder, 
+         col = sapply(m$p1, function(i) adjustcolor(color1, alpha.f = scalefunc(i))), 
+         lwd = lwdd)
+    
+    # Second doses
+    rect(xleft = m$timeSinceFirstDay, 
+         xright = m$timeSinceFirstDay + 7, 
+         ybottom = m$ageMin, 
+         ytop = m$ageMax + 1, 
+         border = colBorder, 
+         col = sapply(m$p2, function(i) adjustcolor(color2, alpha.f = scalefunc(i))), 
+         lwd = lwdd)
+    
+    # Third doses
+    rect(xleft = m$timeSinceFirstDay, 
+         xright = m$timeSinceFirstDay + 7, 
+         ybottom = m$ageMin, 
+         ytop = m$ageMax + 1, 
+         border = colBorder, 
+         col = sapply(m$p3, function(i) adjustcolor(color3, alpha.f = scalefunc(i))), 
+         lwd = lwdd)
+  
+  }
+  
+  # Annotations
+  # Axes, vertical
+  cexx <- 0.9
+  axis(2, lwd = 0, at = seq(0, maxAge, by = 10), col.axis = par("fg"), cex = cexx)
+  axis(4, lwd = 0, at = seq(0, maxAge, by = 10), col.axis = par("fg"), cex = cexx)
+  mtext("age", side = 2, line = 2, las = 3)
+
+  # Horizontal axis
+  axis(1, at = datesmonths$timeSinceFirstDay, 
+       labels = format(datesmonths$months, "%b\n%Y"), cex.axis = cexx, padj = 1, lwd = 0, lwd.ticks = 1, tck = -0.01, col.axis = par("fg"))
+  
+  # Legend  
+  legend(0, 100, inset = c(0, -0), col = c(color1, color2, color3), pch = 15, legend = c("Première Dose", "Dose 2 / complète", "Dose de rappel"), horiz = TRUE, yjust = 0, xpd = TRUE, bty = "n")
+  
+  # Title
+  if(ctr == "EN"){
+    pays <- "Angleterre"
+  }else{
+    pays <- "France"
+  }
+  mtext(pays, side = 3, line = 2, font = 2, cex = 1.5)
+  
+  # Credits
+  mtext(side = 1, text = paste0("@flodebarre, inspiré de @VictimOfMaths, ", Sys.Date()), col = par("fg"), line = 3)
+  
+  if(plotPNG){
+    dev.off()
+    system(paste("open", fname))
+  }
+  
+}
+
+  
+```
+
+
+
