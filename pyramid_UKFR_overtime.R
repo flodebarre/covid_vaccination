@@ -345,8 +345,12 @@ system("./pyramid_UK-FR_gifScript.sh")
 #system("ffmpeg -framerate 24 -i pics/pyramid_UK-FR_2_*.png output.mp4")
 
 # Convert to movie
-system("ffmpeg -framerate 24 -pattern_type glob -i 'pics/pyramid_UK-FR_2_*.png' pics/pyramid_EN-FR_2.mp4")
+#system("ffmpeg -framerate 24 -pattern_type glob -i 'pics/pyramid_UK-FR_2_*.png' pics/pyramid_EN-FR_2.mp4")
 
+#system("ffmpeg -framerate 24 -pattern_type glob -i 'pics/pyramid_UK-FR_2_*.png' pics/pyramid_EN-FR_2.mov")
+
+system("rm pics/pyramid_EN-FR_2.mp4")
+system("ffmpeg -pattern_type glob -i 'pics/pyramid_UK-FR_2_*.png' -vcodec libx264 -s 750x700 -pix_fmt yuv420p pics/pyramid_EN-FR_2.mp4")
 
 # Final prop
 datEN <- dat[dat$country == "Angleterre",]
