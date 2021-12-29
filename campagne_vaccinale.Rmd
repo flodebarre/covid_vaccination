@@ -284,7 +284,15 @@ for(ctr in c("EN", "FR")){
   # Find the maximum p value for scaling
   maxp <- max(c(dat$p1, dat$p2, dat$p3))
   # Function to scale the colors
-  scalefunc <- function(p, exponent = 0.9) (p/maxp)^(exponent)
+  scalefunc <- function(p, exponent = 1) (p/maxp)^(exponent)
+  
+  
+  # Initialize plot window
+  par(las = 1)
+  par(mar = c(4, 2.5, 4, 2.5))
+  par(mgp = c(2, 0, 0))
+#  par(bg = "black", fg = gray(0.8))
+  par(bg = "white", fg = "black")
   
   # Plot parameters
   # Colors for doses
@@ -292,14 +300,9 @@ for(ctr in c("EN", "FR")){
   color2 <- "#1E88E5"
   color3 <- "#D81B60"
   # Color for border of the rectangles
-  colBorder <- "black"#par("bg")
+  colBorder <- par("bg")
   lwdd <- 0.2 # width of the border
-  
-  # Initialize plot window
-  par(las = 1)
-  par(mar = c(4, 2.5, 4, 2.5))
-  par(mgp = c(2, 0, 0))
-  par(bg = "black", fg = gray(0.8))
+
   plot(NULL, 
        ylim = c(0, maxAge), 
        xlim = c(0, max(dat$timeSinceFirstDay)+14), 
@@ -378,6 +381,8 @@ for(ctr in c("EN", "FR")){
   
 }
 
+# Append the output
+system("convert campagne_vaccinale_files/figure-html/countriesDoses-* -append campagne_vaccinale_files/figure-html/countriesDoses.png")
   
 ```
 
