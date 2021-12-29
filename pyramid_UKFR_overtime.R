@@ -10,23 +10,45 @@
 ## FD August 2021
 ##
 
-# Load data
-
-# England data
-# Comes from https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/
-# I downloaded Excel sheets for specific dates (see `data/nhs/`)
-# and manually reorganized them into a single file (`combined`)
-
 rm(list = ls()) # I am doing this knowingly
 
-dat.England.all <- read.csv("data/nhs/combined.csv")
+dlData <- FALSE # Whether to download the data again
+
+
+# Load data ####
+
+
+# England data
+
+# Choose the source of data for EN
+sourceENdata <- "dashboard" # "NHS" 
+
+
+if(sourceENdata == "NHS"){
+  # Comes from https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/
+  # I downloaded Excel sheets for specific dates (see `data/nhs/`)
+  # and manually reorganized them into a single file (`combined`)
+  
+  sourceEN <- "https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/"
+  
+  dat.England.all <- read.csv("data/nhs/combined.csv")
+}
+if(sourceENdata == "dashboard"){
+  source("downloadENvaccinationData.R")
+  sourceEN <- "https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&areaCode=E92000001&metric=vaccinationsAgeDemographics&format=csv"
+}
 head(dat.England.all)
 tail(dat.England.all)
 
-# France data from https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/
+
+# France data 
+
+# from https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/
 # vacsi-a-fra-2021-08-10-19h05.csv
 URL <- "https://www.data.gouv.fr/fr/datasets/r/54dd5f8d-1e2e-4ccb-8fb8-eac68245befd"
-download.file(URL, "data/vacsi-a-fra.csv")
+if(dlData){
+  download.file(URL, "data/vacsi-a-fra.csv")
+}
 dat.France.all <- read.csv("data/vacsi-a-fra.csv", sep = ";")
 
 head(dat.France.all)
@@ -52,6 +74,8 @@ names(popFr) <- popFrance$ageClass
 
 # Add pop information to France data
 dat.France.all$pop <- popFr[dat.France.all$age]
+
+# Merge data
 
 # Select the columns that we want
 dat.France.all <- dat.France.all[, c("jour", "age", "pop", "n_cum_complet", "n_cum_dose1", "n_cum_rappel")]
@@ -110,11 +134,17 @@ col1DFR <- "#ABD2E9"
 
 factorEN <- 1 # Means that England on the right-hand side
 
+# Choose a minimum date
+minDate <- "2020-12-27"
+dates <- dates[dates >= minDate]
 
+# Initialize counter
+count <- 0
 
-
-#for(thedate in dates){
-  thedate <- dates[length(dates)]
+for(thedate in dates){
+  count <- count + 1 # update counter
+  
+#  thedate <- dates[length(dates)]
   
   # Select values at this date
   dat <- dat.all[dat.all$date == thedate, ]
@@ -126,13 +156,13 @@ factorEN <- 1 # Means that England on the right-hand side
   # Plot 
   
   
-  for(version in 1:2){
+  for(version in c(2)){ # 1:2
     # Two versions of the figure, 
     # 1 focus on vaccinated completely
     # 2 focus on unvaccinated
     
     # file name of the output figure  
-    fname <- paste0("pics/pyramid_UK-FR_", thedate, "_", version, ".pdf")
+    fname <- paste0("pics/pyramid_UK-FR_", version, "_", formatC(count, width = 3, format = "d", flag = "0"), ".pdf")
     
     pdf(fname, width = 7.5, height = 7)
     
@@ -147,7 +177,7 @@ factorEN <- 1 # Means that England on the right-hand side
     # Write Credits
     par(family = "mono")
     mtext(side = 1, line = 4.75, text = paste0("@flodebarre, d'après @VictimOfMaths ; ", thedate, ",  
-  Données NHS : https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/
+  Données Angleterre : ", sourceEN, " (pop ONS)
   France : https://www.data.gouv.fr/fr/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/, 
            Population INSEE 2021 https://www.insee.fr/fr/statistiques/2381472
   Code : https://github.com/flodebarre/covid_vaccination/blob/main/pyramid_UKFR_overtime.R"), adj = 0, cex = 0.55, col = gray(0.4))
@@ -297,19 +327,26 @@ factorEN <- 1 # Means that England on the right-hand side
     mtext(thedate, side = 3, line = 2.75, cex = 1.2, font = 2)
     dev.off()
     
-    system(paste0("open ", fname))
+#    system(paste0("open ", fname))
   } # end version
-#} # end thedate
+} # end thedate
 
   
   
-# ## Evaluate this in console to convert pdfs to png
-# # for p in pics/pyramid_UK-FR_*.pdf; do; pdftoppm "$p" "${p%.*}" -png; done
-# system("./pyramid_UK-FR_gifScript.sh")
+## Evaluate this in console to convert pdfs to png
+# for p in pics/pyramid_UK-FR_*.pdf; do; pdftoppm "$p" "${p%.*}" -png; done
+system("./pyramid_UK-FR_gifScript.sh")
+
 # 
 # # Build gif
-# system("convert -delay 150 pics/pyramid_UK-FR_*_2*.png pics/pyramid_UK-FR_2.gif")
-# system("convert -delay 150 pics/pyramid_UK-FR_*_1*.png pics/pyramid_UK-FR_1.gif")
+#system("convert -delay 10 pics/pyramid_UK-FR_2_*.png pics/pyramid_UK-FR_2.gif")
+# system("convert -delay 150 pics/pyramid_UK-FR_1_*.png pics/pyramid_UK-FR_1.gif")
+
+#system("ffmpeg -framerate 24 -i pics/pyramid_UK-FR_2_*.png output.mp4")
+
+# Convert to movie
+system("ffmpeg -framerate 24 -pattern_type glob -i 'pics/pyramid_UK-FR_2_*.png' pics/pyramid_EN-FR_2.mp4")
+
 
 # Final prop
 datEN <- dat[dat$country == "Angleterre",]
