@@ -17,7 +17,7 @@ rm(list = ls()) # I don't care, I am doing it anyway
 ```
 
 ```{r, include = FALSE}
-dlData <- TRUE
+dlData <- FALSE
 # Whether to download the data again
 ```
 
@@ -455,7 +455,7 @@ for(ctr in c("EN", "FR")){
     
     # Third doses
     rect(xleft = m$timeSinceFirstDay, 
-         xright = m$timeSinceFirstDay + 7, 
+         xright = m$timeSinceFirstDay + 1, 
          ybottom = m$ageMin, 
          ytop = m$ageMax + 1, 
          border = colBorder2, 
