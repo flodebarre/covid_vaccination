@@ -17,7 +17,7 @@ rm(list = ls()) # I don't care, I am doing it anyway
 ```
 
 ```{r, include = FALSE}
-dlData <- FALSE
+dlData <- TRUE
 # Whether to download the data again
 ```
 
@@ -139,6 +139,8 @@ datFR$wk <- sapply(datFR$date, FUN = function(i) sum(i >= mondays))
 tmp <- sapply(mondays, FUN = function(i) sum(i >= mondays))
 dates <- data.frame(wk = tmp, mondays = mondays, timeSinceFirstDay = as.numeric(mondays - firstDate))
 
+datEN$timeSinceFirstDay <- as.numeric(datEN$date - firstDate)
+datFR$timeSinceFirstDay <- as.numeric(datFR$date - firstDate)
 
 # Add year and week
 datEN$year <- format(datEN$date, "%Y")
@@ -268,8 +270,9 @@ datENwk <- merge(datENwk, dates, by = "wk", all.x = TRUE)
 
 # Plot
 
+## By week
 
-```{r countriesDoses, fig.width=12, fig.height=5}
+```{r countriesDosesByWeek, fig.width=12, fig.height=5}
 
 for(ctr in c("EN", "FR")){
     
@@ -382,9 +385,130 @@ for(ctr in c("EN", "FR")){
 }
 
 # Append the output
-system("convert campagne_vaccinale_files/figure-html/countriesDoses-* -append campagne_vaccinale_files/figure-html/countriesDoses.png")
+system("convert campagne_vaccinale_files/figure-html/countriesDosesByWeek-* -append campagne_vaccinale_files/figure-html/countriesDosesByWeek.png")
   
 ```
 
+
+## By day
+
+```{r countriesDosesByDay, fig.width=12, fig.height=5}
+
+for(ctr in c("EN", "FR")){
+    
+  
+  plotPNG <- FALSE # Whether to save as png (no need if Knit)
+  fname <- paste0("pics/joyPlotDay_", ctr, ".png") # Fig file name
+  if(plotPNG) png(fname, width = 1000, height = 400)
+  
+  # Get the data for the country we want
+  dat <- get(paste0("dat", ctr))
+  
+  # Find the maximum p value for scaling
+  maxp <- max(c(dat$p1, dat$p2, dat$p3))
+  # Function to scale the colors
+  scalefunc <- function(p, exponent = 1) (p/maxp)^(exponent)
+  
+  
+  # Initialize plot window
+  par(las = 1)
+  par(mar = c(4, 2.5, 4, 2.5))
+  par(mgp = c(2, 0, 0))
+#  par(bg = "black", fg = gray(0.8))
+  par(bg = "white", fg = "black")
+  
+  # Color for border of the rectangles
+  colBorder2 <- gray(0, 0)
+  lwdd2 <- 0. # width of the border
+
+  plot(NULL, 
+       ylim = c(0, maxAge), 
+       xlim = c(0, max(dat$timeSinceFirstDay)+14), 
+       xlab = "", ylab = "", 
+       xaxs = "i", yaxs = "i", frame.plot = FALSE, axes = FALSE)
+  
+  # For each day
+  #XXXXXXXXXXX
+  
+  for (day in seq(firstDate, max(c(datFR$date, datEN$date), na.rm = TRUE), by = "day")){
+    
+    # Subset of the data for this week
+    m <- dat[dat$date == day, ]
+  
+    # First doses
+    rect(xleft = m$timeSinceFirstDay, 
+         xright = m$timeSinceFirstDay + 1, 
+         ybottom = m$ageMin, 
+         ytop = m$ageMax + 1, 
+         border = colBorder2, 
+         col = sapply(m$p1, function(i) adjustcolor(color1, alpha.f = scalefunc(i))), 
+         lwd = lwdd2)
+    
+    # Second doses
+    rect(xleft = m$timeSinceFirstDay, 
+         xright = m$timeSinceFirstDay + 1, 
+         ybottom = m$ageMin, 
+         ytop = m$ageMax + 1, 
+         border = colBorder2, 
+         col = sapply(m$p2, function(i) adjustcolor(color2, alpha.f = scalefunc(i))), 
+         lwd = lwdd2)
+    
+    # Third doses
+    rect(xleft = m$timeSinceFirstDay, 
+         xright = m$timeSinceFirstDay + 7, 
+         ybottom = m$ageMin, 
+         ytop = m$ageMax + 1, 
+         border = colBorder2, 
+         col = sapply(m$p3, function(i) adjustcolor(color3, alpha.f = scalefunc(i))), 
+         lwd = lwdd2)
+  
+  }
+  
+  # Add lines for ages
+  for(i in unique(dat$ageMin)){
+    abline(h = i, col = colBorder, lwd = lwdd)
+  }
+  
+  # Annotations
+  # Axes, vertical
+  cexx <- 0.8
+  axis(2, lwd = 0, at = seq(0, maxAge, by = 10), col.axis = par("fg"), cex.axis = cexx)
+  axis(4, lwd = 0, at = seq(0, maxAge, by = 10), col.axis = par("fg"), cex.axis = cexx)
+  mtext("age", side = 2, line = 1.5, las = 3, cex = cexx)
+
+  # Horizontal axis
+  axis(1, at = datesmonths$timeSinceFirstDay, 
+       labels = format(datesmonths$months, "%b\n%Y"), cex.axis = cexx, padj = 0.75, lwd = 0, lwd.ticks = 1, tck = -0.01, col.axis = par("fg"))
+  
+  # Legend  
+  legend(0, maxAge, inset = c(0, -0), col = c(color1, color2, color3), pch = 15, legend = c("Première Dose", "Dose 2 / complète", "Dose de rappel"), horiz = TRUE, yjust = 0, xpd = TRUE, bty = "n")
+  
+  # Title
+  if(ctr == "EN"){
+    pays <- "Angleterre"
+  }else{
+    pays <- "France"
+  }
+  mtext(pays, side = 3, line = 2, font = 2, cex = 1.3)
+  
+  # Credits
+  if(ctr == "EN"){
+    src <- "https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&areaCode=E92000001&metric=vaccinationsAgeDemographics&format=csv"
+  }else{
+    src <- "https://www.data.gouv.fr/en/datasets/donnees-relatives-aux-personnes-vaccinees-contre-la-covid-19-1/"
+  }
+  mtext(side = 1, text = paste0("@flodebarre, inspiré de @VictimOfMaths, ", Sys.Date(), "\nDonnées : ", src, "\nCode : ", "https://github.com/flodebarre/covid_vaccination/blob/main/campagne_vaccinale.Rmd"), col = par("fg"), line = 3, family = "mono", adj = 0, cex = 0.5)
+  
+  if(plotPNG){
+    dev.off()
+    system(paste("open", fname))
+  }
+  
+}
+
+# Append the output
+system("convert campagne_vaccinale_files/figure-html/countriesDosesByDay-* -append campagne_vaccinale_files/figure-html/countriesDosesByDay.png")
+  
+```
 
 
