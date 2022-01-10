@@ -302,6 +302,12 @@ for(ctr in c("EN", "FR")){
   color1 <- "#FFC107" # Alternative: "#004D40"
   color2 <- "#1E88E5"
   color3 <- "#D81B60"
+  library("MetBrewer")
+  pal <- met.brewer(name = "Egypt", n = 4, type = "discrete")
+  color1 <- pal[4]
+  color2 <- pal[2]
+  color3 <- pal[1]
+  
   # Color for border of the rectangles
   colBorder <- par("bg")
   lwdd <- 0.2 # width of the border
