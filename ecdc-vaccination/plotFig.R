@@ -10,10 +10,10 @@ plotFig <- function(c1, c2, week, densOrProp, sameScale = FALSE, byRec = 100000,
   
 
   #----------------------------
-  # This is just for testing the function -- comment out when you are done
+  # # This is just for testing the function -- comment out when you are done
   # c1 <- "ES"
   # c2 <- "FR"
-  # week <- "37"
+  # week <- "2021-W37"
   # byRec <- 100000
   # sameScale <- TRUE
   # densOrProp <- "prop"
@@ -21,14 +21,17 @@ plotFig <- function(c1, c2, week, densOrProp, sameScale = FALSE, byRec = 100000,
   
   
   # Define colors 
-  colPop <- gray(0.8) # Unvaccinated
-  colComplet1 <- "#9B2500" # 2 doses, left
-  col1D1 <- "#FF6939" # 1 dose, left
-  colComplet2 <- "#044063" # 2 doses, right
-  col1D2 <- "#4F92BA" # 1 dose, right
+  colPop <- gray(0.9) # Unvaccinated
+  colComplet1 <- "#AA3939" # 2 doses, left
+  col1D1 <- "#FFAAAA" # 1 dose, left
+  colRappel1 <- "#550000" # 3 doses, left
+  
+  colComplet2 <- "#226666" # 2 doses, right
+  col1D2 <- "#9BC2C2" # 1 dose, right
+  colRappel2 <- "#003333" # 3 doses, right
   
   # Subset of the data with these countries
-  tmp <- newdat[is.element(newdat$ReportingCountry, c(c1, c2)) & (newdat$YearWeekISO == paste0("2021-W", sprintf("%02d", as.numeric(week)))), ]
+  tmp <- newdat[is.element(newdat$ReportingCountry, c(c1, c2)) & (newdat$YearWeekISO == week), ]
   
   # Get max size of age class
   tmp1 <- tmp[tmp$ReportingCountry == c1, ]
@@ -46,33 +49,40 @@ plotFig <- function(c1, c2, week, densOrProp, sameScale = FALSE, byRec = 100000,
       tmp1$RDenom <- tmp1$Denominator / xmax / tmp1$ageWidth
       tmp1$R1D <- tmp1$FirstDose / xmax / tmp1$ageWidth
       tmp1$R2D <- tmp1$SecondDose / xmax / tmp1$ageWidth
+      tmp1$R3D <- tmp1$DoseAdditional1 / xmax / tmp1$ageWidth
       
       tmp2$RDenom <- tmp2$Denominator / xmax / tmp2$ageWidth
       tmp2$R1D <- tmp2$FirstDose / xmax / tmp2$ageWidth
       tmp2$R2D <- tmp2$SecondDose / xmax / tmp2$ageWidth
+      tmp2$R3D <- tmp2$DoseAdditional1 / xmax / tmp2$ageWidth
+      
     }else{
       # If different scale, rescale using the maximum of each country data
       tmp1$RDenom <- tmp1$Denominator / xmax1 / tmp1$ageWidth
       tmp1$R1D <- tmp1$FirstDose / xmax1 / tmp1$ageWidth
       tmp1$R2D <- tmp1$SecondDose / xmax1 / tmp1$ageWidth
+      tmp1$R3D <- tmp1$DoseAdditional1 / xmax1 / tmp1$ageWidth
       
       tmp2$RDenom <- tmp2$Denominator / xmax2 / tmp2$ageWidth
       tmp2$R1D <- tmp2$FirstDose / xmax2 / tmp2$ageWidth
       tmp2$R2D <- tmp2$SecondDose / xmax2 / tmp2$ageWidth
+      tmp2$R3D <- tmp2$DoseAdditional1 / xmax2 / tmp2$ageWidth
     }
   }else{
     # Proportions
     tmp1$RDenom <- 1
     tmp1$R1D <- tmp1$FirstDose / tmp1$Denominator
     tmp1$R2D <- tmp1$SecondDose / tmp1$Denominator
+    tmp1$R3D <- tmp1$DoseAdditional1 / tmp1$Denominator
     
     tmp2$RDenom <- 1
     tmp2$R1D <- tmp2$FirstDose / tmp2$Denominator
     tmp2$R2D <- tmp2$SecondDose / tmp2$Denominator
+    tmp2$R3D <- tmp2$DoseAdditional1 / tmp2$Denominator
   }
   
   par(xpd = FALSE, family = "sans", mgp = c(2, 0.15, 0), tck = -0.02)
-  par(mar = c(5, 2.5, 4.5, 2.5))
+  par(mar = c(5, 2.5, 5.5, 2.5))
   
   # Initialize plot
   plot(c(-1, 1), c(0, 100), type = "n", 
@@ -96,6 +106,7 @@ Code: https://github.com/flodebarre/covid_vaccination/blob/main/ECDC.Rmd"), adj 
     factor <- (-1)^ictr
     colComplet <- get(paste0("colComplet", ictr))
     col1D <- get(paste0("col1D", ictr))
+    colRappel <- get(paste0("colRappel", ictr))
     
     tmpp <- get(paste0("tmp", ictr))
     fullCtr <- unique(tmpp$Country) # Full name
@@ -123,6 +134,11 @@ Code: https://github.com/flodebarre/covid_vaccination/blob/main/ECDC.Rmd"), adj 
         rect(xleft = factor * max(0, tmp$RDenom - tmp$R2D), ybottom = tmp$minAge, 
              xright = factor * tmp$RDenom, ytop = tmp$maxAge + 1, 
              col = colComplet, border = gray(0, 0))
+
+        # Vaccinated, rappel1
+        rect(xleft = factor * max(0, tmp$RDenom - tmp$R3D), ybottom = tmp$minAge, 
+             xright = factor * tmp$RDenom, ytop = tmp$maxAge + 1, 
+             col = colRappel, border = gray(0, 0))
         
         # Identify whether denominator problem
         if(tmp$RDenom < tmp$R1D){
@@ -210,10 +226,10 @@ Graduations every 10%
   
   # Plot legend (manually centered)
   par(family = "mono")
-  legend(x = 0, y = 105, pch = 15, col = c(colComplet1, col1D1, colPop, colComplet2, col1D2, colPop), ncol = 2, legend = c("     2 doses", "     1 dose", " non vaccinated", "", "", ""), xjust = 0.29, yjust = 0, box.lwd = -1, text.font = 1, pt.cex = 2, cex = 0.8, bg = gray(0, 0))
+  legend(x = 0, y = 105, pch = 15, col = c(colRappel1, colComplet1, col1D1, colPop, colRappel2, colComplet2, col1D2, colPop), ncol = 2, legend = c("     3 doses", "     2 doses", "     1 dose", " non vaccinated", "", "", "", ""), xjust = 0.29, yjust = 0, box.lwd = -1, text.font = 1, pt.cex = 2, cex = 0.8, bg = gray(0, 0))
   
   # Add title 
   par(family = "sans")
-  mtext(paste0("2021-W", sprintf("%02d", as.numeric(week))), side = 3, line = 3, cex = 1.2, font = 2)
+  mtext(week, side = 3, line = 4, cex = 1.2, font = 2)
   
 }

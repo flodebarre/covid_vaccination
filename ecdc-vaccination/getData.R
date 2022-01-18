@@ -50,12 +50,13 @@ ac2$minAge <- c(0, 18, 25, 50, 60, 70, 80)
 ac2$maxAge <- c(17, 24, 49, 59, 69, 79, 100)
 ac2$ageWidth <- ac2$maxAge - ac2$minAge + 1
 
-
+names(dat.ECDC)
 
 # Initialize the new dataset
 newdat <- data.frame("TargetGroup" = character(0), 
                      "FirstDose" = numeric(0), 
                      "SecondDose" = numeric(0), 
+                     "DoseAdditional1" = numeric(0), # Add booster shots
                      "Population" = numeric(0), 
                      "Denominator" = numeric(0), 
                      "Country" = character(0), 
@@ -76,15 +77,15 @@ for(thedate in sort(unique(dat.ECDC$YearWeekISO))){
       # If there are data at this date!
       
       # Compute cumulated values
-      agg <- aggregate(x = tmp[, c("FirstDose", "SecondDose")], by = list(TargetGroup = tmp[, "TargetGroup"]), FUN = sum)
+      agg <- aggregate(x = tmp[, c("FirstDose", "SecondDose", "DoseAdditional1")], by = list(TargetGroup = tmp[, "TargetGroup"]), FUN = sum)
       # Get the unique values (e.g. population size should not be summed!)
       agg2 <- aggregate(x = tmp[, c("Population", "Denominator", "Country", "ReportingCountry")], by = list(TargetGroup = tmp[, "TargetGroup"]), FUN = unique)
-      
+      # Merge the two aggregated datasets
       agg <- merge(agg, agg2, by = "TargetGroup")
       
       # If there is no line for Age<18, add it
       if(all(agg$TargetGroup != "Age<18")){
-        agg <- rbind(agg, c("Age<18", 0, 0, agg[agg$TargetGroup == "ALL", "Population"], NA, agg[agg$TargetGroup == "ALL", "Country"], agg[agg$TargetGroup == "ALL", "ReportingCountry"]))
+        agg <- rbind(agg, c("Age<18", 0, 0, 0, agg[agg$TargetGroup == "ALL", "Population"], NA, agg[agg$TargetGroup == "ALL", "Country"], agg[agg$TargetGroup == "ALL", "ReportingCountry"]))
       }
       
       # Add Denominator to Age<18 if it is missing
@@ -122,7 +123,7 @@ for(thedate in sort(unique(dat.ECDC$YearWeekISO))){
 }
 
 # Made numerical values numeric again
-for(col in c("FirstDose", "SecondDose", "Population", "Denominator", "minAge", "maxAge")){
+for(col in c("FirstDose", "SecondDose", "DoseAdditional1", "Population", "Denominator", "minAge", "maxAge")){
   newdat[, col] <- as.numeric(newdat[, col])
 }
 

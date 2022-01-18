@@ -17,6 +17,10 @@ thedate <- as.Date(substr(latestDataFile, 33, 42))
 # Load the data
 newdat <- read.csv(latestDataFile)
 
+# Week values
+wks <- sort(unique(newdat$YearWeekISO))
+# Remove the first four
+wks <- wks[5:length(wks)]
 
 # Load function to plot the figure
 source("plotFig.R")
@@ -86,7 +90,8 @@ There may be issues with denominators (estimations of population size of the dif
        
        # Date
        fluidRow(
-         column(width = 12, offset = 0, sliderInput(inputId = "week", label = "2021 Week number (click play to animate)", min = 1, max = as.numeric(substr(max(newdat$YearWeekISO), start = 7, stop = 8)), value = as.numeric(substr(max(newdat$YearWeekISO), start = 7, stop = 8)), step = 1, animate = animationOptions(interval = 750, playButton = "play"), width = '100%'))
+#         column(width = 12, offset = 0, sliderInput(inputId = "week", label = "2021 Week number (click play to animate)", min = 1, max = as.numeric(substr(max(newdat$YearWeekISO), start = 7, stop = 8)), value = as.numeric(substr(max(newdat$YearWeekISO), start = 7, stop = 8)), step = 1, animate = animationOptions(interval = 750, playButton = "play"), width = '100%'))
+         column(width = 12, offset = 0, sliderInput(inputId = "week", label = "Week (click play to animate)", min = 1, max = length(wks), value = length(wks), step = 1, animate = animationOptions(interval = 250, playButton = "play"), width = '100%'))
        ),
        #--------------------------------------------------------------------
        
@@ -138,10 +143,10 @@ There may be issues with denominators (estimations of population size of the dif
 server <- function(input, output) {
     
       output$agePyramid <- renderPlot({
-        plotFig(c1 = as.character(input$c1), c2 = as.character(input$c2), 
-                week = as.character(input$week), 
-                densOrProp = as.character(input$densOrProp), 
-                sameScale = as.logical(input$sameScale), byRec = as.numeric(input$byRec), 
+        plotFig(c1 = as.character(input$c1), c2 = as.character(input$c2),
+                week = as.character(wks[input$week]),
+                densOrProp = as.character(input$densOrProp),
+                sameScale = as.logical(input$sameScale), byRec = as.numeric(input$byRec),
                 thedate = thedate, newdat = newdat)
       }, res = 80)
       
@@ -150,11 +155,11 @@ server <- function(input, output) {
         # Source: https://stackoverflow.com/questions/14810409/save-plots-made-in-a-shiny-app
         filename = function(){ paste('agePyramid_', input$c1, '-', input$c2, "_w-", input$week, '.pdf', sep='') },
         content = function(file){
-          pdf(width = 7, height = 5.5, file = file)
-          print(plotFig(c1 = as.character(input$c1), c2 = as.character(input$c2), 
-                        week = as.character(input$week), 
-                        densOrProp = as.character(input$densOrProp), 
-                        sameScale = as.logical(input$sameScale), byRec = as.numeric(input$byRec), 
+          pdf(width = 7, height = 6.5, file = file)
+          print(plotFig(c1 = as.character(input$c1), c2 = as.character(input$c2),
+                        week = as.character(wks[input$week]),
+                        densOrProp = as.character(input$densOrProp),
+                        sameScale = as.logical(input$sameScale), byRec = as.numeric(input$byRec),
                         thedate = thedate, newdat = newdat))
           dev.off()
         }
