@@ -20,7 +20,7 @@ rm(list = ls()) # I don't care, I am doing it anyway
 
 # Load data
 
-```{r}
+```{r, results = 'hide'}
 dat <- read.csv("data/dataDREES-deaths_2022-01-28.csv")
 
 dat
@@ -29,7 +29,6 @@ dat
 **Main message**: we want to see vaccine efficacy
 Then we would like to compare variants
 and finally age classes
-
 
 
 ```{r}
@@ -49,32 +48,40 @@ names(cols) <- c("Omicron", "Delta")
 pchs <- c(16, 17) # Round for Omicron, Triangle for Delta
 names(pchs) <- names(cols)
 
-cexs <- c(1.3, 1.5)
+cexs <- c(1.3, 1.5) # Point size, smaller for Omicron, so that Delta remains visible behind
 names(cexs) <- names(cols)
 ```
 
-# Plot
-
-```{r figDeces, fig.width = 8, fig.height = 4.5}
+```{r}
 # Rewrite variables
 vac2 <- c("Non vacciné", "Complet sans rappel", "Complet avec rappel")
 # Check 
 cbind(vac, vac2)
 
-agcls
 agcls2 <- c("20-59\nans", "60-79\nans", "80 ans\net +")
 # Check
 cbind(agcls, agcls2)
 
-lbls <- expand.grid(vac = rev(vac2), age = agcls2)
-prms <- expand.grid(vac = rev(vac), age = agcls)
+# Combinations of variables
+lbls <- expand.grid(vac = rev(vac2), age = agcls2) # Labels
+prms <- expand.grid(vac = rev(vac), age = agcls) # Names in the data
+```
 
+# Plot
+
+```{r figDeces, fig.width = 8, fig.height = 4.5}
 # Distances on the plot
 d.age <- 4.5
 d.vac <- 1
 
-thecex <- 1.5
-rmax <- ceiling(min(100, 1.2 * max(dat$risk)))
+# Max risk value on the plot
+rmax <- ceiling(min(100, 1.2 * max(dat$risk))) 
+
+lwd.big <- 3 # lwd large graduations
+lwd.fine <- 1 # lwd fine graduations
+
+
+# Initialize plot
 par(mar = c(5, 9, 3, 4), 
     mgp = c(1., 0, 0), tck = -0.025)
 plot(0, xlim = c(0, rmax), 
@@ -84,49 +91,55 @@ plot(0, xlim = c(0, rmax),
      xlab = "Risque de décès hospitalier (%)", 
      ylab = "")
 
-lwd.big <- 3
-lwd.fine <- 1
-
+# Axis
 xx <- seq(0, ceiling(rmax), by = 1)
 axis(1, at = xx, lwd = 0, lwd.ticks = 0, labels = rep("", length(xx)))
 axis(1, at = seq(0, ceiling(rmax), by = 5), lwd = 0, lwd.ticks = 0)
 #axis(3, lwd = 0, lwd.ticks = 1)
 
+# Function to compute position from indices
 getPos <- function(ia, iv){
   (ia - 1) * d.age + (iv - 1) * d.vac
 }
-count <- 1
+
+count <- 1 # Counter
 for(ia in seq_along(agcls)){
   for(iv in seq_along(vac)){
     par(xpd = FALSE)
+    
     # Compute position
     pos <- getPos(ia, iv)
+    
     # Draw horizontal like to locate the points
     lines(y = rep(pos, 2), x = c(0, rmax), col = gray(0.8), lwd = 2)
   }
 }
 
 # Vertical lines
-for(i in seq(0, ceiling(rmax))){
+for(i in seq(0, ceiling(rmax))){ # Fine
   abline(v = i, col = "white", lwd = lwd.fine)
 }
-for(i in seq(0, ceiling(rmax), by = 5)){
+for(i in seq(0, ceiling(rmax), by = 5)){ # Large
   abline(v = i, col = "white", lwd = lwd.big)
 }
 
-  for(ia in seq_along(agcls)){
+# Yes, a loop
+for(ia in seq_along(agcls)){
   for(iv in seq_along(vac)){
     par(xpd = FALSE)
+    
     # Compute position
     pos <- getPos(ia, iv)
 
     # Plot the point
     for(vrt in c("Delta", "Omicron")){
       points(dat[which(dat$vaccination == prms[count, "vac"] & dat$cl_age == prms[count, "age"] & dat$variant == vrt), "risk"], pos, col = cols[vrt], pch = pchs[vrt], cex = cexs[vrt])
-
     }
     par(xpd = TRUE)
+    # Add vaccination information
     text(-1, pos, adj = 1, labels = lbls[count, "vac"])
+    
+    # Add age information (middle position, hence "if")
     if(iv == 2){
       text(1.1*rmax,  (ia - 1) * d.age + 1 * d.vac, adj = 0.5, labels = lbls[count, "age"], cex = 1.2)
     }
@@ -138,9 +151,9 @@ for(i in seq(0, ceiling(rmax), by = 5)){
 par(xpd = TRUE)
 legend("bottom", legend = c("Omicron", "Delta"), pch = pchs, col = cols, pt.cex = cexs, horiz = TRUE, inset = c(-0.65, -0.25), bty = "n")
 
-
 title(main = "Risque de décès hospitalier de patients infectés")
 
+# Credits
 mtext(side = 1, text = "Données : https://drees.solidarites-sante.gouv.fr/sites/default/files/2022-01/
 2022-01-28%20-%20Appariements%20sivic-sidep-vacsi%20Drees.pdf, p17. 2021-12-20 -- 2022-01-23.", family  = "mono", cex = 0.5, line = 3.5, adj = 0, col = gray(0.4))
 ```
