@@ -70,6 +70,10 @@ prms <- expand.grid(vac = rev(vac), age = agcls) # Names in the data
 # Plot
 
 ```{r figDeces, fig.width = 8, fig.height = 4.5}
+# Whether to zoom in for the youngest age class
+# (not recommended at the moment, values to low an imprecise)
+zoomYoung <- FALSE 
+
 # Distances on the plot
 d.age <- 4.5
 d.vac <- 1
@@ -93,8 +97,8 @@ plot(0, xlim = c(0, rmax),
 
 # Axis
 xx <- seq(0, ceiling(rmax), by = 1)
-axis(1, at = xx, lwd = 0, lwd.ticks = 0, labels = rep("", length(xx)))
-axis(1, at = seq(0, ceiling(rmax), by = 5), lwd = 0, lwd.ticks = 0)
+#axis(1, at = xx, lwd = 0, lwd.ticks = 0, labels = rep("", length(xx)))
+#axis(1, at = seq(0, ceiling(rmax), by = 5), lwd = 0, lwd.ticks = 0)
 #axis(3, lwd = 0, lwd.ticks = 1)
 
 # Function to compute position from indices
@@ -119,7 +123,8 @@ for(ia in seq_along(agcls)){
 for(i in seq(0, ceiling(rmax))){ # Fine
   abline(v = i, col = "white", lwd = lwd.fine)
 }
-for(i in seq(0, ceiling(rmax), by = 5)){ # Large
+xx2 <- seq(0, ceiling(rmax), by = 5)
+for(i in xx2){ # Large
   abline(v = i, col = "white", lwd = lwd.big)
 }
 
@@ -142,6 +147,7 @@ for(ia in seq_along(agcls)){
     # Add age information (middle position, hence "if")
     if(iv == 2){
       text(1.1*rmax,  (ia - 1) * d.age + 1 * d.vac, adj = 0.5, labels = lbls[count, "age"], cex = 1.2)
+      text(xx2, rep((ia - 1) * d.age - 0.5*d.vac, length(xx2)), labels = xx2)
     }
     count <- count + 1
   }
@@ -156,6 +162,57 @@ title(main = "Risque de décès hospitalier de patients infectés")
 # Credits
 mtext(side = 1, text = "Données : https://drees.solidarites-sante.gouv.fr/sites/default/files/2022-01/
 2022-01-28%20-%20Appariements%20sivic-sidep-vacsi%20Drees.pdf, p17. 2021-12-20 -- 2022-01-23.", family  = "mono", cex = 0.5, line = 3.5, adj = 0, col = gray(0.4))
+
+#par(fig = c(), new=TRUE, mar=c(0,0,0,0) )
+
+par("usr")
+
+#------------------------------
+if(zoomYoung){
+  # Zoom on the youngest age class
+  fac <- 10
+  dx <- 0.5
+  dy <- 0.5
+  xr <- 0.5
+  rect(xleft = 0 - dx, ybottom = 0 - dy, 
+       xright = xr * fac + dx, ytop = 2 * d.vac + dy, 
+       col = "white", border = gray(0.5))
+  
+  ia <- 1
+  for(iv in seq_along(vac)){
+    par(xpd = FALSE)
+    
+    # Compute position
+    pos <- getPos(ia, iv)
+    
+    # Draw horizontal like to locate the points
+    lines(y = rep(pos, 2), x = c(0, fac * xr), col = gray(0.8), lwd = 2)
+  }
+  # Vertical lines
+  for(i in seq(0, xr, by = 0.1)){ # Fine
+    lines(x = rep(fac * i, 2), y = c(0 - 0.5*dy, 2 * d.vac + 0.5*dy), col = "white", lwd = lwd.fine)
+  }
+  xxx2 <- seq(0, xr, by = 0.5)
+  for(i in xxx2){ # Large
+    lines(x = rep(fac * i, 2), y = c(0 - 0.5*dy, 2 * d.vac + 0.5*dy), col = "white", lwd = lwd.big)
+  }
+  text(xxx2 * fac, rep((ia - 1) * d.age - 0.5*dy, length(xxx2)), labels = xxx2, cex = 0.75)
+  
+  # Add points
+  count <- 1
+  for(iv in seq_along(vac)){
+    par(xpd = FALSE)
+    
+    # Compute position
+    pos <- getPos(ia, iv)
+    
+    # Plot the point
+    for(vrt in c("Delta", "Omicron")){
+      points(fac * dat[which(dat$vaccination == prms[count, "vac"] & dat$cl_age == prms[count, "age"] & dat$variant == vrt), "risk"], pos, col = cols[vrt], pch = pchs[vrt], cex = cexs[vrt])
+    }
+    count <- count + 1
+  }
+} # End zoomYoung
 ```
 
 
